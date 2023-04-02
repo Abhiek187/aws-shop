@@ -1,0 +1,173 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  A stack to host the frontend and configure the backend of the AWS Shopping App
+#Metadata
+Parameters:
+  ReactAppBucketName:
+    Type: String
+    Description: The name of the S3 bucket to deploy the React app to
+    Default: my-react-app-bucket
+#Rules
+#Mappings
+#Conditions
+#Transform
+Resources:
+  # IAM users/roles
+  # Frontend Developer
+  # Backend Developer
+  # Database Administrator
+  # Allow CodeBuild to upload objects to S3
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: ["sts:AssumeRole"]
+            Effect: Allow
+            Principal:
+              Service: [codebuild.amazonaws.com]
+        Version: "2012-10-17"
+      Path: /
+      Policies:
+        - PolicyName: CodeBuildAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Action:
+                  - "s3:PutObject"
+                Effect: Allow
+                Resource: "*"
+  # CodePipeline (or just CodeBuild for now)
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: AWSShopBuild
+      Description: A project that builds and deploys the AWS Shopping App
+      Source:
+        Auth:
+          Type: OAUTH
+        # Directions to let GitHub authorize CodeBuild:
+        # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-source.html#cfn-codebuild-project-source-location
+        Location: https://github.com/Abhiek187/aws-shop.git # not required if using CodePipeline
+        Type: GITHUB
+        ReportBuildStatus: true
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      # Upload the build to the S3 bucket
+      Artifacts:
+        Location: !Ref ReactAppBucketName
+        Name: "/" # store the build in the root directory of the bucket (not zipped)
+        Type: S3
+      Environment:
+        Type: ARM_CONTAINER
+        Image: aws/codebuild/amazonlinux2-aarch64-standard:2.0 # Amazon Linux 2 ARM image
+        ComputeType: BUILD_GENERAL1_SMALL # free tier eligible
+      BadgeEnabled: true # show a badge of the build status on GitHub, remove if using CodePipeline
+      TimeoutInMinutes: 5 # important to limit build minutes/month (default: 60)
+  # Get the PAT from Parameter Store to let CodeBuild authenticate with GitHub
+  CodeBuildSourceCredential:
+    Type: AWS::CodeBuild::SourceCredential
+    Properties:
+      Token: "{{resolve:ssm:GitHubToken}}" # must be created outside CloudFormation
+      ServerType: GITHUB
+      AuthType: PERSONAL_ACCESS_TOKEN
+  # CloudWatch
+  # X-Ray
+  ### Frontend ###
+  # S3 bucket
+  ReactAppBucket:
+    Type: AWS::S3::Bucket
+    # Can't delete an S3 bucket until all its objects are deleted
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Ref ReactAppBucketName
+      AccessControl: Private # don't give public access to the S3 bucket directly
+      VersioningConfiguration:
+        Status: Enabled
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html # TODO: change to error.html
+  ReactAppBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ReactAppBucket
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action:
+              - "s3:GetObject"
+            Resource: !Sub "${ReactAppBucket.Arn}/*"
+  # CloudFront
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt ReactAppBucket.DomainName
+            Id: ReactAppS3Origin
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+            OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
+        Enabled: true # required
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+        DefaultRootObject: index.html
+        DefaultCacheBehavior: # required
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          TargetOriginId: ReactAppS3Origin
+          CachePolicyId: !Ref CloudFrontCachePolicy
+          ViewerProtocolPolicy: redirect-to-https
+        PriceClass: PriceClass_100 # only use edge locations in North America, Europe, and Israel
+        # CustomErrorResponses:
+        #   - ErrorCachingMinTTL: 300 # 5 minutes
+        #     ErrorCode: 403
+        #     ResponseCode: 404
+        #     ResponsePagePath: error.html
+  CloudFrontOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Description: AWS Shopping App Origin Access Control
+        Name: ReactAppOAC
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+  CloudFrontCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        # TTL in seconds
+        DefaultTTL: 86400 # 1 day
+        MaxTTL: 31536000 # 1 year
+        MinTTL: 86400
+        Name: ReactAppCachePolicy
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: none
+          # Brotli has better compression than gzip
+          EnableAcceptEncodingBrotli: true
+          EnableAcceptEncodingGzip: false
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+  ### Backend ###
+  # API Gateway
+  # SQS
+  # Lambda
+  # DynamoDB
+  # Parameter Store
+  # CloudFormation doesn't support creating a SecureString parameter type
+  # Cognito
+Outputs:
+  WebsiteURL:
+    Description: URL for the website hosted on S3
+    Value: !GetAtt ReactAppBucket.WebsiteURL
+  CloudFrontURL:
+    Description: The URL of the React app hosted over HTTPS using CloudFront
+    Value: !Sub "https://${CloudFrontDistribution.DomainName}/"
