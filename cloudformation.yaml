@@ -81,7 +81,20 @@ Resources:
     UpdateReplacePolicy: Retain
     Properties:
       BucketName: !Ref ReactAppBucketName
+      # Buckets and objects are encrypted by default
+      # BucketEncryption:
+      #   ServerSideEncryptionConfiguration:
+      #     - ServerSideEncryptionByDefault:
+      #         SSEAlgorithm: AES256
       AccessControl: Private # don't give public access to the S3 bucket directly
+      # LoggingConfiguration:
+      #   DestinationBucketName: !Ref LoggingBucket
+      #   LogFilePrefix: testing-logs
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
       VersioningConfiguration:
         Status: Enabled
       WebsiteConfiguration:
@@ -99,6 +112,17 @@ Resources:
             Action:
               - "s3:GetObject"
             Resource: !Sub "${ReactAppBucket.Arn}/*"
+          - Sid: AllowSSLRequestsOnly
+            Effect: Deny
+            Principal: "*"
+            Action:
+              - "s3:*"
+            Resource:
+              - !GetAtt ReactAppBucket.Arn
+              - !Sub "${ReactAppBucket.Arn}/*"
+            Condition:
+              Bool:
+                "aws:SecureTransport": false
   # CloudFront
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
