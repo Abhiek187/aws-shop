@@ -17,6 +17,7 @@ Resources:
   # Backend Developer
   # Database Administrator
   # Allow CodeBuild to upload objects to S3
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html#setting-up-service-role
   CodeBuildRole:
     Type: AWS::IAM::Role
     Properties:
@@ -33,9 +34,17 @@ Resources:
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              - Action:
-                  - "s3:PutObject"
+              - Sid: CloudWatchLogsPolicy
                 Effect: Allow
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+              - Sid: S3PutObjectPolicy
+                Effect: Allow
+                Action:
+                  - "s3:PutObject"
                 Resource: "*"
   # CodePipeline (or just CodeBuild for now)
   CodeBuildProject:
