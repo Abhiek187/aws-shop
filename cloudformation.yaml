@@ -67,6 +67,9 @@ Resources:
         Location: !Ref ReactAppBucketName
         Name: "/" # store the build in the root directory of the bucket (not zipped)
         Type: S3
+        # Don't override S3's default SSE-S3 encryption with a KMS key
+        # (will prevent the website from being accessible)
+        EncryptionDisabled: true
       Environment:
         # Make sure the image supports the runtime in the buildspec:
         # https://docs.aws.amazon.com/codebuild/latest/userguide/available-runtimes.html
@@ -99,10 +102,10 @@ Resources:
     Properties:
       BucketName: !Ref ReactAppBucketName
       # Buckets and objects are encrypted by default
-      # BucketEncryption:
-      #   ServerSideEncryptionConfiguration:
-      #     - ServerSideEncryptionByDefault:
-      #         SSEAlgorithm: AES256
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
       AccessControl: Private # don't give public access to the S3 bucket directly
       # LoggingConfiguration:
       #   DestinationBucketName: !Ref LoggingBucket
