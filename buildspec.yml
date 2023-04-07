@@ -14,7 +14,7 @@ phases:
       - echo Running tests
       # npm test will hang at the watcher unless there's a CI environment variable
       # https://create-react-app.dev/docs/running-tests/#continuous-integration
-      - npm test -- --watchAll=false
+      - npm test
       - echo Building app
       - npm run build
   post_build:

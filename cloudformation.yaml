@@ -73,6 +73,9 @@ Resources:
         Type: LINUX_CONTAINER
         Image: aws/codebuild/amazonlinux2-x86_64-standard:4.0 # Amazon Linux 2 x86_64 image
         ComputeType: BUILD_GENERAL1_SMALL # free tier eligible
+        EnvironmentVariables:
+          - Name: CI
+            Value: "true"
       BadgeEnabled: true # show a badge of the build status on GitHub, remove if using CodePipeline
       TimeoutInMinutes: 5 # important to limit build minutes/month (default: 60)
   # Get the PAT from Parameter Store to let CodeBuild authenticate with GitHub
