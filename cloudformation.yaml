@@ -68,8 +68,10 @@ Resources:
         Name: "/" # store the build in the root directory of the bucket (not zipped)
         Type: S3
       Environment:
-        Type: ARM_CONTAINER
-        Image: aws/codebuild/amazonlinux2-aarch64-standard:2.0 # Amazon Linux 2 ARM image
+        # Make sure the image supports the runtime in the buildspec:
+        # https://docs.aws.amazon.com/codebuild/latest/userguide/available-runtimes.html
+        Type: LINUX_CONTAINER
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:4.0 # Amazon Linux 2 x86_64 image
         ComputeType: BUILD_GENERAL1_SMALL # free tier eligible
       BadgeEnabled: true # show a badge of the build status on GitHub, remove if using CodePipeline
       TimeoutInMinutes: 5 # important to limit build minutes/month (default: 60)
