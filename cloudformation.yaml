@@ -93,17 +93,14 @@ Resources:
       # LoggingConfiguration:
       #   DestinationBucketName: !Ref LoggingBucket
       #   LogFilePrefix: testing-logs
-      # Prevents adding bucket policies to give access
-      # PublicAccessBlockConfiguration:
-      #   BlockPublicAcls: true
-      #   BlockPublicPolicy: true
-      #   IgnorePublicAcls: true
-      #   RestrictPublicBuckets: true
+      # Some access settings need to be enabled to add bucket policies
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: false
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: false
       VersioningConfiguration:
         Status: Enabled
-      WebsiteConfiguration:
-        IndexDocument: index.html
-        ErrorDocument: index.html # TODO: change to error.html
   ReactAppBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -111,12 +108,18 @@ Resources:
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Sid: PublicReadGetObject
+          # Only allow CloudFront to access the S3 bucket
+          # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html#create-oac-overview-s3
+          - Sid: AllowCloudFrontServicePrincipalReadOnly
             Effect: Allow
-            Principal: "*"
+            Principal:
+              Service: cloudfront.amazonaws.com
             Action:
               - "s3:GetObject"
             Resource: !Sub "${ReactAppBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution.Id}"
           - Sid: AllowSSLRequestsOnly
             Effect: Deny
             Principal: "*"
