@@ -21,6 +21,6 @@ phases:
     commands:
       - echo Build completed on `date`
 artifacts:
-  base-directory: build
+  base-directory: "shop-app/build"
   files:
     - "**/*"
