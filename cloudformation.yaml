@@ -6,7 +6,7 @@ Parameters:
   ReactAppBucketName:
     Type: String
     Description: The name of the S3 bucket to deploy the React app to
-    Default: my-react-app-bucket
+    Default: aws-shop-bucket-jlkafn93hvo0a3f
 #Rules
 #Mappings
 #Conditions
@@ -21,12 +21,12 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
+        Version: "2012-10-17"
         Statement:
           - Action: ["sts:AssumeRole"]
             Effect: Allow
             Principal:
               Service: [codebuild.amazonaws.com]
-        Version: "2012-10-17"
       Path: /
       Policies:
         - PolicyName: CodeBuildAccess
@@ -40,6 +40,7 @@ Resources:
   # CodePipeline (or just CodeBuild for now)
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
+    # DependsOn: CodeBuildSourceCredential
     Properties:
       Name: AWSShopBuild
       Description: A project that builds and deploys the AWS Shopping App
@@ -64,12 +65,14 @@ Resources:
       BadgeEnabled: true # show a badge of the build status on GitHub, remove if using CodePipeline
       TimeoutInMinutes: 5 # important to limit build minutes/month (default: 60)
   # Get the PAT from Parameter Store to let CodeBuild authenticate with GitHub
-  CodeBuildSourceCredential:
-    Type: AWS::CodeBuild::SourceCredential
-    Properties:
-      Token: "{{resolve:ssm:GitHubToken}}" # must be created outside CloudFormation
-      ServerType: GITHUB
-      AuthType: PERSONAL_ACCESS_TOKEN
+  # ssm-secure only works with a limited number of resources:
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#template-parameters-dynamic-patterns-resources
+  # CodeBuildSourceCredential:
+  #   Type: AWS::CodeBuild::SourceCredential
+  #   Properties:
+  #     Token: "{{resolve:ssm-secure:GitHubToken}}" # must be created outside CloudFormation
+  #     ServerType: GITHUB
+  #     AuthType: PERSONAL_ACCESS_TOKEN
   # CloudWatch
   # X-Ray
   ### Frontend ###
@@ -90,11 +93,12 @@ Resources:
       # LoggingConfiguration:
       #   DestinationBucketName: !Ref LoggingBucket
       #   LogFilePrefix: testing-logs
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
+      # Prevents adding bucket policies to give access
+      # PublicAccessBlockConfiguration:
+      #   BlockPublicAcls: true
+      #   BlockPublicPolicy: true
+      #   IgnorePublicAcls: true
+      #   RestrictPublicBuckets: true
       VersioningConfiguration:
         Status: Enabled
       WebsiteConfiguration:
@@ -105,6 +109,7 @@ Resources:
     Properties:
       Bucket: !Ref ReactAppBucket
       PolicyDocument:
+        Version: "2012-10-17"
         Statement:
           - Sid: PublicReadGetObject
             Effect: Allow
