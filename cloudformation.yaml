@@ -5,7 +5,7 @@ Description: >-
 Parameters:
   ReactAppBucketName:
     Type: String
-    Description: The name of the S3 bucket to deploy the React app to
+    Description: The name of the S3 bucket to store the React code
     Default: aws-shop-bucket-jlkafn93hvo0a3f
 #Rules
 #Mappings
@@ -117,7 +117,7 @@ Resources:
         IgnorePublicAcls: true
         RestrictPublicBuckets: false
       VersioningConfiguration:
-        Status: Enabled
+        Status: Suspended # save money by avoiding making multiple copies of objects
   ReactAppBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
