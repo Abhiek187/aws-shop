@@ -16,6 +16,18 @@ Resources:
   # Frontend Developer
   # Backend Developer
   # Database Administrator
+  DeveloperGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: Developers
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/job-function/SystemAdministrator
+  DatabaseAdminGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: DatabaseAdmins
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/job-function/DatabaseAdministrator
   # Allow CodeBuild to upload objects to S3
   # https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html#setting-up-service-role
   CodeBuildRole:
@@ -117,7 +129,14 @@ Resources:
         IgnorePublicAcls: true
         RestrictPublicBuckets: false
       VersioningConfiguration:
-        Status: Suspended # save money by avoiding making multiple copies of objects
+        Status: Enabled
+      # Save money by deleting older copies of objects
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldVersionsRule
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 1
   ReactAppBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
