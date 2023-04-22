@@ -20,3 +20,34 @@ A basic shopping app that utilizes various AWS services
 
 1. Build the infrastructure using CloudFormation.
 2. Use CodeBuild to test the app, build it, and upload the build to S3.
+
+## Using the CLI
+
+Run `aws configure` and pass in your access key ID, secret access key, default region, and default ouput format. (Run `aws sts get-caller-identity` to verify you're signed in as the right user.)
+
+### CloudFormation Commands
+
+Create stack:
+
+```bash
+aws cloudformation create-stack --stack-name NAME --template-body FILE_PATH --parameters ParameterKey=KEY,ParameterValue=VALUE
+```
+
+List stacks:
+
+```bash
+aws cloudformation list-stacks
+aws cloudformation describe-stacks # more detailed than list-stacks
+```
+
+Update stack:
+
+```bash
+aws cloudformation update-stack --stack-name NAME --template-body FILE_PATH --parameters ParameterKey=KEY,ParameterValue=VALUE
+```
+
+Delete stack:
+
+```bash
+aws cloudformation delete-stack --stack-name NAME
+```

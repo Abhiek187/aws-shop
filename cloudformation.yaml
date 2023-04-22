@@ -16,6 +16,12 @@ Resources:
   # Frontend Developer
   # Backend Developer
   # Database Administrator
+  AdminGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: Admins
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
   DeveloperGroup:
     Type: AWS::IAM::Group
     Properties:
