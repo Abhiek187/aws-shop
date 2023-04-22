@@ -51,3 +51,11 @@ Delete stack:
 ```bash
 aws cloudformation delete-stack --stack-name NAME
 ```
+
+## Rotating Access Keys
+
+Rotate your access keys every 60 days by running the following shell script ([jq](https://stedolan.github.io/jq/) is required):
+
+```bash
+./rotate-access-key.sh
+```
