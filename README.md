@@ -52,6 +52,27 @@ Delete stack:
 aws cloudformation delete-stack --stack-name NAME
 ```
 
+### CodeBuild Commands
+
+Start build:
+
+```bash
+aws codebuild start-build --project-name NAME
+```
+
+List builds:
+
+```bash
+aws codebuild list-builds
+aws codebuild list-builds-for-project --project-name NAME
+```
+
+Stop build:
+
+```bash
+aws codebuild stop-build --id BUILD_ID
+```
+
 ## Rotating Access Keys
 
 Rotate your access keys every 60 days by running the following shell script ([jq](https://stedolan.github.io/jq/) is required):
