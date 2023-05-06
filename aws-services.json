@@ -1,0 +1,15 @@
+{
+  "AWSServices": [
+    {
+      "PutRequest": {
+        "Item": {
+          "Id": { "S": "random-uuid" },
+          "Name": { "S": "EC2" },
+          "Description": { "S": "Servers in the cloud" },
+          "Price": { "N": "21" },
+          "Category": { "S": "trial" }
+        }
+      }
+    }
+  ]
+}

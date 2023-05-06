@@ -1,0 +1,115 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+#Globals
+Description: >-
+  A stack to build the serverless backend of the AWS Shopping App
+#Metadata
+#Parameters
+#Rules
+#Mappings
+#Conditions
+Resources:
+  # API Gateway
+  HttpApi:
+    # API Gateway v1 = REST, v2 = HTTP/WebSocket
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 100 # max # of concurrent requests
+        ThrottlingRateLimit: 100 # max # of requests/sec
+      #DefinitionUri: # OpenAPI file URI
+      FailOnWarnings: true
+  # SQS
+  # Lambda
+  LambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Zip # zip files run faster than container images
+      CodeUri: microservices/store/
+      Handler: app.handler
+      Runtime: python3.8 # see https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
+      Architectures:
+        - arm64
+      Description: Query the AWS Services table
+      Events:
+        HttpApiEvent:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: GET
+            TimeoutInMillis: 3000
+      FunctionName: aws-service-handler
+      Policies:
+        # SAM policy templates:
+        # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
+        - DynamoDBReadPolicy:
+            TableName: !Ref AWSServiceTable
+      # Can use function URLs if API Gateway isn't necessary
+      # 128 MB of memory allocated by default
+      # Automatically update the runtime version
+      # Timeout after 3 seconds
+  # DynamoDB
+  AWSServiceTable:
+    # SAM Version
+    # Type: AWS::Serverless::SimpleTable
+    # Properties:
+    #   # PrimaryKey will be an id of type String by default
+    #   # Provisioned Mode (under free tier)
+    #   # ProvisionedThroughput:
+    #   #   ReadCapacityUnits: 25
+    #   #   WriteCapacityUnits: 25
+    #   # Use an AWS owned key
+    #   TableName: AWSServices
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+        - AttributeName: Name
+          AttributeType: S
+        - AttributeName: Description
+          AttributeType: S
+        - AttributeName: Price
+          AttributeType: N
+        - AttributeName: Category
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST # on-demand mode
+      # GSIs are preferred over LSIs (unless strong consistency is required)
+      # Query by price and category in addition to by name
+      GlobalSecondaryIndexes:
+        - IndexName: PriceIndex
+          KeySchema:
+            - AttributeName: Id
+              KeyType: HASH # HASH = partition key, RANGE = sort key
+            - AttributeName: Price
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL # project all keys to the index
+        - IndexName: CategoryIndex
+          KeySchema:
+            - AttributeName: Id
+              KeyType: HASH
+            - AttributeName: Category
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+        - AttributeName: Name
+          KeyType: RANGE
+      # PointInTimeRecoverySpecification:
+      #   PointInTimeRecoveryEnabled: true
+      TableClass: STANDARD
+      TableName: AWSServices
+Outputs:
+  HttpApiUrl:
+    Description: URL of your API endpoint
+    Value:
+      Fn::Sub: "https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"
+  HttpApiId:
+    Description: Api id of HttpApi
+    Value:
+      Ref: HttpApi
