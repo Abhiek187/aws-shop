@@ -119,5 +119,6 @@ sam delete
 Rotate your access keys every 60 days by running the following shell script ([jq](https://stedolan.github.io/jq/) is required):
 
 ```bash
+chmod u+x rotate-access-key.sh
 ./rotate-access-key.sh
 ```
