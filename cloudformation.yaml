@@ -64,8 +64,11 @@ Resources:
                 Action:
                   - "s3:DeleteObject"
                   - "s3:GetObject"
+                  - "s3:ListBucket"
                   - "s3:PutObject"
-                Resource: "*"
+                Resource:
+                  - !GetAtt ReactAppBucket.Arn
+                  - !Sub "${ReactAppBucket.Arn}/*"
   # CodePipeline (or just CodeBuild for now)
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
