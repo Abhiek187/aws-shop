@@ -84,7 +84,7 @@ aws dynamodb list-tables
 Describe table:
 
 ```bash
-aws dynamodb describe-table --table-name AWSServices
+aws dynamodb describe-table --table-name TABLE_NAME
 ```
 
 Query table:
