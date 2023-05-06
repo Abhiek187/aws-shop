@@ -59,10 +59,11 @@ Resources:
                   - "logs:CreateLogStream"
                   - "logs:PutLogEvents"
                 Resource: "*"
-              - Sid: S3PutObjectPolicy
+              - Sid: S3ObjectPolicy
                 Effect: Allow
                 Action:
                   - "s3:PutObject"
+                  - "s3:DeleteObject"
                 Resource: "*"
   # CodePipeline (or just CodeBuild for now)
   CodeBuildProject:
@@ -97,6 +98,8 @@ Resources:
         EnvironmentVariables:
           - Name: CI
             Value: "true"
+          - Name: ARTIFACT_BUCKET
+            Value: !Ref ReactAppBucket
       BadgeEnabled: true # show a badge of the build status on GitHub, remove if using CodePipeline
       TimeoutInMinutes: 5 # important to limit build minutes/month (default: 60)
   # Get the PAT from Parameter Store to let CodeBuild authenticate with GitHub

@@ -12,15 +12,15 @@ phases:
   build:
     commands:
       - echo Running tests
-      # npm test will hang at the watcher unless there's a CI environment variable
-      # https://create-react-app.dev/docs/running-tests/#continuous-integration
       - npm test
       - echo Building app
       - npm run build
   post_build:
     commands:
+      # Delete the old code in S3 before uploading the new code
+      - aws s3 rm s3://$ARTIFACT_BUCKET --recursive
       - echo Build completed on `date`
 artifacts:
-  base-directory: "shop-app/build"
+  base-directory: "shop-app/dist"
   files:
     - "**/*"
