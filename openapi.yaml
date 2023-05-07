@@ -1,0 +1,42 @@
+openapi: 3.1.0
+
+info:
+  title: AWS Service Store
+  description: An API that fetches AWS service pricing
+  version: 1.0.0
+
+paths:
+  /:
+    get:
+      summary: Get all AWS services
+      responses:
+        "200":
+          description: Successfully returned all services
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/services"
+
+components:
+  schemas:
+    services:
+      type: array
+      items:
+        type: object
+        properties:
+          Id:
+            type: string
+            description: A unique identifier for each service
+          Name:
+            type: string
+            description: The name of the AWS service
+          Description:
+            type: string
+            description: A description of the AWS service
+          Price:
+            type: number
+            minimum: 0
+            description: The price of the AWS service
+          Category:
+            type: string
+            description: Whether the service is under a free tier, trial, or paid plan

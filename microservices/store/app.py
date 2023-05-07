@@ -1,32 +1,54 @@
-"""
-Purpose
-Shows how to implement an AWS Lambda function that handles input from direct
-invocation.
-"""
+import json
+import boto3
 
-# snippet-start:[python.example_code.lambda.handler.increment]
-import logging
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+dynamodb = boto3.resource("dynamodb")
+table_name = "AWS-Services"
+table = dynamodb.Table(table_name)
 
 
 def handler(event, context):
-    """
-    Accepts an action and a single number, performs the specified action on the number,
-    and returns the result. The only allowable action is 'increment'.
-    :param event: The event dict that contains the parameters sent when the function
-                  is invoked.
-    :param context: The context in which the function is called.
-    :return: The result of the action.
-    """
-    result = None
-    action = event.get('action')
-    if action == 'increment':
-        result = event.get('number', 0) + 1
-        logger.info('Calculated result of %s', result)
-    else:
-        logger.error("%s is not a valid action.", action)
+    print(f"{event=}")
+    print(f"{context=}")
 
-    response = {'result': result}
-    return
+    body = ""
+    status_code = 200
+    headers = {
+        "Content-Type": "application/json",
+    }
+
+    try:
+        route_key = event["routeKey"]
+        path_parameters = event["pathParameters"]
+
+        # if route_key == "DELETE /items/{id}":
+        #     table.delete_item(Key={"id": path_parameters["id"]})
+        #     body = f"Deleted item {path_parameters['id']}"
+        # elif route_key == "GET /items/{id}":
+        #     response = table.get_item(Key={"id": path_parameters["id"]})
+        #     body = response["Item"]
+        # elif route_key == "GET /items":
+        #     response = table.scan()
+        #     body = response["Items"]
+        # elif route_key == "PUT /items":
+        #     request_json = json.loads(event["body"])
+        #     table.put_item(
+        #         Item={
+        #             "id": request_json["id"],
+        #             "price": request_json["price"],
+        #             "name": request_json["name"],
+        #         }
+        #     )
+        #     body = f"Put item {request_json['id']}"
+        if route_key == "GET /":
+            response = table.scan()
+            print(f"{response=}")
+            body = response["Items"]
+        else:
+            raise Exception(f'Unsupported route: "{route_key}"')
+    except Exception as e:
+        status_code = 400
+        body = str(e)
+    finally:
+        body = json.dumps(body)
+
+    return {"statusCode": status_code, "headers": headers, "body": body}

@@ -17,7 +17,7 @@ Resources:
       DefaultRouteSettings:
         ThrottlingBurstLimit: 100 # max # of concurrent requests
         ThrottlingRateLimit: 100 # max # of requests/sec
-      #DefinitionUri: # OpenAPI file URI
+      DefinitionUri: openapi.yaml # OpenAPI file URI
       FailOnWarnings: true
   # SQS
   # Lambda
@@ -59,7 +59,7 @@ Resources:
     #   #   ReadCapacityUnits: 25
     #   #   WriteCapacityUnits: 25
     #   # Use an AWS owned key
-    #   TableName: AWSServices
+    #   TableName: AWS-Services
     Type: AWS::DynamoDB::Table
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
@@ -103,7 +103,7 @@ Resources:
       # PointInTimeRecoverySpecification:
       #   PointInTimeRecoveryEnabled: true
       TableClass: STANDARD
-      TableName: AWSServices
+      TableName: AWS-Services
 Outputs:
   HttpApiUrl:
     Description: URL of your API endpoint

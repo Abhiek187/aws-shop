@@ -90,7 +90,7 @@ aws dynamodb describe-table --table-name TABLE_NAME
 Query table:
 
 ```bash
-aws dynamodb query --table-name AWSServices --projection-expression "Name,Price" --key-condition-expression "Category = :free" --expression-attribute-values file://expression-attributes.json --return-consumed-capacity TOTAL
+aws dynamodb query --table-name AWS-Services --projection-expression "Name,Price" --key-condition-expression "Category = :free" --expression-attribute-values file://expression-attributes.json --return-consumed-capacity TOTAL
 ```
 
 Update table:
@@ -105,6 +105,7 @@ Install the [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/l
 
 ```bash
 sam init
+sam validate
 sam build
 sam deploy --guided
 sam list endpoints --output json
