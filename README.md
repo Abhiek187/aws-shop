@@ -101,17 +101,23 @@ aws dynamodb batch-write-item --request-items file://aws-services.json --return-
 
 ## SAM (Serverless Application Model)
 
-Install the [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html), then run the following commands:
+Install the [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html). To test locally, make sure [Docker](https://docs.docker.com/get-docker/) is installed and running. Then run the following commands:
+
+1. Build the serverless code: `sam build`
+2. _(Optional)_ Validate the SAM template: `sam validate`
+3. _(Optional)_ Invoke the Lambda function locally: `sam local invoke`
+4. _(Optional)_ Start API Gateway locally: `sam local start-api`. Then call `GET http://127.0.0.1:3000/`. Once done, press CTRL-C to stop the server.
+5. Deploy the serverless code using CloudFormation: `sam deploy --guided`
 
 ```bash
 sam init
 sam validate
 sam build
+sam local invoke
+sam local start-api
 sam deploy --guided
 sam list endpoints --output json
 sam sync --watch
-sam local invoke
-sam local start-api
 sam delete
 ```
 

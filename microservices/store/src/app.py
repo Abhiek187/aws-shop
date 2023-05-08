@@ -6,9 +6,24 @@ table_name = "AWS-Services"
 table = dynamodb.Table(table_name)
 
 
+def print_context(context):
+    # All properties listed in: https://docs.aws.amazon.com/lambda/latest/dg/python-context.html
+    print(f"{context.get_remaining_time_in_millis()=}")
+    print(f"{context.function_name=}")
+    print(f"{context.function_version=}")
+    print(f"{context.invoked_function_arn=}")
+    print(f"{context.memory_limit_in_mb=}")
+    print(f"{context.aws_request_id=}")
+    print(f"{context.log_group_name=}")
+    print(f"{context.log_stream_name=}")
+    print(f"{context.identity.cognito_identity_id=}")
+    print(f"{context.identity.cognito_identity_pool_id=}")
+    print(f"{context.client_context=}")
+
+
 def handler(event, context):
-    print(f"{event=}")
-    print(f"{context=}")
+    # print(f"{event=}")
+    # print_context(context)
 
     body = ""
     status_code = 200
