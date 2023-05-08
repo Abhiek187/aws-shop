@@ -1,6 +1,9 @@
 import json
 import os
 import pytest
+import sys
+
+sys.path.append("..")
 
 from src import app
 
