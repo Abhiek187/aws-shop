@@ -11,6 +11,7 @@ Description: >-
 Resources:
   # API Gateway
   HttpApi:
+    # Creates AWS::ApiGatewayV2::Stage/Api
     # API Gateway v1 = REST, v2 = HTTP/WebSocket
     Type: AWS::Serverless::HttpApi
     Properties:
@@ -22,6 +23,7 @@ Resources:
   # SQS
   # Lambda
   LambdaFunction:
+    # Creates AWS::Lambda::Permission/Function, AWS::IAM::Role
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Zip # zip files run faster than container images
