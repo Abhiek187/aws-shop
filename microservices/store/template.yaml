@@ -37,9 +37,7 @@ Resources:
         HttpApiEvent:
           Type: HttpApi
           Properties:
-            Path: /
-            Method: GET
-            TimeoutInMillis: 3000
+            ApiId: !Ref HttpApi
       FunctionName: aws-service-handler
       Policies:
         # SAM policy templates:
@@ -67,12 +65,13 @@ Resources:
     UpdateReplacePolicy: Delete
     Properties:
       AttributeDefinitions:
+        # Only need to list the sort and partition keys
         - AttributeName: Id
           AttributeType: S
         - AttributeName: Name
           AttributeType: S
-        - AttributeName: Description
-          AttributeType: S
+        # - AttributeName: Description
+        #   AttributeType: S
         - AttributeName: Price
           AttributeType: N
         - AttributeName: Category
