@@ -9,8 +9,6 @@ paths:
   /:
     get:
       summary: Get all AWS services
-      # OpenAPI extensions for API Gateway:
-      # https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html
       responses:
         "200":
           description: Successfully returned all services
@@ -18,6 +16,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/services"
+      # OpenAPI extensions for API Gateway:
+      # https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html
+      x-amazon-apigateway-integration:
+        $ref: "#/components/x-amazon-apigateway-integrations/lambda"
 
 components:
   schemas:
@@ -42,3 +44,12 @@ components:
           Category:
             type: string
             description: Whether the service is under a free tier, trial, or paid plan
+  x-amazon-apigateway-integrations:
+    lambda:
+      type: aws
+      httpMethod: POST
+      # !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations"
+      uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:701157632481:function:aws-service-handler/invocations
+      passthroughBehavior: when_no_templates
+      payloadFormatVersion: 2.0
+      timeoutInMillis: 3000

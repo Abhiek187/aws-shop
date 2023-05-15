@@ -114,17 +114,7 @@ Install the [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/l
    4. Deactivate the virtual environment: `deactivate`
 6. Deploy the serverless code using CloudFormation: `sam deploy --guided`
 
-```bash
-sam init
-sam validate
-sam build
-sam local invoke
-sam local start-api
-sam deploy --guided
-sam list endpoints --output json
-sam sync --watch
-sam delete
-```
+To delete all resources, run `sam delete`
 
 ## Rotating Access Keys
 
