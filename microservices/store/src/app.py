@@ -22,6 +22,7 @@ def print_context(context):
 
 
 def handler(event, context):
+    # Event types: https://docs.aws.amazon.com/lambda/latest/dg/lambda-services.html
     # print(f"{event=}")
     # print_context(context)
 
@@ -33,7 +34,7 @@ def handler(event, context):
 
     try:
         route_key = event["routeKey"]
-        path_parameters = event["pathParameters"]
+        # path_parameters = event["pathParameters"]
 
         # if route_key == "DELETE /items/{id}":
         #     table.delete_item(Key={"id": path_parameters["id"]})

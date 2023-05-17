@@ -15,11 +15,19 @@ Resources:
     # API Gateway v1 = REST, v2 = HTTP/WebSocket
     Type: AWS::Serverless::HttpApi
     Properties:
+      AccessLogSettings:
+        DestinationArn: !GetAtt AccessLogs.Arn
+        Format: $context.requestId
       DefaultRouteSettings:
         ThrottlingBurstLimit: 100 # max # of concurrent requests
         ThrottlingRateLimit: 100 # max # of requests/sec
       DefinitionUri: openapi.yaml # OpenAPI file URI
       FailOnWarnings: true
+  AccessLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: store-api
+      RetentionInDays: 365
   # SQS
   # Lambda
   LambdaFunction:
