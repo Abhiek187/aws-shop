@@ -25,6 +25,8 @@ Resources:
       FailOnWarnings: true
   AccessLogs:
     Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       LogGroupName: store-api
       RetentionInDays: 365
