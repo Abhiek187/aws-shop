@@ -53,3 +53,21 @@ components:
       passthroughBehavior: when_no_templates
       payloadFormatVersion: 2.0
       timeoutInMillis: 3000
+
+x-amazon-apigateway-cors:
+  allowOrigins:
+    - "https://d23f1hp5lvetow.cloudfront.net"
+  allowCredentials: true
+  exposeHeaders:
+    - "x-apigateway-header"
+    - "x-amz-date"
+    - "content-type"
+  maxAge: 3600
+  allowMethods:
+    - GET
+    - HEAD
+    - OPTIONS
+  allowHeaders:
+    - "x-apigateway-header"
+    - "x-amz-date"
+    - "content-type"
