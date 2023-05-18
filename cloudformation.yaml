@@ -161,7 +161,7 @@ Resources:
             Resource: !Sub "${ReactAppBucket.Arn}/*"
             Condition:
               StringEquals:
-                "AWS:SourceArn": !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution.Id}"
+                "AWS:SourceArn": !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution.Id}"
           - Sid: AllowSSLRequestsOnly
             Effect: Deny
             Principal: "*"
