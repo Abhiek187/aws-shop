@@ -1,0 +1,73 @@
+openapi: 3.0.3
+
+info:
+  title: AWS Service Store
+  description: An API that fetches AWS service pricing
+  version: 1.0.0
+
+paths:
+  /:
+    get:
+      summary: Get all AWS services
+      responses:
+        "200":
+          description: Successfully returned all services
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/services"
+      # OpenAPI extensions for API Gateway:
+      # https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html
+      x-amazon-apigateway-integration:
+        $ref: "#/components/x-amazon-apigateway-integrations/lambda"
+
+components:
+  schemas:
+    services:
+      type: array
+      items:
+        type: object
+        properties:
+          Id:
+            type: string
+            description: A unique identifier for each service
+          Name:
+            type: string
+            description: The name of the AWS service
+          Description:
+            type: string
+            description: A description of the AWS service
+          Price:
+            type: number
+            minimum: 0
+            description: The price of the AWS service
+          Category:
+            type: string
+            description: Whether the service is under a free tier, trial, or paid plan
+  x-amazon-apigateway-integrations:
+    lambda:
+      type: aws_proxy
+      httpMethod: POST
+      # !Sub "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations"
+      uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:701157632481:function:aws-service-handler/invocations
+      passthroughBehavior: when_no_templates
+      payloadFormatVersion: 2.0
+      timeoutInMillis: 3000
+
+x-amazon-apigateway-cors:
+  allowOrigins:
+    - "https://d23f1hp5lvetow.cloudfront.net"
+  allowCredentials: true
+  exposeHeaders:
+    - "x-apigateway-header"
+    - "x-amz-date"
+    - "content-type"
+  maxAge: 3600
+  allowMethods:
+    - GET
+    - HEAD
+    - OPTIONS
+  allowHeaders:
+    - "x-apigateway-header"
+    - "x-amz-date"
+    - "content-type"

@@ -1,0 +1,37 @@
+{
+  "AWS-Services": [
+    {
+      "PutRequest": {
+        "Item": {
+          "Id": { "S": "random-uuid" },
+          "Name": { "S": "EC2" },
+          "Description": { "S": "Servers in the cloud" },
+          "Price": { "N": "21" },
+          "Category": { "S": "trial" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "Id": { "S": "random-uuid-2" },
+          "Name": { "S": "S3" },
+          "Description": { "S": "Cloud storage" },
+          "Price": { "N": "5" },
+          "Category": { "S": "trial" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "Id": { "S": "random-uuid-3" },
+          "Name": { "S": "Lambda" },
+          "Description": { "S": "Run code in under 15 minutes" },
+          "Price": { "N": "1" },
+          "Category": { "S": "free" }
+        }
+      }
+    }
+  ]
+}

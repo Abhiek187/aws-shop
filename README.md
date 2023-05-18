@@ -23,7 +23,7 @@ A basic shopping app that utilizes various AWS services
 
 ## Using the CLI
 
-Run `aws configure` and pass in your access key ID, secret access key, default region, and default ouput format. (Run `aws sts get-caller-identity` to verify you're signed in as the right user.)
+Download the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html). Then run `aws configure` and pass in your access key ID, secret access key, default region, and default ouput format. (Run `aws sts get-caller-identity` to verify you're signed in as the right user.)
 
 ### CloudFormation Commands
 
@@ -52,6 +52,18 @@ Delete stack:
 aws cloudformation delete-stack --stack-name NAME
 ```
 
+Detect stack drift:
+
+```bash
+aws cloudformation detect-stack-drift --stack-name NAME
+```
+
+Describe stack drift:
+
+```bash
+aws cloudformation describe-stack-resource-drifts --stack-name NAME --stack-resource-drift-status-filters DELETED MODIFIED
+```
+
 ### CodeBuild Commands
 
 Start build:
@@ -73,10 +85,37 @@ Stop build:
 aws codebuild stop-build --id BUILD_ID
 ```
 
+### DynamoDB Commands
+
+List tables:
+
+```bash
+aws dynamodb list-tables
+```
+
+Describe table:
+
+```bash
+aws dynamodb describe-table --table-name TABLE_NAME
+```
+
+Query table:
+
+```bash
+aws dynamodb query --table-name AWS-Services --projection-expression "Name,Price" --key-condition-expression "Category = :free" --expression-attribute-values file://expression-attributes.json --return-consumed-capacity TOTAL
+```
+
+Update table:
+
+```bash
+aws dynamodb batch-write-item --request-items file://aws-services.json --return-consumed-capacity INDEXES --return-item-collection-metrics SIZE
+```
+
 ## Rotating Access Keys
 
 Rotate your access keys every 60 days by running the following shell script ([jq](https://stedolan.github.io/jq/) is required):
 
 ```bash
+chmod u+x rotate-access-key.sh
 ./rotate-access-key.sh
 ```
