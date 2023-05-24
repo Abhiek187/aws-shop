@@ -28,7 +28,8 @@ Resources:
           Properties:
             Description: Check the age of access keys every day
             # You can't use * in both day-of-month [3] and day-of-week [5]
-            ScheduleExpression: "cron(0 0 * * ?)" # run every day at midnight UTC
+            # https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html#cron-based
+            ScheduleExpression: "cron(0 0 * * ? *)" # run every day at midnight UTC
             State: ENABLED
       FunctionName: iam-old-handler
       Policies:
