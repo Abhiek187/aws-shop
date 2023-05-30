@@ -10,4 +10,7 @@ IAM Old is a service that checks the age of all the access keys for all IAM user
 
 ## Directions
 
-Run `sam build` to build the app and `sam deploy` to deploy the app using CloudFormation. When first creating the SNS topic, you will need to confirm your email subscription.
+Run `sam build` to build the app. Then:
+
+- When first creating the stack, run `sam deploy --parameter-overrides ParameterKey=Email,ParameterValue=YOUR_EMAIL_ADDRESS`, replacing YOUR_EMAIL_ADDRESS with your email address. You need to confirm your email subscription to get added to the SNS topic.
+- On subsequent deployments, run `sam deploy` to reuse the same email address.
