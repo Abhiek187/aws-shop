@@ -119,7 +119,7 @@
   },
   {
     "Name": "Elastic Beanstalk",
-    "Description": "Platform as a Service tool for building applications using EC2, Auto Scaling, ALB, RDS, and more",
+    "Description": "Platform as a Service (PaaS) tool for building applications using EC2, Auto Scaling, ALB, RDS, and more",
     "Price": 5,
     "Unit": "application",
     "Category": "paid"
