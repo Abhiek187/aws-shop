@@ -11,7 +11,7 @@ from uuid import uuid4
 
 TABLE_NAME = "AWS-Services"
 JSON_FILE_NAME = "aws-services.json"
-BATCH_WRITE_LIMIT = 25
+TRANSACT_WRITE_LIMIT = 100
 
 
 def get_json_file():
@@ -30,9 +30,9 @@ def get_all_services(client):
     return scan_response["Items"]
 
 
-def add_services(client, local_services, services_to_create):
+def add_services(local_services, services_to_create):
     """Add all AWS services present in the JSON file, but not in DynamoDB"""
-    # Transform the JSON file to a supported format for the batch-write-item API
+    # Transform the JSON file to a supported format for the transact-write-item API
     put_requests = []
     filtered_services = [
         service for service in local_services if service["Name"] in services_to_create
@@ -53,37 +53,28 @@ def add_services(client, local_services, services_to_create):
             else:
                 service_with_types[key] = {"N": str(value)}
 
-        put_requests.append({"PutRequest": {"Item": service_with_types}})
+        put_requests.append(
+            {
+                "Put": {
+                    "Item": service_with_types,
+                    "TableName": TABLE_NAME,
+                    "ReturnValuesOnConditionCheckFailure": "ALL_OLD",
+                }
+            }
+        )
 
-    # Write items to a DynamoDB table
-    # Split request items into chunks to satisfy batch-write-item's constraint
-    num_chunks = ceil(len(put_requests) / BATCH_WRITE_LIMIT)
-    print(f"Splitting batch-write-item into {num_chunks} chunk(s)")
-
-    for chunk_i in range(num_chunks):
-        put_request_chunk = put_requests[
-            (chunk_i * BATCH_WRITE_LIMIT) : ((chunk_i + 1) * BATCH_WRITE_LIMIT)
-        ]
-        request_items = {TABLE_NAME: put_request_chunk}
-
-        try:
-            batch_write_response = client.batch_write_item(
-                RequestItems=request_items,
-                ReturnConsumedCapacity="INDEXES",
-                ReturnItemCollectionMetrics="SIZE",
-            )
-            print(f"Success!\n{batch_write_response}")
-            print(f"Added the following services: {services_to_create}")
-        except ClientError as error:
-            print(f"Client error: {error}")
+    print(f"Adding the following services: {put_requests}")
+    return put_requests
 
 
-def update_services(client):
+def update_services(local_services, remote_services, common_services):
     """Update all AWS services changed in the JSON file"""
-    pass
+    update_requests = []
+    print(f"Updating the following services: {update_requests}")
+    return update_requests
 
 
-def remove_services(client, remote_services, services_to_delete):
+def remove_services(remote_services, services_to_delete):
     """Remove all AWS services present in DynamoDB, but no longer present in the JSON file"""
     delete_requests = []
     filtered_services = [
@@ -94,27 +85,40 @@ def remove_services(client, remote_services, services_to_delete):
 
     for service in filtered_services:
         # The primary key is a composite key containing the service's ID and name
-        primary_key = {"Id": service["Id"]["S"], "Name": service["Name"]["S"]}
-        delete_requests.append({"DeleteRequest": {"Key": primary_key}})
+        primary_key = {"Id": service["Id"], "Name": service["Name"]}
+        delete_requests.append(
+            {
+                "Delete": {
+                    "Key": primary_key,
+                    "TableName": TABLE_NAME,
+                    "ReturnValuesOnConditionCheckFailure": "ALL_OLD",
+                }
+            }
+        )
 
-    # Split request items into chunks to satisfy batch-write-item's constraint
-    num_chunks = ceil(len(delete_requests) / BATCH_WRITE_LIMIT)
-    print(f"Splitting batch-write-item into {num_chunks} chunk(s)")
+    print(f"Deleting the following services: {delete_requests}")
+    return delete_requests
+
+
+def perform_transaction(client, put_items, update_items, delete_items):
+    """Run all create, update, and delete actions in one API call"""
+    transact_items = put_items + update_items + delete_items
+    # Split request items into chunks to satisfy transact-write-item's constraint
+    num_chunks = ceil(len(transact_items) / TRANSACT_WRITE_LIMIT)
+    print(f"Splitting transact-write-item into {num_chunks} chunk(s)")
 
     for chunk_i in range(num_chunks):
-        delete_request_chunk = delete_requests[
-            (chunk_i * BATCH_WRITE_LIMIT) : ((chunk_i + 1) * BATCH_WRITE_LIMIT)
+        transact_items_chunk = transact_items[
+            (chunk_i * TRANSACT_WRITE_LIMIT) : ((chunk_i + 1) * TRANSACT_WRITE_LIMIT)
         ]
-        request_items = {TABLE_NAME: delete_request_chunk}
 
         try:
-            batch_write_response = client.batch_write_item(
-                RequestItems=request_items,
+            transact_write_response = client.transact_write_items(
+                TransactItems=transact_items_chunk,
                 ReturnConsumedCapacity="INDEXES",
                 ReturnItemCollectionMetrics="SIZE",
             )
-            print(f"Success!\n{batch_write_response}")
-            print(f"Removed the following services: {services_to_delete}")
+            print(f"Success!\n{transact_write_response}")
         except ClientError as error:
             print(f"Client error: {error}")
 
@@ -130,11 +134,15 @@ def main():
     remote_services_set = {service["Name"]["S"] for service in remote_services}
     services_to_create = local_services_set - remote_services_set
     services_to_delete = remote_services_set - local_services_set
+    common_services = local_services_set & remote_services_set
 
-    # Perform all the create, update, and delete operations
-    add_services(dynamodb_client, local_services, services_to_create)
-    update_services(dynamodb_client)
-    remove_services(dynamodb_client, remote_services, services_to_delete)
+    # Gather all the create, update, and delete operations
+    put_items = add_services(local_services, services_to_create)
+    update_items = update_services(local_services, remote_services, common_services)
+    delete_items = remove_services(remote_services, services_to_delete)
+
+    # Perform a single transact-write-item request for CUD operations
+    perform_transaction(dynamodb_client, put_items, update_items, delete_items)
 
 
 if __name__ == "__main__":
