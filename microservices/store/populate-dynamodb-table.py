@@ -1,8 +1,3 @@
-# So here me out:
-# We can create a regular JSON file with the items we want to include.
-# Then using boto3, we can apply a UUID to each item and split the items into chunks of 25 to make
-# batch-write-item happy. (And apply other formatting required for that command.)
-# This would normally be done by a DBA, but we'll use the admin account for now.
 import boto3
 from botocore.exceptions import ClientError
 import json
@@ -22,12 +17,16 @@ def get_json_file():
 
 def get_all_services(client):
     """Get all the AWS services currently in the DynamoDB table"""
-    scan_response = client.scan(
-        TableName=TABLE_NAME,
-        ReturnConsumedCapacity="INDEXES",
-    )
-    print(f"{scan_response=}")
-    return scan_response["Items"]
+    try:
+        scan_response = client.scan(
+            TableName=TABLE_NAME,
+            ReturnConsumedCapacity="INDEXES",
+        )
+        print(f"{scan_response=}")
+        return scan_response["Items"]
+    except ClientError as error:
+        print(f"Client error: {error}")
+        return None
 
 
 def add_services(local_services, services_to_create):
@@ -67,9 +66,95 @@ def add_services(local_services, services_to_create):
     return put_requests
 
 
+def is_equal(local_service, remote_service):
+    """Compare all the properties in each service to see if they're the same"""
+    res = True
+    diff = []
+
+    for key, value in local_service.items():
+        # Avoid referencing nonexistent keys
+        if key not in remote_service:
+            res = False
+            diff.append(key)
+        elif value is None and remote_service[key] != {"NULL": True}:
+            res = False
+            diff.append(key)
+        elif type(value) is str and remote_service[key] != {"S": value}:
+            res = False
+            diff.append(key)
+        elif remote_service[key] != {"N": str(value)}:
+            res = False
+            diff.append(key)
+
+    return res, diff
+
+
+def create_update_expression(local_service, diff):
+    """Create an update expression based on the number of keys that differ"""
+    # Update expression syntax:
+    # https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.UpdateExpressions.html
+    update_expression = "SET "
+    expression_values = {}
+
+    for i, key in enumerate(diff):
+        attribute = f":newval{i}"
+        update_expression += f"{key} = {attribute}"
+
+        if local_service[key] is None:
+            expression_values[attribute] = {"NULL": True}
+        elif type(local_service[key]) is str:
+            expression_values[attribute] = {"S": local_service[key]}
+        else:
+            expression_values[attribute] = {"N": str(local_service[key])}
+
+        if i < len(diff) - 1:
+            update_expression += ", "
+
+    return update_expression, expression_values
+
+
 def update_services(local_services, remote_services, common_services):
     """Update all AWS services changed in the JSON file"""
     update_requests = []
+    filtered_services = []
+    update_expressions = {}
+
+    for common_service in common_services:
+        local_service = next(
+            service for service in local_services if service["Name"] == common_service
+        )
+        remote_service = next(
+            service
+            for service in remote_services
+            if service["Name"]["S"] == common_service
+        )
+
+        # Gather all the differences between the JSON file and DynamoDB table into an update expression
+        is_eq, diff = is_equal(local_service, remote_service)
+
+        if not is_eq:
+            # The ID only appears in DynamoDB
+            filtered_services.append({**local_service, "Id": remote_service["Id"]})
+            update_expressions[local_service["Name"]] = create_update_expression(
+                local_service, diff
+            )
+
+    for service in filtered_services:
+        # The primary key is a composite key containing the service's ID and name
+        primary_key = {"Id": service["Id"], "Name": {"S": service["Name"]}}
+        update_expression, expression_value = update_expressions[service["Name"]]
+        update_requests.append(
+            {
+                "Update": {
+                    "Key": primary_key,
+                    "UpdateExpression": update_expression,
+                    "ExpressionAttributeValues": expression_value,
+                    "TableName": TABLE_NAME,
+                    "ReturnValuesOnConditionCheckFailure": "ALL_OLD",
+                }
+            }
+        )
+
     print(f"Updating the following services: {update_requests}")
     return update_requests
 
@@ -84,7 +169,6 @@ def remove_services(remote_services, services_to_delete):
     ]
 
     for service in filtered_services:
-        # The primary key is a composite key containing the service's ID and name
         primary_key = {"Id": service["Id"], "Name": service["Name"]}
         delete_requests.append(
             {
@@ -113,6 +197,7 @@ def perform_transaction(client, put_items, update_items, delete_items):
         ]
 
         try:
+            print(f"{transact_items_chunk=}")
             transact_write_response = client.transact_write_items(
                 TransactItems=transact_items_chunk,
                 ReturnConsumedCapacity="INDEXES",
@@ -128,6 +213,10 @@ def main():
     local_services = get_json_file()
     dynamodb_client = boto3.client("dynamodb")
     remote_services = get_all_services(dynamodb_client)
+
+    # Exit early if the scan fails
+    if remote_services is None:
+        return
 
     # Create two sets of service names and compare which are only present locally/remotely
     local_services_set = {service["Name"] for service in local_services}
@@ -147,13 +236,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-# That is the create part. But we also need to handle upserts and deletions.
-# So we could query the database to see if the service exists.
-# If it does, check if there's a difference between your local JSON and what's stored in the database
-# (minus the UUID).
-# If it doesn't, insert the item into the database like earlier.
-# Good, creation and upserts are taken care of, but what about deletions?
-# I'm sort of handling this like Git for databases.
-# Maybe get all the items in the database and keep track of which items you queried.
-# Every item already present will be queried, so items that were never queried must have been deleted.
-# So remove those items at the end. Maybe with a prompt?
