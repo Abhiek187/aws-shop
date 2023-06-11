@@ -14,3 +14,9 @@ Install the [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/l
 6. Deploy the serverless code using CloudFormation: `sam deploy --guided`
 
 To delete all resources, run `sam delete`
+
+# Microservices
+
+## Store
+
+`aws-services.json` is the source of truth for items stored in the DynamoDB table. Whenever that file gets updated, run `python3 populate-dynamodb-table.py` to ensure the DynamoDB table is in sync. This requires having read and write access to the DynamoDB table. boto3 and other dependencies can be installed by running `pip3 install -r requirements.txt`.

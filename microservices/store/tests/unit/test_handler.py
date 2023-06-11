@@ -27,4 +27,4 @@ def test_lambda_handler(apigw_event):
     assert lambda_response["headers"] == {
         "Content-Type": "application/json",
     }
-    assert body == []
+    assert type(body) is list and len(body) > 0

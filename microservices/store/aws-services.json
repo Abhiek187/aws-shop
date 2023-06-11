@@ -1,37 +1,509 @@
-{
-  "AWS-Services": [
-    {
-      "PutRequest": {
-        "Item": {
-          "Id": { "S": "random-uuid" },
-          "Name": { "S": "EC2" },
-          "Description": { "S": "Servers in the cloud" },
-          "Price": { "N": "21" },
-          "Category": { "S": "trial" }
-        }
-      }
-    },
-    {
-      "PutRequest": {
-        "Item": {
-          "Id": { "S": "random-uuid-2" },
-          "Name": { "S": "S3" },
-          "Description": { "S": "Cloud storage" },
-          "Price": { "N": "5" },
-          "Category": { "S": "trial" }
-        }
-      }
-    },
-    {
-      "PutRequest": {
-        "Item": {
-          "Id": { "S": "random-uuid-3" },
-          "Name": { "S": "Lambda" },
-          "Description": { "S": "Run code in under 15 minutes" },
-          "Price": { "N": "1" },
-          "Category": { "S": "free" }
-        }
-      }
-    }
-  ]
-}
+[
+  {
+    "Name": "EC2",
+    "Description": "Servers in the cloud",
+    "Price": 7.2,
+    "Unit": "instance",
+    "Category": "trial"
+  },
+  {
+    "Name": "S3",
+    "Description": "Object-based cloud storage",
+    "Price": 0.02,
+    "Unit": "GB",
+    "Category": "trial"
+  },
+  {
+    "Name": "Lambda",
+    "Description": "Run code in under 15 minutes",
+    "Price": 2e-7,
+    "Unit": "invocation",
+    "Category": "free",
+    "FreeTier": 1e6
+  },
+  {
+    "Name": "Auto Scaling",
+    "Description": "Automatically scale the number of EC2 instances with demand",
+    "Price": 0,
+    "Unit": "group",
+    "Category": "free",
+    "FreeTier": null
+  },
+  {
+    "Name": "Certificate Manager",
+    "Description": "Provision SSL certificates using Let's Encrypt",
+    "Price": 0,
+    "Unit": "certificate",
+    "Category": "free",
+    "FreeTier": null
+  },
+  {
+    "Name": "CloudFormation",
+    "Description": "Build infrastructure as code (IaC)",
+    "Price": 0,
+    "Unit": "stack",
+    "Category": "free",
+    "FreeTier": null
+  },
+  {
+    "Name": "CloudFront",
+    "Description": "Front services across edge locations using HTTPS",
+    "Price": 1e-6,
+    "Unit": "origin request",
+    "Category": "free",
+    "FreeTier": 1e7
+  },
+  {
+    "Name": "CloudTrail",
+    "Description": "Audit all AWS API calls",
+    "Price": 1e-6,
+    "Unit": "event",
+    "Category": "free",
+    "FreeTier": 1e5
+  },
+  {
+    "Name": "CloudWatch",
+    "Description": "Monitor application metrics and set up alarms",
+    "Price": 0.3,
+    "Unit": "metric",
+    "Category": "free",
+    "FreeTier": 10
+  },
+  {
+    "Name": "CodeArtifact",
+    "Description": "Store software and generic packages, Artifactory-like",
+    "Price": 0.05,
+    "Unit": "GB",
+    "Category": "free",
+    "FreeTier": 2
+  },
+  {
+    "Name": "CodeBuild",
+    "Description": "CI (Continuous Integration): build and test your code",
+    "Price": 0.01,
+    "Unit": "build minute",
+    "Category": "free",
+    "FreeTier": 100
+  },
+  {
+    "Name": "CodeCommit",
+    "Description": "Code repository, GitHub-like",
+    "Price": 1,
+    "Unit": "user",
+    "Category": "free",
+    "FreeTier": 5
+  },
+  {
+    "Name": "CodePipeline",
+    "Description": "CI/CD pipeline",
+    "Price": 1,
+    "Unit": "pipeline",
+    "Category": "free",
+    "FreeTier": 1
+  },
+  {
+    "Name": "Cognito",
+    "Description": "Authentication for external users",
+    "Price": 0.01,
+    "Unit": "MAU (monthly active user)",
+    "Category": "free",
+    "FreeTier": 5e4
+  },
+  {
+    "Name": "DynamoDB",
+    "Description": "NoSQL, serverless key-value database",
+    "Price": 0.25,
+    "Unit": "GB",
+    "Category": "free",
+    "FreeTier": 25
+  },
+  {
+    "Name": "Elastic Beanstalk",
+    "Description": "Platform as a Service (PaaS) tool for building applications using EC2, Auto Scaling, ALB, RDS, and more",
+    "Price": 5,
+    "Unit": "application",
+    "Category": "paid"
+  },
+  {
+    "Name": "IAM",
+    "Description": "Users, policies, and roles for securing AWS access",
+    "Price": 0,
+    "Unit": "user",
+    "Category": "free",
+    "FreeTier": null
+  },
+  {
+    "Name": "KMS",
+    "Description": "Manage cryptographic keys for server-side encryption",
+    "Price": 1,
+    "Unit": "customer key",
+    "Category": "paid"
+  },
+  {
+    "Name": "SES",
+    "Description": "Send marketing emails",
+    "Price": 1e-4,
+    "Unit": "email",
+    "Category": "free",
+    "FreeTier": 62e3
+  },
+  {
+    "Name": "Shield",
+    "Description": "Protect against DDoS attacks",
+    "Price": 3e3,
+    "Unit": "advanced subscription",
+    "Category": "paid"
+  },
+  {
+    "Name": "SNS",
+    "Description": "Push notifications to email, SMS, SQS, etc.",
+    "Price": 5e-7,
+    "Unit": "publish",
+    "Category": "free",
+    "FreeTier": 1e6
+  },
+  {
+    "Name": "SQS",
+    "Description": "Poll messages to decouple services",
+    "Price": 4e-7,
+    "Unit": "standard request",
+    "Category": "free",
+    "FreeTier": 1e6
+  },
+  {
+    "Name": "Step Functions",
+    "Description": "Serverless state machines",
+    "Price": 3e-5,
+    "Unit": "state transition",
+    "Category": "free",
+    "FreeTier": 4e3
+  },
+  {
+    "Name": "Systems Manager Parameter Store",
+    "Description": "Key-value store for parameters and secrets",
+    "Price": 0,
+    "Unit": "standard parameter",
+    "Category": "free",
+    "FreeTier": null
+  },
+  {
+    "Name": "Systems Manager AppConfig",
+    "Description": "Key-value pairs to configure applications",
+    "Price": 2e-7,
+    "Unit": "config request",
+    "Category": "paid"
+  },
+  {
+    "Name": "Systems Manager Automation",
+    "Description": "Runbooks to automate IT operations",
+    "Price": 0.002,
+    "Unit": "step",
+    "Category": "free",
+    "FreeTier": 1e5
+  },
+  {
+    "Name": "Well-Architected Tool",
+    "Description": "Run an analysis of your cloud architecture",
+    "Price": 0,
+    "Unit": "workload",
+    "Category": "free",
+    "FreeTier": null
+  },
+  {
+    "Name": "X-Ray",
+    "Description": "Debug applications",
+    "Price": 5e-6,
+    "Unit": "trace",
+    "Category": "free",
+    "FreeTier": 1e5
+  },
+  {
+    "Name": "API Gateway",
+    "Description": "Protect APIs at scale",
+    "Price": 1e-6,
+    "Unit": "HTTP API call, Apigee-like",
+    "Category": "trial"
+  },
+  {
+    "Name": "AppSync",
+    "Description": "Create GraphQL APIs",
+    "Price": 4e-6,
+    "Unit": "query",
+    "Category": "trial"
+  },
+  {
+    "Name": "EBS",
+    "Description": "Persistent block storage",
+    "Price": 0.08,
+    "Unit": "GB",
+    "Category": "trial"
+  },
+  {
+    "Name": "ECR",
+    "Description": "Repository for Docker images, Docker Hub-like",
+    "Price": 0.1,
+    "Unit": "public GB",
+    "Category": "free",
+    "FreeTier": 50
+  },
+  {
+    "Name": "ElastiCache",
+    "Description": "Cache data",
+    "Price": 14.4,
+    "Unit": "node",
+    "Category": "trial"
+  },
+  {
+    "Name": "ELB",
+    "Description": "Load balancer",
+    "Price": 14.4,
+    "Unit": "application load balancer (ALB)",
+    "Category": "trial"
+  },
+  {
+    "Name": "IoT Core",
+    "Description": "Connect IoT devices in the cloud",
+    "Price": 1e-6,
+    "Unit": "message",
+    "Category": "trial"
+  },
+  {
+    "Name": "IoT Greengrass",
+    "Description": "Edge runtime for IoT software",
+    "Price": 0.16,
+    "Unit": "device",
+    "Category": "trial"
+  },
+  {
+    "Name": "OpenSearch Service",
+    "Description": "Search logs and applications",
+    "Price": 28.8,
+    "Unit": "instance",
+    "Category": "trial"
+  },
+  {
+    "Name": "Pinpoint",
+    "Description": "Send targeted notifications to users, Airship-like",
+    "Price": 1e-3,
+    "Unit": "user endpoint",
+    "Category": "trial"
+  },
+  {
+    "Name": "RDS",
+    "Description": "Relational database",
+    "Price": 14.4,
+    "Unit": "instance",
+    "Category": "trial"
+  },
+  {
+    "Name": "DeepRacer",
+    "Description": "Compete in an autonomous race using reinforcement learning",
+    "Price": 3.5,
+    "Unit": "training hour",
+    "Category": "trial"
+  },
+  {
+    "Name": "Detective",
+    "Description": "Use ML to identify the root cause of suspicious activity",
+    "Price": 2,
+    "Unit": "GB",
+    "Category": "trial"
+  },
+  {
+    "Name": "Device Farm",
+    "Description": "Test web and mobile apps on real devices hosted in the cloud, Sauce Labs-like",
+    "Price": 0.17,
+    "Unit": "device minute",
+    "Category": "trial"
+  },
+  {
+    "Name": "DocumentDB",
+    "Description": "MongoDB service for document databases",
+    "Price": 57.6,
+    "Unit": "instance",
+    "Category": "trial"
+  },
+  {
+    "Name": "GuardDuty",
+    "Description": "Use ML to detect unusual network activity",
+    "Price": 4e-6,
+    "Unit": "CloudTrail management event analysis",
+    "Category": "trial"
+  },
+  {
+    "Name": "Inspector",
+    "Description": "Detect software vulnerabilities, Dependabot-like",
+    "Price": 0.3,
+    "Unit": "Lambda function",
+    "Category": "trial"
+  },
+  {
+    "Name": "LightSail",
+    "Description": "Quickly create servers",
+    "Price": 3.5,
+    "Unit": "Linux server",
+    "Category": "trial"
+  },
+  {
+    "Name": "Location Service",
+    "Description": "Location data for applications",
+    "Price": 3.5e-5,
+    "Unit": "open map tile",
+    "Category": "trial"
+  },
+  {
+    "Name": "Macie",
+    "Description": "Detect PII (personal identifiable information) in S3",
+    "Price": 0.1,
+    "Unit": "bucket",
+    "Category": "trial"
+  },
+  {
+    "Name": "Redshift",
+    "Description": "Data warehouse",
+    "Price": 180,
+    "Unit": "instance",
+    "Category": "trial"
+  },
+  {
+    "Name": "SageMaker",
+    "Description": "Train and test ML models",
+    "Price": 0.05,
+    "Unit": "notebook hour",
+    "Category": "trial"
+  },
+  {
+    "Name": "Secrets Manager",
+    "Description": "Protect and automatically rotate secrets",
+    "Price": 0.4,
+    "Unit": "secret",
+    "Category": "trial"
+  },
+  {
+    "Name": "App Runner",
+    "Description": "Quickly build and deploy containerized applications",
+    "Price": 5.21,
+    "Unit": "application",
+    "Category": "paid"
+  },
+  {
+    "Name": "Athena",
+    "Description": "Query data in S3 using SQL",
+    "Price": 5e-3,
+    "Unit": "GB",
+    "Category": "paid"
+  },
+  {
+    "Name": "Aurora",
+    "Description": "AWS-managed relational database",
+    "Price": 28.8,
+    "Unit": "instance",
+    "Category": "paid"
+  },
+  {
+    "Name": "Cloud9",
+    "Description": "Cloud IDE",
+    "Price": 7.2,
+    "Unit": "EC2 instance",
+    "Category": "paid"
+  },
+  {
+    "Name": "CloudHSM",
+    "Description": "Dedicated hardware for encryption",
+    "Price": 1152,
+    "Unit": "hardware instance",
+    "Category": "paid"
+  },
+  {
+    "Name": "CodeDeploy",
+    "Description": "CD (continuous delivery): deploy code to EC2, Lambda, and ECS",
+    "Price": 0,
+    "Unit": "deployment",
+    "Category": "free",
+    "FreeTier": null
+  },
+  {
+    "Name": "CodeGuru",
+    "Description": "Automated code review, SonarQube-like",
+    "Price": 10,
+    "Unit": "repo",
+    "Category": "paid"
+  },
+  {
+    "Name": "CodeStar",
+    "Description": "GUI for managing software deployment projects",
+    "Price": 7.2,
+    "Unit": "EC2 instance",
+    "Category": "paid"
+  },
+  {
+    "Name": "Compute Optimizer",
+    "Description": "Provide recommendations to optimize EC2, EBS, ECS, and Lambda usage",
+    "Price": 0.25,
+    "Unit": "resource",
+    "Category": "paid"
+  },
+  {
+    "Name": "Config",
+    "Description": "Audit the configuration of AWS resources",
+    "Price": 0.003,
+    "Unit": "configuration item",
+    "Category": "paid"
+  },
+  {
+    "Name": "ECS",
+    "Description": "Run containers in the cloud",
+    "Price": 21.6,
+    "Unit": "ARM Linux instance",
+    "Category": "paid"
+  },
+  {
+    "Name": "EKS",
+    "Description": "Run Kubernetes in AWS",
+    "Price": 72,
+    "Unit": "cluster",
+    "Category": "paid"
+  },
+  {
+    "Name": "EventBridge",
+    "Description": "Serverless event bus",
+    "Price": 1e-6,
+    "Unit": "custom event",
+    "Category": "paid"
+  },
+  {
+    "Name": "Kinesis",
+    "Description": "Stream data in real-time",
+    "Price": 28.8,
+    "Unit": "data stream",
+    "Category": "paid"
+  },
+  {
+    "Name": "Route 53",
+    "Description": "DNS service for naming websites",
+    "Price": 1.58,
+    "Unit": "hosted zone & .com domain name",
+    "Category": "paid"
+  },
+  {
+    "Name": "Trusted Advisor",
+    "Description": "Cost optimization, performance, security, fault tolerance, and service limit recommendations",
+    "Price": 100,
+    "Unit": "business account",
+    "Category": "paid"
+  },
+  {
+    "Name": "VPC",
+    "Description": "Isolate cloud resources in a virtual network",
+    "Price": 36,
+    "Unit": "NAT gateway",
+    "Category": "paid"
+  },
+  {
+    "Name": "WAF",
+    "Description": "Securely protect web applications using a firewall",
+    "Price": 6,
+    "Unit": "web ACL & rule",
+    "Category": "paid"
+  }
+]

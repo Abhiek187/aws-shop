@@ -1,9 +1,8 @@
 import json
 import boto3
 
-dynamodb = boto3.resource("dynamodb")
+dynamodb = boto3.client("dynamodb")
 table_name = "AWS-Services"
-table = dynamodb.Table(table_name)
 
 
 def print_context(context):
@@ -56,7 +55,7 @@ def handler(event, context):
         #     )
         #     body = f"Put item {request_json['id']}"
         if route_key == "GET /":
-            response = table.scan()
+            response = dynamodb.scan(TableName=table_name)
             print(f"{response=}")
             body = response["Items"]
         else:
