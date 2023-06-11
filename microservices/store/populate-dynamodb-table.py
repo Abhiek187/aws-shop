@@ -2,7 +2,7 @@ from __future__ import annotations  # support list and dict types in Python < 3.
 import boto3
 from botocore.exceptions import ClientError
 import json
-from math import ceil
+from math import ceil, isclose
 from typing import Any, Dict
 from uuid import uuid4
 
@@ -105,7 +105,15 @@ def is_equal(
             keys_to_update.append(key)
         elif type(value) is str and remote_service[key] != {"S": value}:
             keys_to_update.append(key)
-        elif remote_service[key] != {"N": str(value)}:
+        # Exponents are rendered differently as strings in DynamoDB vs. Python
+        # 3e16: DynamoDB = '1000...000', Python = '3e+16' (for all e >= 16)
+        # 3e3: DynamoDB = '1000', Python = '3000.0' (for all -4 <= e <= 15)
+        # 3e-6: DynamoDB = '0.000003', Python = '3e-6' (for all e <= -5)
+        # Instead of comparing strings, compare the numbers as floats
+        elif isinstance(value, (int, float)) and not (
+            "N" in remote_service[key]
+            and isclose(value, float(remote_service[key]["N"]))
+        ):
             keys_to_update.append(key)
 
     # All keys that are only defined in DynamoDB should be deleted (except the ID field)
@@ -133,7 +141,7 @@ def create_update_expression(
 
     # Add all values to create/update to the table
     for i, key in enumerate(keys_to_update):
-        attribute = f":newval{i}"
+        attribute = f":{key.lower()}"
         set_expression += f"{key} = {attribute}"
 
         if local_service[key] is None:
@@ -263,8 +271,12 @@ def perform_transaction(
                 ReturnConsumedCapacity="INDEXES",
                 ReturnItemCollectionMetrics="SIZE",
             )
-            print(f"{json.dumps(transact_write_response, indent=4)}")
-            print(f"Success!")
+            write_capacity_units = transact_write_response["ConsumedCapacity"][0][
+                "WriteCapacityUnits"
+            ]
+            print(
+                f"Success! Transaction chunk #{chunk_i + 1} consumed {write_capacity_units} write capacity units (WCU) across the table and all GSIs (Global Secondary Indexes)"
+            )
         except ClientError as error:
             print(f"transact-write-items client error: {error}")
 
