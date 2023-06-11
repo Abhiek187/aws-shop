@@ -35,7 +35,11 @@ def get_all_services(client) -> list[RemoteService] | None:
             TableName=TABLE_NAME,
             ReturnConsumedCapacity="INDEXES",
         )
-        print(f"{scan_response=}")
+        num_items = scan_response["ScannedCount"]
+        read_capacity_units = scan_response["ConsumedCapacity"]["CapacityUnits"]
+        print(
+            f"Successfully scanned {num_items} items and used {read_capacity_units} read capacity units (RCU)"
+        )
         return scan_response["Items"]
     except ClientError as error:
         print(f"scan client error: {error}")
@@ -77,7 +81,7 @@ def add_services(
             }
         )
 
-    print(f"Adding the following services: {put_requests}")
+    print(f"Adding the following services: {services_to_create}")
     return put_requests
 
 
@@ -204,7 +208,8 @@ def update_services(
             }
         )
 
-    print(f"Updating the following services: {update_requests}")
+    updated_services = [service["Name"] for service in filtered_services]
+    print(f"Updating the following services: {updated_services}")
     return update_requests
 
 
@@ -231,7 +236,7 @@ def remove_services(
             }
         )
 
-    print(f"Deleting the following services: {delete_requests}")
+    print(f"Deleting the following services: {services_to_delete}")
     return delete_requests
 
 
@@ -258,7 +263,8 @@ def perform_transaction(
                 ReturnConsumedCapacity="INDEXES",
                 ReturnItemCollectionMetrics="SIZE",
             )
-            print(f"Success!\n{transact_write_response}")
+            print(f"{json.dumps(transact_write_response, indent=4)}")
+            print(f"Success!")
         except ClientError as error:
             print(f"transact-write-items client error: {error}")
 
