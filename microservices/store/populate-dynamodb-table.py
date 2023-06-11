@@ -68,7 +68,6 @@ def add_services(local_services, services_to_create):
 
 def is_equal(local_service, remote_service):
     """Compare all the properties in each service to see if they're the same"""
-    res = True
     keys_to_update = []
     keys_to_delete = []
 
@@ -76,23 +75,20 @@ def is_equal(local_service, remote_service):
     for key, value in local_service.items():
         # Avoid referencing nonexistent keys
         if key not in remote_service:
-            res = False
             keys_to_update.append(key)
         elif value is None and remote_service[key] != {"NULL": True}:
-            res = False
             keys_to_update.append(key)
         elif type(value) is str and remote_service[key] != {"S": value}:
-            res = False
             keys_to_update.append(key)
         elif remote_service[key] != {"N": str(value)}:
-            res = False
             keys_to_update.append(key)
 
     # All keys that are only defined in DynamoDB should be deleted (except the ID field)
     keys_to_delete = [
         key for key in remote_service if key not in local_service and key != "Id"
     ]
-    return res, keys_to_update, keys_to_delete
+    is_eq = not (keys_to_update or keys_to_delete)
+    return is_eq, keys_to_update, keys_to_delete
 
 
 def create_update_expression(local_service, keys_to_update, keys_to_delete):
