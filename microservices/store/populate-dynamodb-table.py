@@ -10,11 +10,15 @@ from uuid import uuid4
 TABLE_NAME = "AWS-Services"
 JSON_FILE_NAME = "aws-services.json"
 TRANSACT_WRITE_LIMIT = 100
+# Reserved words in DynamoDB that can't be used in update expressions:
+# https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedWords.html
+RESERVED_WORDS = ["Name", "Unit"]
 
 # Type aliases
 LocalService = Dict[str, Any]
 RemoteService = Dict[str, Dict[str, Any]]
 Transaction = Dict[str, Dict[str, Any]]
+AttributeNames = Dict[str, str]
 AttributeValues = Dict[str, Dict[str, Any]]
 
 
@@ -51,7 +55,7 @@ def add_services(
 ) -> list[Transaction]:
     """Add all AWS services present in the JSON file, but not in DynamoDB"""
     # Transform the JSON file to a supported format for the transact-write-items API
-    put_requests = []
+    put_requests: list[Transaction] = []
     filtered_services = [
         service for service in local_services if service["Name"] in services_to_create
     ]
@@ -59,7 +63,7 @@ def add_services(
     # Add a random UUID to each item as the partition key
     for service in filtered_services:
         service["Id"] = str(uuid4())
-        service_with_types = {}
+        service_with_types: RemoteService = {}
 
         for key, value in service.items():
             # Set the type of each service property, according to:
@@ -94,7 +98,7 @@ def is_equal(
     Returns a bool indicating whether the services are equivalent, a list of keys to be updated in
     DynamoDB, and a list of keys to remove from DynamoDB.
     """
-    keys_to_update = []
+    keys_to_update: list[str] = []
 
     # All keys that are only defined locally or differ should be updated
     for key, value in local_service.items():
@@ -126,37 +130,51 @@ def is_equal(
 
 def create_update_expression(
     local_service: LocalService, keys_to_update: list[str], keys_to_delete: list[str]
-) -> tuple[str, AttributeValues]:
+) -> tuple[str, AttributeNames, AttributeValues]:
     """
     Create an update expression based on the number of keys that differ.
 
-    Returns an update expression with SET and/or REMOVE statements and a dictionary of attribute
-    values (those that start with :) present in the update expression.
+    Returns an update expression with SET and/or REMOVE statements, a dictionary of attribute names
+    (that start with #), and a dictionary of attribute values (that start with :) present in the
+    update expression.
     """
     # Update expression syntax:
     # https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.UpdateExpressions.html
     set_expression = "SET " if keys_to_update else ""
     remove_expression = "REMOVE " if keys_to_delete else ""
-    expression_values = {}
+    expression_names: AttributeNames = {}
+    expression_values: AttributeValues = {}
 
     # Add all values to create/update to the table
     for i, key in enumerate(keys_to_update):
-        attribute = f":{key.lower()}"
-        set_expression += f"{key} = {attribute}"
+        attribute_name = key
+
+        # If the key is reserved, use an attribute name to reference the key
+        if key in RESERVED_WORDS:
+            attribute_name = f"#{key.lower()}"
+            expression_names[attribute_name] = key
+
+        attribute_value = f":{key.lower()}"
+        set_expression += f"{attribute_name} = {attribute_value}"
 
         if local_service[key] is None:
-            expression_values[attribute] = {"NULL": True}
+            expression_values[attribute_value] = {"NULL": True}
         elif type(local_service[key]) is str:
-            expression_values[attribute] = {"S": local_service[key]}
+            expression_values[attribute_value] = {"S": local_service[key]}
         else:
-            expression_values[attribute] = {"N": str(local_service[key])}
+            expression_values[attribute_value] = {"N": str(local_service[key])}
 
         if i < len(keys_to_update) - 1:
             set_expression += ", "
 
     # Add all values to delete from the table
     for i, key in enumerate(keys_to_delete):
-        remove_expression += key
+        if key in RESERVED_WORDS:
+            attribute_name = f"#{key.lower()}"
+            remove_expression += attribute_name
+            expression_names[attribute_name] = key
+        else:
+            remove_expression += key
 
         if i < len(keys_to_delete) - 1:
             remove_expression += ", "
@@ -167,7 +185,7 @@ def create_update_expression(
     else:
         update_expression = set_expression + remove_expression
 
-    return update_expression, expression_values
+    return update_expression, expression_names, expression_values
 
 
 def update_services(
@@ -176,9 +194,9 @@ def update_services(
     common_services: set[str],
 ) -> list[Transaction]:
     """Update all AWS services changed in the JSON file"""
-    update_requests = []
+    update_requests: list[Transaction] = []
     filtered_services = []
-    update_expressions = {}
+    update_expressions: dict[str, tuple[str, AttributeNames, AttributeValues]] = {}
 
     for common_service in common_services:
         local_service = next(
@@ -203,18 +221,25 @@ def update_services(
     for service in filtered_services:
         # The primary key is a composite key containing the service's ID and name
         primary_key = {"Id": service["Id"], "Name": {"S": service["Name"]}}
-        update_expression, expression_value = update_expressions[service["Name"]]
-        update_requests.append(
-            {
-                "Update": {
-                    "Key": primary_key,
-                    "UpdateExpression": update_expression,
-                    "ExpressionAttributeValues": expression_value,
-                    "TableName": TABLE_NAME,
-                    "ReturnValuesOnConditionCheckFailure": "ALL_OLD",
-                }
+        update_expression, expression_name, expression_value = update_expressions[
+            service["Name"]
+        ]
+        update_request = {
+            "Update": {
+                "Key": primary_key,
+                "UpdateExpression": update_expression,
+                "TableName": TABLE_NAME,
+                "ReturnValuesOnConditionCheckFailure": "ALL_OLD",
             }
-        )
+        }
+
+        # ExpressionAttributeValues and ExpressionAttributeNames must not be empty
+        if expression_value:
+            update_request["Update"]["ExpressionAttributeValues"] = expression_value
+        if expression_name:
+            update_request["Update"]["ExpressionAttributeNames"] = expression_name
+
+        update_requests.append(update_request)
 
     updated_services = [service["Name"] for service in filtered_services]
     print(f"Updating the following services: {updated_services}")
@@ -225,7 +250,7 @@ def remove_services(
     remote_services: list[RemoteService], services_to_delete: set[str]
 ) -> list[Transaction]:
     """Remove all AWS services present in DynamoDB, but no longer present in the JSON file"""
-    delete_requests = []
+    delete_requests: list[Transaction] = []
     filtered_services = [
         service
         for service in remote_services
