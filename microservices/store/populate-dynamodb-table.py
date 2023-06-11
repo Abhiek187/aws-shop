@@ -1,22 +1,35 @@
+from __future__ import annotations  # support list and dict types in Python < 3.9
 import boto3
 from botocore.exceptions import ClientError
 import json
 from math import ceil
+from typing import Any, Dict
 from uuid import uuid4
 
+# Constants
 TABLE_NAME = "AWS-Services"
 JSON_FILE_NAME = "aws-services.json"
 TRANSACT_WRITE_LIMIT = 100
 
+# Type aliases
+LocalService = Dict[str, Any]
+RemoteService = Dict[str, Dict[str, Any]]
+Transaction = Dict[str, Dict[str, Any]]
+AttributeValues = Dict[str, Dict[str, Any]]
 
-def get_json_file():
+
+def get_json_file() -> list[LocalService]:
     """Parse the AWS services from the JSON file"""
     with open(JSON_FILE_NAME, "r") as aws_services_file:
         return json.load(aws_services_file)
 
 
-def get_all_services(client):
-    """Get all the AWS services currently in the DynamoDB table"""
+def get_all_services(client) -> list[RemoteService] | None:
+    """
+    Get all the AWS services currently in the DynamoDB table.
+
+    Returns None if the API call fails.
+    """
     try:
         scan_response = client.scan(
             TableName=TABLE_NAME,
@@ -29,7 +42,9 @@ def get_all_services(client):
         return None
 
 
-def add_services(local_services, services_to_create):
+def add_services(
+    local_services: list[LocalService], services_to_create: set[str]
+) -> list[Transaction]:
     """Add all AWS services present in the JSON file, but not in DynamoDB"""
     # Transform the JSON file to a supported format for the transact-write-items API
     put_requests = []
@@ -66,8 +81,15 @@ def add_services(local_services, services_to_create):
     return put_requests
 
 
-def is_equal(local_service, remote_service):
-    """Compare all the properties in each service to see if they're the same"""
+def is_equal(
+    local_service: LocalService, remote_service: RemoteService
+) -> tuple[bool, list[str], list[str]]:
+    """
+    Compare all the properties in each service to see if they're the same.
+
+    Returns a bool indicating whether the services are equivalent, a list of keys to be updated in
+    DynamoDB, and a list of keys to remove from DynamoDB.
+    """
     keys_to_update = []
 
     # All keys that are only defined locally or differ should be updated
@@ -90,8 +112,15 @@ def is_equal(local_service, remote_service):
     return is_eq, keys_to_update, keys_to_delete
 
 
-def create_update_expression(local_service, keys_to_update, keys_to_delete):
-    """Create an update expression based on the number of keys that differ"""
+def create_update_expression(
+    local_service: LocalService, keys_to_update: list[str], keys_to_delete: list[str]
+) -> tuple[str, AttributeValues]:
+    """
+    Create an update expression based on the number of keys that differ.
+
+    Returns an update expression with SET and/or REMOVE statements and a dictionary of attribute
+    values (those that start with :) present in the update expression.
+    """
     # Update expression syntax:
     # https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.UpdateExpressions.html
     set_expression = "SET " if keys_to_update else ""
@@ -129,7 +158,11 @@ def create_update_expression(local_service, keys_to_update, keys_to_delete):
     return update_expression, expression_values
 
 
-def update_services(local_services, remote_services, common_services):
+def update_services(
+    local_services: list[LocalService],
+    remote_services: list[RemoteService],
+    common_services: set[str],
+) -> list[Transaction]:
     """Update all AWS services changed in the JSON file"""
     update_requests = []
     filtered_services = []
@@ -175,7 +208,9 @@ def update_services(local_services, remote_services, common_services):
     return update_requests
 
 
-def remove_services(remote_services, services_to_delete):
+def remove_services(
+    remote_services: list[RemoteService], services_to_delete: set[str]
+) -> list[Transaction]:
     """Remove all AWS services present in DynamoDB, but no longer present in the JSON file"""
     delete_requests = []
     filtered_services = [
@@ -200,7 +235,12 @@ def remove_services(remote_services, services_to_delete):
     return delete_requests
 
 
-def perform_transaction(client, put_items, update_items, delete_items):
+def perform_transaction(
+    client,
+    put_items: list[Transaction],
+    update_items: list[Transaction],
+    delete_items: list[Transaction],
+):
     """Run all create, update, and delete actions in one API call"""
     transact_items = put_items + update_items + delete_items
     # Split request items into chunks to satisfy transact-write-items's constraint
