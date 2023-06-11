@@ -73,6 +73,7 @@ def add_services(client, local_services, services_to_create):
                 ReturnItemCollectionMetrics="SIZE",
             )
             print(f"Success!\n{batch_write_response}")
+            print(f"Added the following services: {services_to_create}")
         except ClientError as error:
             print(f"Client error: {error}")
 
@@ -82,9 +83,40 @@ def update_services(client):
     pass
 
 
-def remove_services(client, remote_services):
+def remove_services(client, remote_services, services_to_delete):
     """Remove all AWS services present in DynamoDB, but no longer present in the JSON file"""
-    pass
+    delete_requests = []
+    filtered_services = [
+        service
+        for service in remote_services
+        if service["Name"]["S"] in services_to_delete
+    ]
+
+    for service in filtered_services:
+        # The primary key is a composite key containing the service's ID and name
+        primary_key = {"Id": service["Id"]["S"], "Name": service["Name"]["S"]}
+        delete_requests.append({"DeleteRequest": {"Key": primary_key}})
+
+    # Split request items into chunks to satisfy batch-write-item's constraint
+    num_chunks = ceil(len(delete_requests) / BATCH_WRITE_LIMIT)
+    print(f"Splitting batch-write-item into {num_chunks} chunk(s)")
+
+    for chunk_i in range(num_chunks):
+        delete_request_chunk = delete_requests[
+            (chunk_i * BATCH_WRITE_LIMIT) : ((chunk_i + 1) * BATCH_WRITE_LIMIT)
+        ]
+        request_items = {TABLE_NAME: delete_request_chunk}
+
+        try:
+            batch_write_response = client.batch_write_item(
+                RequestItems=request_items,
+                ReturnConsumedCapacity="INDEXES",
+                ReturnItemCollectionMetrics="SIZE",
+            )
+            print(f"Success!\n{batch_write_response}")
+            print(f"Removed the following services: {services_to_delete}")
+        except ClientError as error:
+            print(f"Client error: {error}")
 
 
 def main():
@@ -102,7 +134,7 @@ def main():
     # Perform all the create, update, and delete operations
     add_services(dynamodb_client, local_services, services_to_create)
     update_services(dynamodb_client)
-    remove_services(dynamodb_client, services_to_delete)
+    remove_services(dynamodb_client, remote_services, services_to_delete)
 
 
 if __name__ == "__main__":
