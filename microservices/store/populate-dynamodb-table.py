@@ -25,13 +25,13 @@ def get_all_services(client):
         print(f"{scan_response=}")
         return scan_response["Items"]
     except ClientError as error:
-        print(f"Client error: {error}")
+        print(f"scan client error: {error}")
         return None
 
 
 def add_services(local_services, services_to_create):
     """Add all AWS services present in the JSON file, but not in DynamoDB"""
-    # Transform the JSON file to a supported format for the transact-write-item API
+    # Transform the JSON file to a supported format for the transact-write-items API
     put_requests = []
     filtered_services = [
         service for service in local_services if service["Name"] in services_to_create
@@ -69,36 +69,44 @@ def add_services(local_services, services_to_create):
 def is_equal(local_service, remote_service):
     """Compare all the properties in each service to see if they're the same"""
     res = True
-    diff = []
+    keys_to_update = []
+    keys_to_delete = []
 
+    # All keys that are only defined locally or differ should be updated
     for key, value in local_service.items():
         # Avoid referencing nonexistent keys
         if key not in remote_service:
             res = False
-            diff.append(key)
+            keys_to_update.append(key)
         elif value is None and remote_service[key] != {"NULL": True}:
             res = False
-            diff.append(key)
+            keys_to_update.append(key)
         elif type(value) is str and remote_service[key] != {"S": value}:
             res = False
-            diff.append(key)
+            keys_to_update.append(key)
         elif remote_service[key] != {"N": str(value)}:
             res = False
-            diff.append(key)
+            keys_to_update.append(key)
 
-    return res, diff
+    # All keys that are only defined in DynamoDB should be deleted (except the ID field)
+    keys_to_delete = [
+        key for key in remote_service if key not in local_service and key != "Id"
+    ]
+    return res, keys_to_update, keys_to_delete
 
 
-def create_update_expression(local_service, diff):
+def create_update_expression(local_service, keys_to_update, keys_to_delete):
     """Create an update expression based on the number of keys that differ"""
     # Update expression syntax:
     # https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.UpdateExpressions.html
-    update_expression = "SET "
+    set_expression = "SET " if keys_to_update else ""
+    remove_expression = "REMOVE " if keys_to_delete else ""
     expression_values = {}
 
-    for i, key in enumerate(diff):
+    # Add all values to create/update to the table
+    for i, key in enumerate(keys_to_update):
         attribute = f":newval{i}"
-        update_expression += f"{key} = {attribute}"
+        set_expression += f"{key} = {attribute}"
 
         if local_service[key] is None:
             expression_values[attribute] = {"NULL": True}
@@ -107,8 +115,21 @@ def create_update_expression(local_service, diff):
         else:
             expression_values[attribute] = {"N": str(local_service[key])}
 
-        if i < len(diff) - 1:
-            update_expression += ", "
+        if i < len(keys_to_update) - 1:
+            set_expression += ", "
+
+    # Add all values to delete from the table
+    for i, key in enumerate(keys_to_delete):
+        remove_expression += key
+
+        if i < len(keys_to_delete) - 1:
+            remove_expression += ", "
+
+    if set_expression and remove_expression:
+        # Add a space between the SET and REMOVE expressions if they're both non-empty
+        update_expression = f"{set_expression} {remove_expression}"
+    else:
+        update_expression = set_expression + remove_expression
 
     return update_expression, expression_values
 
@@ -130,13 +151,13 @@ def update_services(local_services, remote_services, common_services):
         )
 
         # Gather all the differences between the JSON file and DynamoDB table into an update expression
-        is_eq, diff = is_equal(local_service, remote_service)
+        is_eq, keys_to_update, keys_to_delete = is_equal(local_service, remote_service)
 
         if not is_eq:
             # The ID only appears in DynamoDB
             filtered_services.append({**local_service, "Id": remote_service["Id"]})
             update_expressions[local_service["Name"]] = create_update_expression(
-                local_service, diff
+                local_service, keys_to_update, keys_to_delete
             )
 
     for service in filtered_services:
@@ -187,9 +208,9 @@ def remove_services(remote_services, services_to_delete):
 def perform_transaction(client, put_items, update_items, delete_items):
     """Run all create, update, and delete actions in one API call"""
     transact_items = put_items + update_items + delete_items
-    # Split request items into chunks to satisfy transact-write-item's constraint
+    # Split request items into chunks to satisfy transact-write-items's constraint
     num_chunks = ceil(len(transact_items) / TRANSACT_WRITE_LIMIT)
-    print(f"Splitting transact-write-item into {num_chunks} chunk(s)")
+    print(f"Splitting transact-write-items into {num_chunks} chunk(s)")
 
     for chunk_i in range(num_chunks):
         transact_items_chunk = transact_items[
@@ -197,7 +218,6 @@ def perform_transaction(client, put_items, update_items, delete_items):
         ]
 
         try:
-            print(f"{transact_items_chunk=}")
             transact_write_response = client.transact_write_items(
                 TransactItems=transact_items_chunk,
                 ReturnConsumedCapacity="INDEXES",
@@ -205,7 +225,7 @@ def perform_transaction(client, put_items, update_items, delete_items):
             )
             print(f"Success!\n{transact_write_response}")
         except ClientError as error:
-            print(f"Client error: {error}")
+            print(f"transact-write-items client error: {error}")
 
 
 def main():
@@ -230,7 +250,7 @@ def main():
     update_items = update_services(local_services, remote_services, common_services)
     delete_items = remove_services(remote_services, services_to_delete)
 
-    # Perform a single transact-write-item request for CUD operations
+    # Perform a single transact-write-items request for CUD operations
     perform_transaction(dynamodb_client, put_items, update_items, delete_items)
 
 
