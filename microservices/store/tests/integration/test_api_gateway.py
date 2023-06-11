@@ -46,6 +46,7 @@ class TestApiGateway:
     def test_api_gateway(self, api_gateway_url):
         """Call the API Gateway endpoint and check the response"""
         response = requests.get(api_gateway_url)
+        json = response.json()
 
         assert response.status_code == 200
-        assert response.json() == []
+        assert type(json) is list and len(json) > 0
