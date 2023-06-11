@@ -69,7 +69,6 @@ def add_services(local_services, services_to_create):
 def is_equal(local_service, remote_service):
     """Compare all the properties in each service to see if they're the same"""
     keys_to_update = []
-    keys_to_delete = []
 
     # All keys that are only defined locally or differ should be updated
     for key, value in local_service.items():
