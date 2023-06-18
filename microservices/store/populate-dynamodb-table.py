@@ -1,6 +1,7 @@
 from __future__ import annotations  # support list and dict types in Python < 3.9
 import boto3
 from botocore.exceptions import ClientError
+from distutils.util import strtobool
 import json
 from math import ceil, isclose
 from typing import Any, Dict
@@ -328,8 +329,20 @@ def main():
     update_items = update_services(local_services, remote_services, common_services)
     delete_items = remove_services(remote_services, services_to_delete)
 
-    # Perform a single transact-write-items request for CUD operations
-    perform_transaction(dynamodb_client, put_items, update_items, delete_items)
+    # Ask the user if they want to perform the above changes
+    print("Are these changes ok? [y/n] ", end="")
+    should_continue = None
+    while should_continue is None:
+        try:
+            should_continue = strtobool(input().lower())
+        except (ValueError, EOFError):
+            print("Please respond with 'y' or 'n': ", end="")
+
+    if should_continue:
+        # Perform a single transact-write-items request for CUD operations
+        perform_transaction(dynamodb_client, put_items, update_items, delete_items)
+    else:
+        print("Ok, won't update the database")
 
 
 if __name__ == "__main__":
