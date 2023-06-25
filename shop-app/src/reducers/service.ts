@@ -1,21 +1,22 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import { GET_ALL_SERVICES, SERVICE_ERROR } from "../actions/types";
+import AWSService from "../types/AWSService";
 
 export type ServiceState = {
-  error: any;
+  error?: string;
   loading: boolean;
-  services: any[];
+  services: AWSService[];
 };
 
 const initialState: ServiceState = {
-  error: {},
+  error: undefined,
   loading: true,
   services: [],
 };
 
 export default function (
   state = initialState,
-  action: PayloadAction<any>
+  action: PayloadAction<string | AWSService[] | undefined>
 ): ServiceState {
   const { type, payload } = action;
 
@@ -24,12 +25,12 @@ export default function (
       return {
         ...state,
         loading: false,
-        services: payload,
+        services: payload as AWSService[],
       };
     case SERVICE_ERROR:
       return {
         ...state,
-        error: payload,
+        error: payload as string | undefined,
         loading: false,
       };
     default:

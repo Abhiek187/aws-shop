@@ -10,7 +10,7 @@ const Store = () => {
     dispatch(loadAllServices());
   }, [dispatch]);
 
-  return <p>{JSON.stringify(services)}</p>;
+  return <p>{loading ? "Loading..." : error ?? JSON.stringify(services)}</p>;
 };
 
 export default Store;
