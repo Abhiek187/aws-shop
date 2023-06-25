@@ -10,7 +10,11 @@ const Store = () => {
     dispatch(loadAllServices());
   }, [dispatch]);
 
-  return <p>{loading ? "Loading..." : error ?? JSON.stringify(services)}</p>;
+  return (
+    <p className="text-3xl font-bold underline">
+      {loading ? "Loading..." : error ?? JSON.stringify(services)}
+    </p>
+  );
 };
 
 export default Store;
