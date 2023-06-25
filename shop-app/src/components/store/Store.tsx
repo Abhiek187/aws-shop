@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { loadAllServices } from "../../actions/service";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { Button } from "@mui/material";
+import { CircularProgress } from "@mui/material";
+import ServiceCard from "./ServiceCard";
 
 const Store = () => {
   const { error, loading, services } = useAppSelector((state) => state.service);
@@ -13,10 +14,16 @@ const Store = () => {
 
   return (
     <div>
-      <p className="text-3xl font-bold underline">
-        {loading ? "Loading..." : error ?? JSON.stringify(services)}
-      </p>
-      <Button variant="contained">Hello World</Button>
+      {loading ? (
+        <CircularProgress />
+      ) : (
+        <div>
+          {error ??
+            services.map((service) => (
+              <ServiceCard key={service.Id} service={service} />
+            ))}
+        </div>
+      )}
     </div>
   );
 };
