@@ -30,7 +30,7 @@ Download the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-
 Create stack:
 
 ```bash
-aws cloudformation create-stack --stack-name NAME --template-body FILE_PATH --parameters ParameterKey=KEY,ParameterValue=VALUE
+aws cloudformation create-stack --stack-name NAME --template-body FILE_PATH --parameters ParameterKey=KEY,ParameterValue=VALUE --capabilities CAPABILITY_NAMED_IAM
 ```
 
 List stacks:
