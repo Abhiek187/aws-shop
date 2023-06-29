@@ -24,6 +24,7 @@ export default function (
     case GET_ALL_SERVICES:
       return {
         ...state,
+        error: undefined,
         loading: false,
         services: payload as AWSService[],
       };

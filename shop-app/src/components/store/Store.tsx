@@ -9,8 +9,11 @@ const Store = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(loadAllServices());
-  }, [dispatch]);
+    // Don't make an API call if the state is already cached
+    if (services.length === 0) {
+      dispatch(loadAllServices());
+    }
+  }, [dispatch, services.length]);
 
   if (loading) {
     return <CircularProgress />;
