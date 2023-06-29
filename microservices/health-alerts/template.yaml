@@ -26,6 +26,7 @@ Resources:
             - APIGATEWAY
             - LAMBDA
             - DYNAMODB
+            - IAM
             - CODEBUILD
             - CODEPIPELINE
             - SQS

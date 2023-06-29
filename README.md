@@ -43,7 +43,7 @@ aws cloudformation describe-stacks # more detailed than list-stacks
 Update stack:
 
 ```bash
-aws cloudformation update-stack --stack-name NAME --template-body FILE_PATH --parameters ParameterKey=KEY,ParameterValue=VALUE
+aws cloudformation update-stack --stack-name NAME --template-body FILE_PATH --parameters ParameterKey=KEY,UsePreviousValue=true
 ```
 
 Delete stack:
