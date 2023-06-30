@@ -96,8 +96,8 @@ Resources:
       Environment:
         # Make sure the image supports the runtime in the buildspec:
         # https://docs.aws.amazon.com/codebuild/latest/userguide/available-runtimes.html
-        Type: LINUX_CONTAINER
-        Image: aws/codebuild/amazonlinux2-x86_64-standard:4.0 # Amazon Linux 2 x86_64 image
+        Type: ARM_CONTAINER
+        Image: aws/codebuild/amazonlinux2-aarch64-standard:3.0 # Amazon Linux 2 ARM image
         ComputeType: BUILD_GENERAL1_SMALL # free tier eligible
         EnvironmentVariables:
           - Name: CI
