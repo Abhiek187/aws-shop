@@ -28,8 +28,10 @@ Resources:
             - DYNAMODB
             - IAM
             - CODEBUILD
+            - CODEDEPLOY
             - CODEPIPELINE
             - SQS
+            - ECR
             - COGNITO
             - CLOUDWATCH
             - XRAY
