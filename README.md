@@ -67,7 +67,7 @@ aws cloudformation describe-stack-resource-drifts --stack-name NAME --stack-reso
 Create change set:
 
 ```bash
-aws cloudformation create-change-set --stack-name NAME --change-set-name CHANGE_SET --template-body FILE_PATH --capabilities CAPABILITY_IAM
+aws cloudformation create-change-set --stack-name NAME --change-set-name CHANGE_SET --template-body FILE_PATH --capabilities CAPABILITY_NAMED_IAM
 ```
 
 List change sets:
