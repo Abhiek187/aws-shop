@@ -64,6 +64,36 @@ Describe stack drift:
 aws cloudformation describe-stack-resource-drifts --stack-name NAME --stack-resource-drift-status-filters DELETED MODIFIED
 ```
 
+Create change set:
+
+```bash
+aws cloudformation create-change-set --stack-name NAME --change-set-name CHANGE_SET --template-body FILE_PATH --capabilities CAPABILITY_IAM
+```
+
+List change sets:
+
+```bash
+aws cloudformation list-change-sets --stack-name my-stack
+```
+
+Describe change set:
+
+```bash
+aws cloudformation describe-change-set --stack-name NAME --change-set-name CHANGE_SET
+```
+
+Execute change set:
+
+```bash
+aws cloudformation execute-change-set --stack-name NAME --change-set-name CHANGE_SET
+```
+
+Delete change set:
+
+```bash
+aws cloudformation delete-change-set --stack-name NAME --change-set-name CHANGE_SET
+```
+
 ### CodeBuild Commands
 
 Start build:
