@@ -72,6 +72,12 @@ Start build:
 aws codebuild start-build --project-name NAME
 ```
 
+List projects:
+
+```bash
+aws codebuild list-projects
+```
+
 List builds:
 
 ```bash
