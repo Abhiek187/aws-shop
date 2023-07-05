@@ -50,6 +50,13 @@ Resources:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
               StringLike:
                 token.actions.githubusercontent.com:sub: repo:Abhiek187/aws-shop:*
+      ManagedPolicyArns:
+        # A list of policies required for every workflow
+        - "arn:aws:iam::aws:policy/AWSCodeBuildDeveloperAccess"
+        - "arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess"
+        - "arn:aws:iam::aws:policy/AWSCloudFormationFullAccess"
+        - "arn:aws:iam::aws:policy/IAMReadOnlyAccess"
+        - "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
   GitHubOIDC:
     Type: AWS::IAM::OIDCProvider
     Properties:

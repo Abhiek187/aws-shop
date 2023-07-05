@@ -36,8 +36,6 @@ jobs:
           role-to-assume: arn:aws:iam::701157632481:role/AWS-Shop-Frontend-Stack-GitHubRole-O5NTO5LBPHMZ
           aws-region: ${{ env.AWS_REGION }}
 
-      - run: aws --version && aws sts get-caller-identity
-
       - name: Validate CloudFormation Template
         run: aws cloudformation validate-template --template-body file://${{ env.STACK_FILE }}
 
