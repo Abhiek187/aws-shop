@@ -18,6 +18,9 @@ env:
   STACK_FILE: cloudformation.yaml
   CHANGE_SET: Change-Set
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
