@@ -1,6 +1,11 @@
 # AWS Shop
 
 ![AWS CodeBuild](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiL2NLTUo2Y2M4Y2VCZDNUdWFMTGUyN25BTzRMby8vbTJKQ0hidUVBTlZFSXpObE9OMnlxMFAyMVViamc5Z2NvWGdLZy9UZlAxdCtvY2svbGdUT1plSU1vPSIsIml2UGFyYW1ldGVyU3BlYyI6IlNEdldyWkllMnBJWEl5c2UiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
+[![CloudFormation CI/CD](https://github.com/Abhiek187/aws-shop/actions/workflows/cfn.yml/badge.svg)](https://github.com/Abhiek187/aws-shop/actions/workflows/cfn.yml)
+[![CodeQL](https://github.com/Abhiek187/aws-shop/actions/workflows/codeql.yml/badge.svg)](https://github.com/Abhiek187/aws-shop/actions/workflows/codeql.yml)
+[![Dependency Review](https://github.com/Abhiek187/aws-shop/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/Abhiek187/aws-shop/actions/workflows/dependency-review.yml)
+[![Node.js CI/CD](https://github.com/Abhiek187/aws-shop/actions/workflows/node.js.yml/badge.svg)](https://github.com/Abhiek187/aws-shop/actions/workflows/node.js.yml)
+[![Python CI/CD](https://github.com/Abhiek187/aws-shop/actions/workflows/python-app.yml/badge.svg)](https://github.com/Abhiek187/aws-shop/actions/workflows/python-app.yml)
 
 A basic shopping app that utilizes various AWS services
 
@@ -62,6 +67,12 @@ Describe stack drift:
 
 ```bash
 aws cloudformation describe-stack-resource-drifts --stack-name NAME --stack-resource-drift-status-filters DELETED MODIFIED
+```
+
+Describe stack drift status:
+
+```bash
+aws cloudformation describe-stack-drift-detection-status --stack-drift-detection-id DRIFT_ID
 ```
 
 Create change set:

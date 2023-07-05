@@ -37,9 +37,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::123456789100:role/my-github-actions-role
-          # aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          # aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::701157632481:role/AWS-Shop-Frontend-Stack-GitHubRole-O5NTO5LBPHMZ
           aws-region: ${{ env.AWS_REGION }}
       - run: aws --version && aws sts get-caller-identity
       - name: Use Node.js ${{ matrix.node-version }}
@@ -61,9 +59,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::123456789100:role/my-github-actions-role
-          # aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          # aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::701157632481:role/AWS-Shop-Frontend-Stack-GitHubRole-O5NTO5LBPHMZ
           aws-region: ${{ env.AWS_REGION }}
       - name: Run CodeBuild
         uses: aws-actions/aws-codebuild-run-build@v1

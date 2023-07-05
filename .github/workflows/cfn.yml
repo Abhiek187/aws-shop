@@ -28,9 +28,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::123456789100:role/my-github-actions-role
-          # aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          # aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::701157632481:role/AWS-Shop-Frontend-Stack-GitHubRole-O5NTO5LBPHMZ
           aws-region: ${{ env.AWS_REGION }}
 
       - run: aws --version && aws sts get-caller-identity
@@ -39,23 +37,18 @@ jobs:
         run: aws cloudformation validate-template --template-body file://${{ env.STACK_FILE }}
 
       - name: Detect Stack Drift
-        run: aws cloudformation detect-stack-drift --stack-name ${{ env.STACK_NAME }}
+        run: |
+          chmod u+x detect-cfn-drift.sh
+          ./detect-cfn-drift.sh
 
       - name: Check for Vulnerabilities using cfn-guard
         uses: grolston/guard-action@main
         with:
           data_directory: "."
+          # Run checks based on AWS's well-architected security pillar
           rule_set: "wa-Security-Pillar"
 
-      - name: Create a Change Set
-        run: >-
-          aws cloudformation create-change-set
-          --stack-name ${{ env.STACK_NAME }}
-          --change-set-name ${{ env.CHANGE_SET }}
-          --template-body file://${{ env.STACK_FILE }}
-          --capabilities CAPABILITY_NAMED_IAM
-
-  # If the tests were successful and we're pushing to main, deploy the change set
+  # If the tests were successful and we're pushing to main, create/update the stack
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -67,9 +60,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::123456789100:role/my-github-actions-role
-          # aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          # aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::701157632481:role/AWS-Shop-Frontend-Stack-GitHubRole-O5NTO5LBPHMZ
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Deploy to AWS CloudFormation

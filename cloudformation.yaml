@@ -34,6 +34,31 @@ Resources:
       GroupName: DatabaseAdmins
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/job-function/DatabaseAdministrator
+  # Create an IdP for GitHub to use in workflows
+  GitHubRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !Ref GitHubOIDC
+            Condition:
+              # aud = audience, sub = subject
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: repo:Abhiek187/aws-shop:*
+  GitHubOIDC:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1
+        - 1c58a3a8518e8759bf075b76b750d4f2df264fcd
   # Allow CodeBuild to upload objects to S3
   # https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html#setting-up-service-role
   CodeBuildRole:
@@ -252,3 +277,5 @@ Outputs:
   CloudFrontURL:
     Description: The URL of the React app hosted over HTTPS using CloudFront
     Value: !Sub "https://${CloudFrontDistribution.DomainName}/"
+  GitHubRoleArn:
+    Value: !GetAtt GitHubRole.Arn
