@@ -18,6 +18,7 @@ env:
   STACK_FILE: cloudformation.yaml
   CHANGE_SET: Change-Set
 
+# Required to use the AWS CLI
 permissions:
   id-token: write
   contents: read

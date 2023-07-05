@@ -19,6 +19,7 @@ env:
   AWS_REGION: us-east-1
   CODEBUILD_PROJECT: AWSShopBuild
 
+# Required to use the AWS CLI
 permissions:
   id-token: write
   contents: read
@@ -38,17 +39,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: arn:aws:iam::701157632481:role/AWS-Shop-Frontend-Stack-GitHubRole-O5NTO5LBPHMZ
-          aws-region: ${{ env.AWS_REGION }}
-      - run: aws --version && aws sts get-caller-identity
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
+          cache-dependency-path: "./shop-app/package-lock.json"
       - run: npm ci
       - run: npm test
 

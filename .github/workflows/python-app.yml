@@ -15,6 +15,7 @@ on:
       - "microservices/store/**"
       - ".github/workflows/python-app.yml"
 
+# Required to use the AWS CLI
 permissions:
   id-token: write
   contents: read
@@ -47,7 +48,7 @@ jobs:
           pip install -r requirements.txt
       - name: Test with pytest
         run: |
-          pytest
+          python -m pytest
 
   # If the tests were successful and we're pushing to main, deploy using SAM
   deploy:
