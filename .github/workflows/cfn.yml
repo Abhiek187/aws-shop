@@ -19,6 +19,7 @@ env:
   CHANGE_SET: Change-Set
 
 permissions:
+  id-token: write
   contents: read
 
 jobs:

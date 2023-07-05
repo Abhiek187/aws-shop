@@ -16,6 +16,7 @@ on:
       - ".github/workflows/python-app.yml"
 
 permissions:
+  id-token: write
   contents: read
 
 env:
