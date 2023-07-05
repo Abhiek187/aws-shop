@@ -16,7 +16,6 @@ env:
   AWS_REGION: us-east-1
   STACK_NAME: AWS-Shop-Frontend-Stack
   STACK_FILE: cloudformation.yaml
-  CHANGE_SET: Change-Set
 
 # Required to use the AWS CLI
 permissions:
@@ -47,7 +46,7 @@ jobs:
       - name: Check for Vulnerabilities using cfn-guard
         uses: grolston/guard-action@main
         with:
-          data_directory: "."
+          data_directory: ${{ env.STACK_FILE }}
           # Run checks based on AWS's well-architected security pillar
           rule_set: "wa-Security-Pillar"
 
