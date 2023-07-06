@@ -43,12 +43,16 @@ jobs:
           chmod u+x detect-cfn-drift.sh
           ./detect-cfn-drift.sh
 
+      - name: Install cfn-guard
+        run: >-
+          curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/aws-cloudformation/cloudformation-guard/main/install-guard.sh | sh
+          export PATH=~/.guard/bin:$PATH
+
+      # Run checks based on AWS's well-architected security & reliability pillars
       - name: Check for Vulnerabilities using cfn-guard
-        uses: grolston/guard-action@main
-        with:
-          data_directory: ${{ env.STACK_FILE }}
-          # Run checks based on AWS's well-architected security pillar
-          rule_set: "wa-Security-Pillar"
+        run: |
+          cfn-guard validate --show-summary fail --output-format single-line-summary
+          --data ${{ env.STACK_FILE }} --rules cfn-guard-rules/
 
   # If the tests were successful and we're pushing to main, create/update the stack
   deploy:
