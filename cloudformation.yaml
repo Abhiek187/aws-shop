@@ -193,6 +193,10 @@ Resources:
               NoncurrentDays: 1
   ReactAppBucketPolicy:
     Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+          - S3_BUCKET_SSL_REQUESTS_ONLY # Resource: "*" isn't valid
     Properties:
       Bucket: !Ref ReactAppBucket
       PolicyDocument:
@@ -210,16 +214,18 @@ Resources:
             Condition:
               StringEquals:
                 "AWS:SourceArn": !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution.Id}"
-          # Allow SSL requests only
-          - Action: "s3:*"
+          - Sid: AllowSSLRequestsOnly
             Effect: Deny
             Principal: "*"
-            Resource: "*"
+            Action: "s3:*"
+            Resource:
+              - !GetAtt ReactAppBucket.Arn
+              - !Sub "${ReactAppBucket.Arn}/*"
             Condition:
               Bool:
                 "aws:SecureTransport": false
   LoggingBucket:
-    Type: "AWS::S3::Bucket"
+    Type: AWS::S3::Bucket
     Metadata:
       guard:
         SuppressedRules:
@@ -254,6 +260,7 @@ Resources:
       # Enable WORM (write once, read many)
       ObjectLockEnabled: true
       ObjectLockConfiguration:
+        ObjectLockEnabled: Enabled
         Rule:
           DefaultRetention:
             Mode: GOVERNANCE # more lax than compliance mode

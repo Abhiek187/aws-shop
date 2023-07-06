@@ -105,6 +105,14 @@ Delete change set:
 aws cloudformation delete-change-set --stack-name NAME --change-set-name CHANGE_SET
 ```
 
+#### cfn-guard
+
+To run a security check of a CloudFormation template, follow [these steps](https://docs.aws.amazon.com/cfn-guard/latest/ug/setting-up-linux.html) to install `cfn-guard`. Then run:
+
+```bash
+cfn-guard validate --show-summary [pass|fail] --output-format [single-line-summary|json|yaml] --data FILE --rules cfn-guard-rules/
+```
+
 ### CodeBuild Commands
 
 Start build:
