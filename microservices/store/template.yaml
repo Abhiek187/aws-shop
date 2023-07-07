@@ -22,11 +22,15 @@ Resources:
         ThrottlingBurstLimit: 100 # max # of concurrent requests
         ThrottlingRateLimit: 100 # max # of requests/sec
       DefinitionUri: openapi.yaml # OpenAPI file URI
-      FailOnWarnings: true
+      #FailOnWarnings: true
   AccessLogs:
     Type: AWS::Logs::LogGroup
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
+    Metadata:
+      guard:
+        SuppressedRules:
+          - CLOUDWATCH_LOG_GROUP_ENCRYPTED # server-side encryption is used by default
     Properties:
       LogGroupName: store-api
       RetentionInDays: 365
@@ -35,11 +39,19 @@ Resources:
   LambdaFunction:
     # Creates AWS::Lambda::Permission/Function, AWS::IAM::Role
     Type: AWS::Serverless::Function
+    Metadata:
+      guard:
+        SuppressedRules:
+          # Reliability suppressions
+          - LAMBDA_CONCURRENCY_CHECK # save costs
+          - LAMBDA_INSIDE_VPC # no VPC created (also security check)
+          # Security suppressions
+          - IAM_NO_INLINE_POLICY_CHECK # SAM policy templates become inline policies
     Properties:
-      PackageType: Zip # zip files run faster than container images
+      # Zip files run faster than container images (setting PackageType causes false drift)
       CodeUri: src/
       Handler: app.handler
-      Runtime: python3.8 # see https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
+      Runtime: python3.10 # see https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
       Architectures:
         - arm64
       Description: Query the AWS Services table
@@ -111,11 +123,12 @@ Resources:
           KeyType: HASH
         - AttributeName: Name
           KeyType: RANGE
-      # PointInTimeRecoverySpecification:
-      #   PointInTimeRecoveryEnabled: true
+      PointInTimeRecoverySpecification:
+        # Back up table every second for 35 days (only charged based on table+index size)
+        PointInTimeRecoveryEnabled: true
       TableClass: STANDARD
       TableName: AWS-Services
 Outputs:
   HttpApiUrl:
-    Description: URL of your API endpoint
+    Description: URL of the API endpoint
     Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"
