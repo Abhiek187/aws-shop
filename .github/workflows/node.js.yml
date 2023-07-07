@@ -16,7 +16,6 @@ on:
       - ".github/workflows/node.js.yml"
 
 env:
-  AWS_REGION: us-east-1
   CODEBUILD_PROJECT: AWSShopBuild
 
 # Required to use the AWS CLI
@@ -59,8 +58,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::701157632481:role/AWS-Shop-Frontend-Stack-GitHubRole-O5NTO5LBPHMZ
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ vars.GH_OIDC_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
       - name: Run CodeBuild
         uses: aws-actions/aws-codebuild-run-build@v1
         with:

@@ -13,7 +13,6 @@ on:
       - ".github/workflows/cfn.yml"
 
 env:
-  AWS_REGION: us-east-1
   STACK_NAME: AWS-Shop-Frontend-Stack
   STACK_FILE: cloudformation.yaml
 
@@ -32,8 +31,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::701157632481:role/AWS-Shop-Frontend-Stack-GitHubRole-O5NTO5LBPHMZ
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ vars.GH_OIDC_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Validate CloudFormation Template
         run: aws cloudformation validate-template --template-body file://${{ env.STACK_FILE }}
@@ -66,8 +65,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::701157632481:role/AWS-Shop-Frontend-Stack-GitHubRole-O5NTO5LBPHMZ
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ vars.GH_OIDC_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Deploy to AWS CloudFormation
         uses: aws-actions/aws-cloudformation-github-deploy@v1

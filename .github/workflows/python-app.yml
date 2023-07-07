@@ -20,9 +20,6 @@ permissions:
   id-token: write
   contents: read
 
-env:
-  AWS_REGION: us-east-1
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -40,8 +37,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::701157632481:role/AWS-Shop-Frontend-Stack-GitHubRole-O5NTO5LBPHMZ
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ vars.GH_OIDC_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -67,8 +64,8 @@ jobs:
           use-installer: true
       - uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::701157632481:role/AWS-Shop-Frontend-Stack-GitHubRole-O5NTO5LBPHMZ
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ vars.GH_OIDC_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
       # Build inside Docker containers
       - run: sam build --use-container
       # Prevent prompts and failure when the stack is unchanged
