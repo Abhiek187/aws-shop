@@ -11,7 +11,6 @@ done
 
 if [ $DETECT_STATUS == "DETECTION_FAILED" ]; then
     aws cloudformation describe-stack-drift-detection-status --stack-drift-detection-id $DRIFT_ID
-    aws cloudformation describe-stack-resource-drifts --stack-name $STACK_NAME --stack-resource-drift-status-filters DELETED MODIFIED --no-cli-pager
     echo "Failed to detect drift. See details above." && exit 1
 elif [ $DRIFT_STATUS == "DRIFTED" ]; then
     aws cloudformation describe-stack-resource-drifts --stack-name $STACK_NAME --stack-resource-drift-status-filters DELETED MODIFIED --no-cli-pager
