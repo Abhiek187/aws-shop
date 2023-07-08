@@ -52,14 +52,16 @@ Resources:
                 token.actions.githubusercontent.com:sub: repo:Abhiek187/aws-shop:*
       ManagedPolicyArns:
         # A list of policies required for every workflow (max 10)
+        # React
         - "arn:aws:iam::aws:policy/AWSCodeBuildDeveloperAccess"
-        - "arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess"
-        - "arn:aws:iam::aws:policy/AWSCloudFormationFullAccess"
-        - "arn:aws:iam::aws:policy/IAMReadOnlyAccess"
+        # Microservices
         - "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
-        - "arn:aws:iam::aws:policy/CloudFrontReadOnlyAccess"
-        - "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
-        - "arn:aws:iam::aws:policy/CloudWatchLogsReadOnlyAccess"
+        # SAM
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+        # CloudFormation
+        - "arn:aws:iam::aws:policy/AWSCloudFormationFullAccess"
+        # Drift detection
+        - "arn:aws:iam::aws:policy/ReadOnlyAccess"
   GitHubOIDC:
     Type: AWS::IAM::OIDCProvider
     Properties:
