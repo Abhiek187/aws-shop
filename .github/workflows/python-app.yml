@@ -8,11 +8,13 @@ on:
     branches: ["main"]
     paths:
       - "microservices/store/**"
+      - "microservices/iam-old/**"
       - ".github/workflows/python-app.yml"
   pull_request:
     branches: ["main"]
     paths:
       - "microservices/store/**"
+      - "microservices/iam-old/**"
       - ".github/workflows/python-app.yml"
 
 # Required to use the AWS CLI
