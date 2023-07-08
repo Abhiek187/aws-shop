@@ -72,7 +72,7 @@ jobs:
         with:
           role-to-assume: ${{ vars.GH_OIDC_ROLE }}
           aws-region: ${{ vars.AWS_REGION }}
-      # Build inside Docker containers
-      - run: sam build --use-container
+      # Build SAM app
+      - run: sam build
       # Prevent prompts and failure when the stack is unchanged
       - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
