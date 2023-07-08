@@ -57,6 +57,10 @@ jobs:
     needs: build
     if: github.event_name == 'push'
 
+    defaults:
+      run:
+        working-directory: ./microservices/store
+
     steps:
       - uses: actions/checkout@v3
       - uses: aws-actions/setup-sam@v2
