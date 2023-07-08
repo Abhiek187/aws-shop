@@ -22,9 +22,19 @@ updates:
     schedule:
       interval: "weekly"
       day: "wednesday"
+    groups:
+      boto:
+        patterns:
+          - "boto3"
+          - "botocore"
 
   - package-ecosystem: "pip"
     directory: "/microservices/store"
     schedule:
       interval: "weekly"
       day: "wednesday"
+    groups:
+      boto:
+        patterns:
+          - "boto3"
+          - "botocore"
