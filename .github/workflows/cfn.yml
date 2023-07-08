@@ -74,3 +74,4 @@ jobs:
           name: ${{ env.STACK_NAME }}
           template: ${{ env.STACK_FILE }}
           no-fail-on-empty-changeset: "1"
+          capabilities: CAPABILITY_NAMED_IAM
