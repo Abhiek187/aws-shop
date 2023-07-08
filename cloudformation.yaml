@@ -34,41 +34,79 @@ Resources:
       GroupName: DatabaseAdmins
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/job-function/DatabaseAdministrator
+  # Create an IdP for GitHub to use in workflows
+  GitHubRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !Ref GitHubOIDC
+            Condition:
+              # aud = audience, sub = subject
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: repo:Abhiek187/aws-shop:*
+      ManagedPolicyArns:
+        # A list of policies required for every workflow (max 10)
+        - "arn:aws:iam::aws:policy/AWSCodeBuildDeveloperAccess"
+        - "arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess"
+        - "arn:aws:iam::aws:policy/AWSCloudFormationFullAccess"
+        - "arn:aws:iam::aws:policy/IAMReadOnlyAccess"
+        - "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
+        - "arn:aws:iam::aws:policy/CloudFrontReadOnlyAccess"
+        - "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+        - "arn:aws:iam::aws:policy/CloudWatchLogsReadOnlyAccess"
+  GitHubOIDC:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1
+        - 1c58a3a8518e8759bf075b76b750d4f2df264fcd
   # Allow CodeBuild to upload objects to S3
   # https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html#setting-up-service-role
+  CodeBuildPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: CodeBuildAccess
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: CloudWatchLogsPolicy
+            Effect: Allow
+            Action:
+              - "logs:CreateLogGroup"
+              - "logs:CreateLogStream"
+              - "logs:PutLogEvents"
+            Resource: "*"
+          - Sid: S3ObjectPolicy
+            Effect: Allow
+            Action:
+              - "s3:DeleteObject"
+              - "s3:GetObject"
+              - "s3:ListBucket"
+              - "s3:PutObject"
+            Resource:
+              - !GetAtt ReactAppBucket.Arn
+              - !Sub "${ReactAppBucket.Arn}/*"
   CodeBuildRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Action: ["sts:AssumeRole"]
+          - Action: "sts:AssumeRole"
             Effect: Allow
             Principal:
-              Service: [codebuild.amazonaws.com]
-      Path: /
-      Policies:
-        - PolicyName: CodeBuildAccess
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Sid: CloudWatchLogsPolicy
-                Effect: Allow
-                Action:
-                  - "logs:CreateLogGroup"
-                  - "logs:CreateLogStream"
-                  - "logs:PutLogEvents"
-                Resource: "*"
-              - Sid: S3ObjectPolicy
-                Effect: Allow
-                Action:
-                  - "s3:DeleteObject"
-                  - "s3:GetObject"
-                  - "s3:ListBucket"
-                  - "s3:PutObject"
-                Resource:
-                  - !GetAtt ReactAppBucket.Arn
-                  - !Sub "${ReactAppBucket.Arn}/*"
+              Service: codebuild.amazonaws.com
+      ManagedPolicyArns:
+        - !Ref CodeBuildPolicy
   # CodePipeline (or just CodeBuild for now)
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
@@ -121,6 +159,12 @@ Resources:
   # S3 bucket
   ReactAppBucket:
     Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+          # Reliability suppressions
+          - S3_BUCKET_REPLICATION_ENABLED # stay within 435 MB
+          - S3_BUCKET_DEFAULT_LOCK_ENABLED # objects can be overwritten regularly
     # Can't delete an S3 bucket until all its objects are deleted
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
@@ -132,15 +176,15 @@ Resources:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
       AccessControl: Private # don't give public access to the S3 bucket directly
-      # LoggingConfiguration:
-      #   DestinationBucketName: !Ref LoggingBucket
-      #   LogFilePrefix: testing-logs
+      LoggingConfiguration:
+        DestinationBucketName: !Ref LoggingBucket
+        LogFilePrefix: !Ref ReactAppBucketName
       # Some access settings need to be enabled to add bucket policies
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
-        BlockPublicPolicy: false
+        BlockPublicPolicy: true # set to false when creating a bucket policy
         IgnorePublicAcls: true
-        RestrictPublicBuckets: false
+        RestrictPublicBuckets: true # set to false when creating a bucket policy
       VersioningConfiguration:
         Status: Enabled
       # Save money by deleting older copies of objects
@@ -152,6 +196,10 @@ Resources:
               NoncurrentDays: 1
   ReactAppBucketPolicy:
     Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+          - S3_BUCKET_SSL_REQUESTS_ONLY # Resource: "*" isn't valid
     Properties:
       Bucket: !Ref ReactAppBucket
       PolicyDocument:
@@ -172,14 +220,54 @@ Resources:
           - Sid: AllowSSLRequestsOnly
             Effect: Deny
             Principal: "*"
-            Action:
-              - "s3:*"
+            Action: "s3:*"
             Resource:
               - !GetAtt ReactAppBucket.Arn
               - !Sub "${ReactAppBucket.Arn}/*"
             Condition:
               Bool:
                 "aws:SecureTransport": false
+  LoggingBucket:
+    Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+          # Reliability suppressions
+          - S3_BUCKET_REPLICATION_ENABLED # stay within 435 MB
+          # Security suppressions
+          - S3_BUCKET_LOGGING_ENABLED # this is a logging bucket
+    # Can't delete an S3 bucket until all its objects are deleted
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      AccessControl: Private
+      # Some access settings need to be enabled to add bucket policies
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true # set to false when creating a bucket policy
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true # set to false when creating a bucket policy
+      VersioningConfiguration:
+        Status: Enabled
+      # Save money by deleting older copies of objects
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldVersionsRule
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 1
+      # Enable WORM (write once, read many)
+      ObjectLockEnabled: true
+      ObjectLockConfiguration:
+        ObjectLockEnabled: Enabled
+        Rule:
+          DefaultRetention:
+            Mode: GOVERNANCE # more lax than compliance mode
+            Days: 30
   # CloudFront
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
@@ -252,3 +340,5 @@ Outputs:
   CloudFrontURL:
     Description: The URL of the React app hosted over HTTPS using CloudFront
     Value: !Sub "https://${CloudFrontDistribution.DomainName}/"
+  GitHubRoleArn:
+    Value: !GetAtt GitHubRole.Arn
