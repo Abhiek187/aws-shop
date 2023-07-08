@@ -67,6 +67,10 @@ Resources:
         - "arn:aws:iam::aws:policy/CloudWatchFullAccess" # 36
   GitHubRemainingPolicy:
     Type: AWS::IAM::ManagedPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+          - IAM_POLICY_NO_STATEMENTS_WITH_FULL_ACCESS # need write access for CloudFormation
     Properties:
       PolicyDocument:
         Version: "2012-10-17"
