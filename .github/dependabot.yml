@@ -17,16 +17,17 @@ updates:
       interval: "weekly"
       day: "wednesday"
 
-  - package-ecosystem: "pip"
-    directory: "/microservices/iam-old"
-    schedule:
-      interval: "weekly"
-      day: "wednesday"
-    groups:
-      boto:
-        patterns:
-          - "boto3"
-          - "botocore"
+  # Wait until tests are written for IAM Old
+  # - package-ecosystem: "pip"
+  #   directory: "/microservices/iam-old"
+  #   schedule:
+  #     interval: "weekly"
+  #     day: "wednesday"
+  #   groups:
+  #     boto:
+  #       patterns:
+  #         - "boto3"
+  #         - "botocore"
 
   - package-ecosystem: "pip"
     directory: "/microservices/store"

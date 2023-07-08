@@ -8,13 +8,11 @@ on:
     branches: ["main"]
     paths:
       - "microservices/store/**"
-      - "microservices/iam-old/**"
       - ".github/workflows/python-app.yml"
   pull_request:
     branches: ["main"]
     paths:
       - "microservices/store/**"
-      - "microservices/iam-old/**"
       - ".github/workflows/python-app.yml"
 
 # Required to use the AWS CLI
@@ -25,10 +23,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./microservices/store
 
     strategy:
       matrix:
@@ -72,7 +66,7 @@ jobs:
         with:
           role-to-assume: ${{ vars.GH_OIDC_ROLE }}
           aws-region: ${{ vars.AWS_REGION }}
-      # Build SAM app
+      #- run: sam validate # skipping due to OpenAPI DefinitionUri bug
       - run: sam build
       # Prevent prompts and failure when the stack is unchanged
       - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
