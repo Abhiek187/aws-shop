@@ -52,16 +52,46 @@ Resources:
                 token.actions.githubusercontent.com:sub: repo:Abhiek187/aws-shop:*
       ManagedPolicyArns:
         # A list of policies required for every workflow (max 10)
+        # The shortest managed policies will move to a consolidated customer policy
+        - !Ref GitHubRemainingPolicy
+        # CloudFormation (need read access to detect drift & write access to update resources)
+        - "arn:aws:iam::aws:policy/CloudFrontFullAccess" # 31
+        - "arn:aws:iam::aws:policy/IAMFullAccess" # 22
         # React
-        - "arn:aws:iam::aws:policy/AWSCodeBuildDeveloperAccess"
+        - "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess" # 133
         # Microservices
-        - "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
+        - "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess" # 108
         # SAM
-        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-        # CloudFormation
-        - "arn:aws:iam::aws:policy/AWSCloudFormationFullAccess"
-        # Drift detection
-        - "arn:aws:iam::aws:policy/ReadOnlyAccess"
+        - "arn:aws:iam::aws:policy/AWSLambda_FullAccess" # 52
+        - "arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess" # 83
+        - "arn:aws:iam::aws:policy/CloudWatchFullAccess" # 36
+  GitHubRemainingPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AWSCloudFormationFullAccess
+            Effect: Allow
+            Action:
+              - "cloudformation:*"
+            Resource: "*"
+          - Sid: AmazonSNSFullAccess
+            Effect: Allow
+            Action:
+              - "sns:*"
+            Resource: "*"
+          - Sid: AmazonS3FullAccess
+            Effect: Allow
+            Action:
+              - "s3:*"
+              - "s3-object-lambda:*"
+            Resource: "*"
+          - Sid: AmazonAPIGatewayAdministrator
+            Effect: Allow
+            Action:
+              - "apigateway:*"
+            Resource: "arn:aws:apigateway:*::/*"
   GitHubOIDC:
     Type: AWS::IAM::OIDCProvider
     Properties:
