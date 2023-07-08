@@ -12,13 +12,19 @@ updates:
       day: "wednesday"
 
   - package-ecosystem: "npm"
-    directory: "/"
+    directory: "/shop-app"
     schedule:
       interval: "weekly"
       day: "wednesday"
 
   - package-ecosystem: "pip"
-    directory: "/"
+    directory: "/microservices/iam-old"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+
+  - package-ecosystem: "pip"
+    directory: "/microservices/store"
     schedule:
       interval: "weekly"
       day: "wednesday"
