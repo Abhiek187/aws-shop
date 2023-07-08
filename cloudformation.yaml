@@ -109,6 +109,12 @@ Resources:
   # https://docs.aws.amazon.com/codebuild/latest/userguide/setting-up.html#setting-up-service-role
   CodeBuildPolicy:
     Type: AWS::IAM::ManagedPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+          # The same suppressed rule must be defined here due to a bug with cfn-guard:
+          # https://github.com/aws-cloudformation/aws-guard-rules-registry/issues/246
+          - IAM_POLICY_NO_STATEMENTS_WITH_FULL_ACCESS
     Properties:
       ManagedPolicyName: CodeBuildAccess
       PolicyDocument:
