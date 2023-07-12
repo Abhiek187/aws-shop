@@ -1,3 +1,8 @@
+# Check if the stack exists before proceeding
+if ! aws cloudformation describe-stacks --stack-name $STACK_NAME &> /dev/null ; then
+    echo "Stack $STACK_NAME doesn't exist, skipping..." && exit 0
+fi
+
 # Start stack drift detection
 DRIFT_ID=$(aws cloudformation detect-stack-drift --stack-name $STACK_NAME | jq -r ".StackDriftDetectionId" )
 

@@ -1,0 +1,14 @@
+[
+  {
+    "file": "cloudformation.yaml",
+    "stack": "AWS-Shop-Frontend-Stack"
+  },
+  {
+    "file": "microservices/health-alerts/template.yaml",
+    "stack": "Health-Alert-Stack"
+  },
+  {
+    "file": "microservices/ta-alerts/template.yaml",
+    "stack": "Trusted-Advisor-Alert-Stack"
+  }
+]
