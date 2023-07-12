@@ -12,20 +12,39 @@ on:
       - "**.yaml"
       - ".github/workflows/cfn.yml"
 
-env:
-  STACK_NAME: AWS-Shop-Frontend-Stack
-  STACK_FILE: cloudformation.yaml
-
 # Required to use the AWS CLI
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  build:
+  # Read all the CloudFormation files and stack names and create a matrix
+  get-templates:
     runs-on: ubuntu-latest
 
+    outputs:
+      cfn-info: ${{ steps.read-json.outputs.info }}
+
     steps:
+      - uses: actions/checkout@v3
+
+      - id: read-json
+        run: echo "info=$(jq -c . < .github/workflows/cfn-info.json)" >> "$GITHUB_OUTPUT"
+
+  build:
+    runs-on: ubuntu-latest
+    needs: get-templates
+
+    strategy:
+      matrix:
+        cfn-info: ${{ fromJson(needs.get-templates.outputs.cfn-info) }}
+
+    steps:
+      - name: Set Environment Variables
+        run: |
+          echo "STACK_NAME=${{ matrix.cfn-info.stack }}" >> "$GITHUB_ENV"
+          echo "STACK_FILE=${{ matrix.cfn-info.file }}" >> "$GITHUB_ENV"
+
       - uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
@@ -56,10 +75,21 @@ jobs:
   # If the tests were successful and we're pushing to main, create/update the stack
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - get-templates
+      - build
     if: github.event_name == 'push'
 
+    strategy:
+      matrix:
+        cfn-info: ${{ fromJson(needs.get-templates.outputs.cfn-info) }}
+
     steps:
+      - name: Set Environment Variables
+        run: |
+          echo "STACK_NAME=${{ matrix.cfn-info.stack }}" >> "$GITHUB_ENV"
+          echo "STACK_FILE=${{ matrix.cfn-info.file }}" >> "$GITHUB_ENV"
+
       - uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
