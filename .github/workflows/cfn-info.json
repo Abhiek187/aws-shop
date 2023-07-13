@@ -1,14 +1,17 @@
 [
   {
     "file": "cloudformation.yaml",
-    "stack": "AWS-Shop-Frontend-Stack"
+    "stack": "AWS-Shop-Frontend-Stack",
+    "params": "params.json"
   },
   {
     "file": "microservices/health-alerts/template.yaml",
-    "stack": "Health-Alert-Stack"
+    "stack": "Health-Alert-Stack",
+    "params": "microservices/health-alerts/params.json"
   },
   {
     "file": "microservices/ta-alerts/template.yaml",
-    "stack": "Trusted-Advisor-Alert-Stack"
+    "stack": "Trusted-Advisor-Alert-Stack",
+    "params": "microservices/ta-alerts/params.json"
   }
 ]
