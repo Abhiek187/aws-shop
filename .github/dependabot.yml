@@ -16,6 +16,10 @@ updates:
     schedule:
       interval: "weekly"
       day: "wednesday"
+    groups:
+      typescript-eslint:
+        patterns:
+          - "@typescript-eslint*"
 
   # Wait until tests are written for IAM Old
   # - package-ecosystem: "pip"
