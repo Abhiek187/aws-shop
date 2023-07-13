@@ -104,6 +104,6 @@ jobs:
         with:
           name: ${{ env.STACK_NAME }}
           template: ${{ env.STACK_FILE }}
-          parameter-overrides: ${{ env.PARAM_FILE }}
+          parameter-overrides: file://${{ github.workspace }}/${{ env.PARAM_FILE }}
           no-fail-on-empty-changeset: "1"
           capabilities: CAPABILITY_NAMED_IAM
