@@ -70,6 +70,7 @@ Resources:
       # 128 MB of memory allocated by default
       # Automatically update the runtime version
       # Timeout after 3 seconds
+      Tracing: Active
   # DynamoDB
   AWSServiceTable:
     # SAM Version
@@ -123,6 +124,7 @@ Resources:
           KeyType: HASH
         - AttributeName: Name
           KeyType: RANGE
+      DeletionProtectionEnabled: true
       PointInTimeRecoverySpecification:
         # Back up table every second for 35 days (only charged based on table+index size)
         PointInTimeRecoveryEnabled: true
