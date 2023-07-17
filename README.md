@@ -23,9 +23,7 @@ For each service, CI/CD pipelines are written using GitHub Actions to automate u
 
 ## Architecture Diagram
 
-(_Tentative_)
-
-![AWS Shop architecture diagram](arch-diagram.jpg)
+![AWS Shop architecture diagram](architecture-diagram.png)
 
 ### Front End
 
