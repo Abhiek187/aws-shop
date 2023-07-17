@@ -57,6 +57,7 @@ Resources:
       Environment:
         Variables:
           TopicArn: !Ref SNSTopic
+      Tracing: Active
   # SNS
   SNSTopic:
     Type: AWS::SNS::Topic
