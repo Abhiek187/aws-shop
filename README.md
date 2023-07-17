@@ -25,6 +25,8 @@ For each service, CI/CD pipelines are written using GitHub Actions to automate u
 
 ![AWS Shop architecture diagram](architecture-diagram.png)
 
+_Created using [draw.io](https://www.draw.io/?splash=0&libs=aws4)_
+
 ### Front End
 
 - CodeBuild is used to test the React app, build it, and deploy to S3.
