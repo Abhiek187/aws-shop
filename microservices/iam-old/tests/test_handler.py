@@ -4,7 +4,7 @@ import json
 import os
 import pytest
 import sys
-from unittest import mock
+from unittest.mock import MagicMock
 
 sys.path.append("..")
 
@@ -74,7 +74,8 @@ def sns_topic_name():
 def sns_topic(sns_client, sns_topic_name):
     # Create a mock SNS topic
     response = sns_client.create_topic(Name=sns_topic_name)
-    return response["TopicArn"]
+    os.environ["TopicArn"] = response["TopicArn"]
+    sns_client.publish = MagicMock()
 
 
 def test_no_reminders_with_new_keys(iam_client, new_user):
@@ -105,6 +106,41 @@ def test_reminders_with_90_day_keys(iam_client, old_user, access_key_metadata):
     assert reminders[0]["access_key_id"] == access_key_metadata[0]["AccessKeyId"]
     assert reminders[0]["creation_date"] == access_key_metadata[0]["CreateDate"]
     assert reminders[0]["delta"] == 90
+
+
+def test_send_no_reminders(sns_client, sns_topic):
+    # Given an empty reminders list
+    reminders = []
+
+    # When calling send_reminders
+    app.send_reminders(reminders, sns_client)
+
+    # Then no SNS message is published
+    sns_client.publish.assert_not_called()
+
+
+def test_send_reminders(sns_client, sns_topic):
+    # Given a non-empty reminders list
+    day_delta = 90
+    reminders = [
+        {
+            "username": "test-user",
+            "access_key_id": "AKIARZPUZDIKC4BOVXFX",
+            "creation_date": datetime.now(timezone.utc) - timedelta(days=day_delta),
+            "delta": day_delta,
+        }
+    ]
+    reminder = reminders[0]
+
+    # When send_reminders is called
+    app.send_reminders(reminders, sns_client)
+
+    # Then an SNS message is published
+    sns_client.publish.assert_called_once_with(
+        TopicArn=os.environ["TopicArn"],
+        Subject=f"Hey {reminder['username']}, your AWS access key is {reminder['delta']} days old.",
+        Message=f"It's that time of year again! The access key ID in question is {reminder['access_key_id']} and was created on {reminder['creation_date']:%A %B %d, %Y}.",
+    )
 
 
 # @pytest.fixture()

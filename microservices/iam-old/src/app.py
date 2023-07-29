@@ -5,7 +5,6 @@ import os
 # It's more efficient to only initilize boto3 clients during cold starts
 iam = boto3.client("iam")
 sns = boto3.client("sns")
-TOPIC_ARN = os.environ.get("TopicArn", "")
 
 
 def handler(event, context):
@@ -45,7 +44,9 @@ def check_all_access_keys(users):
     return reminders
 
 
-def send_reminders(reminders):
+def send_reminders(reminders, sns=sns):
+    TOPIC_ARN = os.environ.get("TopicArn", "")
+
     for reminder in reminders:
         sns.publish(
             TopicArn=TOPIC_ARN,
