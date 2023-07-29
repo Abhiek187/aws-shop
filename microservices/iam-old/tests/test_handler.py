@@ -143,32 +143,10 @@ def test_send_reminders(sns_client, sns_topic):
     )
 
 
-# @pytest.fixture()
-# def scheduler_event(request):
-#     # Mock EventBridge Scheduler event
-#     current_dir = os.path.dirname(__file__)
-#     event_path = os.path.join(current_dir, "..", "events", request.param)
+def test_lambda_handler_with_new_user(iam_client, new_user, sns_client, sns_topic):
+    # Given a user with a newly created access key
+    # When the Lambda function is called
+    app.handler({}, {})
 
-#     with open(event_path, "r") as event_file:
-#         return json.load(event_file)
-
-
-# @mock.patch("conftest.sns_client.publish")
-# def test_new_access_key(publish_mock, iam_client, sns_client, sns_topic):
-#     # Given an access key that was recently created
-#     # When the Lambda function is called
-#     # Then the SNS topic shouldn't be published
-#     app.check_all_access_keys(iam_client, sns_client, sns_topic)
-#     publish_mock.assert_not_called()
-
-
-# @pytest.mark.parametrize("apigw_event", ["dev.json", "prod.json"], indirect=True)
-# def test_lambda_handler(scheduler_event):
-#     lambda_response = app.handler(scheduler_event, "")
-#     body = json.loads(lambda_response["body"])
-
-#     assert lambda_response["statusCode"] == 200
-#     assert lambda_response["headers"] == {
-#         "Content-Type": "application/json",
-#     }
-#     assert type(body) is list and len(body) > 0
+    # Then no SNS message is published
+    sns_client.publish.assert_not_called()
