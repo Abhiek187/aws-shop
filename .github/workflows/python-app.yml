@@ -8,11 +8,13 @@ on:
     branches: ["main"]
     paths:
       - "microservices/store/**"
+      - "microservices/iam-old/**"
       - ".github/workflows/python-app.yml"
   pull_request:
     branches: ["main"]
     paths:
       - "microservices/store/**"
+      - "microservices/iam-old/**"
       - ".github/workflows/python-app.yml"
 
 # Required to use the AWS CLI
@@ -26,10 +28,11 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./microservices/store
+        working-directory: ${{ matrix.directory }}
 
     strategy:
       matrix:
+        directory: ["./microservices/store", "./microservices/iam-old"]
         python-version: [3.9, "3.10", "3.11"]
         # See supported Python release schedule at https://devguide.python.org/versions/
 
@@ -59,7 +62,11 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./microservices/store
+        working-directory: ${{ matrix.directory }}
+
+    strategy:
+      matrix:
+        directory: ["./microservices/store", "./microservices/iam-old"]
 
     steps:
       - uses: actions/checkout@v3
