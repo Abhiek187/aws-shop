@@ -1,9 +1,6 @@
 from datetime import datetime, timedelta, timezone
-from freezegun import freeze_time
 import os
-import pytest
 import sys
-from unittest.mock import MagicMock
 
 sys.path.append("..")
 
@@ -35,46 +32,6 @@ from src import app
 
 # SNS_TOPIC_ARN = "arn:aws:sns:us-west-2:123456789012:my-topic"
 # SNS_PUBLISH_RESPONSE = {"MessageId": "123a45b6-7890-12c3-45d6-333322221111"}
-
-
-@pytest.fixture()
-def user_name():
-    return "test-user"
-
-
-@pytest.fixture()
-def new_user(iam_client, user_name):
-    # Create a mock IAM user
-    iam_client.create_user(UserName=user_name)
-    iam_client.create_access_key(UserName=user_name)
-
-
-@pytest.fixture()
-def old_user(iam_client, user_name):
-    today = datetime.now(timezone.utc)
-
-    with freeze_time(today - timedelta(days=90)):
-        # Create a mock IAM user whose access key is 90 days old
-        iam_client.create_user(UserName=user_name)
-        iam_client.create_access_key(UserName=user_name)
-
-
-@pytest.fixture()
-def access_key_metadata(iam_client, user_name):
-    return iam_client.list_access_keys(UserName=user_name)["AccessKeyMetadata"]
-
-
-@pytest.fixture()
-def sns_topic_name():
-    return "test-topic"
-
-
-@pytest.fixture()
-def sns_topic(sns_client, sns_topic_name):
-    # Create a mock SNS topic
-    response = sns_client.create_topic(Name=sns_topic_name)
-    os.environ["TopicArn"] = response["TopicArn"]
-    sns_client.publish = MagicMock()
 
 
 def test_no_reminders_with_new_keys(iam_client, new_user):
