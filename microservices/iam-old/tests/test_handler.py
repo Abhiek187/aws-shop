@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, timezone
 from freezegun import freeze_time
-import json
 import os
 import pytest
 import sys
