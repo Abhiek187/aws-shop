@@ -35,6 +35,14 @@ Resources:
       LogGroupName: store-api
       RetentionInDays: 365
   # SQS
+  LambdaDLQ:
+    Type: AWS::SQS::Queue
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      MessageRetentionPeriod: 345600
+      ReceiveMessageWaitTimeSeconds: 5
+      SqsManagedSseEnabled: true
   # Lambda
   LambdaFunction:
     # Creates AWS::Lambda::Permission/Function, AWS::IAM::Role
@@ -71,6 +79,10 @@ Resources:
       # Automatically update the runtime version
       # Timeout after 3 seconds
       Tracing: Active
+      # TODO: modify once SQS becomes the event source
+      DeadLetterQueue:
+        TargetArn: !GetAtt LambdaDLQ.Arn # automatically applies permissions to the execution role
+        Type: SQS
   # DynamoDB
   AWSServiceTable:
     # SAM Version
@@ -134,3 +146,6 @@ Outputs:
   HttpApiUrl:
     Description: URL of the API endpoint
     Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"
+  LambdaDLQURL:
+    Description: DLQ URL for Lambda
+    Value: !Ref LambdaDLQ

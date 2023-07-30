@@ -14,7 +14,6 @@ Parameters:
 #Mappings
 #Conditions
 Resources:
-  # Lambda
   LambdaFunction:
     # Creates AWS::Lambda::Permission/Function, AWS::IAM::Role
     Type: AWS::Serverless::Function
@@ -39,6 +38,8 @@ Resources:
           # Schedule = AWS::Events::Rule, ScheduleV2 = AWS::Scheduler::Schedule
           Type: ScheduleV2
           Properties:
+            DeadLetterConfig:
+              Arn: !GetAtt SchedulerDLQ.Arn # applies the necessary resource-based policy
             Description: Check the age of access keys every day
             # You can't use * in both day-of-month [3] and day-of-week [5]
             # https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html#cron-based
@@ -58,7 +59,9 @@ Resources:
         Variables:
           TopicArn: !Ref SNSTopic
       Tracing: Active
-  # SNS
+      DeadLetterQueue:
+        TargetArn: !GetAtt LambdaDLQ.Arn # automatically applies permissions to the execution role
+        Type: SQS
   SNSTopic:
     Type: AWS::SNS::Topic
     Properties:
@@ -69,7 +72,29 @@ Resources:
         - Endpoint: !Ref Email
           Protocol: email
       TopicName: RotateAccessKeys
+  SchedulerDLQ:
+    Type: AWS::SQS::Queue
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      MessageRetentionPeriod: 345600
+      ReceiveMessageWaitTimeSeconds: 5
+      SqsManagedSseEnabled: true
+  LambdaDLQ:
+    Type: AWS::SQS::Queue
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      MessageRetentionPeriod: 345600
+      ReceiveMessageWaitTimeSeconds: 5
+      SqsManagedSseEnabled: true
 Outputs:
   SNSTopicArn:
     Description: SNS Topic ARN
     Value: !Ref SNSTopic
+  SchedulerDLQURL:
+    Description: DLQ URL for EventBridge
+    Value: !Ref SchedulerDLQ
+  LambdaDLQURL:
+    Description: DLQ URL for Lambda
+    Value: !Ref LambdaDLQ
