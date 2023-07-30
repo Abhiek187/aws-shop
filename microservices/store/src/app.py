@@ -55,9 +55,7 @@ def handler(event, context):
         #     )
         #     body = f"Put item {request_json['id']}"
         if route_key == "GET /":
-            response = dynamodb.scan(TableName=table_name)
-            print(f"{response=}")
-            body = response["Items"]
+            body = get_all_aws_services()
         else:
             raise Exception(f'Unsupported route: "{route_key}"')
     except Exception as e:
@@ -67,3 +65,8 @@ def handler(event, context):
         body = json.dumps(body)
 
     return {"statusCode": status_code, "headers": headers, "body": body}
+
+
+def get_all_aws_services(table_name=table_name):
+    response = dynamodb.scan(TableName=table_name)
+    return response["Items"]

@@ -18,6 +18,15 @@ def apigw_event(request):
         return json.load(event_file)
 
 
+def test_get_all_aws_services(dynamodb_table, table_name):
+    # Given a DynamoDB table
+    # When a GET / request is called
+    items = app.get_all_aws_services(table_name)
+    # Then the entire table is returned
+    assert len(items) > 0
+    assert items[0] == dynamodb_table
+
+
 @pytest.mark.parametrize("apigw_event", ["dev.json", "prod.json"], indirect=True)
 def test_lambda_handler(apigw_event):
     lambda_response = app.handler(apigw_event, "")
