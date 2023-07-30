@@ -2,7 +2,7 @@
 
 Install the [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html). To test locally, make sure [Docker](https://docs.docker.com/get-docker/) is installed and running. Then run the following commands:
 
-1. Build the serverless code: `sam build`
+1. Build the serverless code: `sam build --use-container`
 2. _(Optional)_ Validate the SAM template: `sam validate`
 3. _(Optional)_ Invoke the Lambda function locally: `sam local invoke`
 4. _(Optional)_ Start API Gateway locally: `sam local start-api`. Then call `GET http://127.0.0.1:3000/`. Once done, press CTRL-C to stop the server.
