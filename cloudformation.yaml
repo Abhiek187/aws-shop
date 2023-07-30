@@ -96,6 +96,11 @@ Resources:
             Action:
               - "apigateway:*"
             Resource: "arn:aws:apigateway:*::/*"
+          - Sid: AmazonSQSFullAccess
+            Effect: Allow
+            Action:
+              - "sqs:*"
+            Resource: "*"
   GitHubOIDC:
     Type: AWS::IAM::OIDCProvider
     Properties:
@@ -143,7 +148,7 @@ Resources:
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Action: "sts:AssumeRole"
+          - Action: sts:AssumeRole
             Effect: Allow
             Principal:
               Service: codebuild.amazonaws.com
@@ -253,12 +258,11 @@ Resources:
             Effect: Allow
             Principal:
               Service: cloudfront.amazonaws.com
-            Action:
-              - "s3:GetObject"
+            Action: s3:GetObject
             Resource: !Sub "${ReactAppBucket.Arn}/*"
             Condition:
-              StringEquals:
-                "AWS:SourceArn": !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution.Id}"
+              ArnEquals:
+                "aws:SourceArn": !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution.Id}"
           - Sid: AllowSSLRequestsOnly
             Effect: Deny
             Principal: "*"

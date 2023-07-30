@@ -25,6 +25,9 @@ Resources:
       Targets:
         - Id: EmailTarget
           Arn: !Ref SNSTopic
+          # Failed events are retried up to 185 times within 24 hours by default
+          DeadLetterConfig:
+            Arn: !GetAtt DLQ.Arn
   SNSTopic:
     Type: AWS::SNS::Topic
     Properties:
@@ -46,5 +49,40 @@ Resources:
               Service: events.amazonaws.com
             Action: sns:Publish
             Resource: !Ref SNSTopic
+            Condition:
+              ArnEquals:
+                "aws:SourceArn": !GetAtt EventBridgeRule.Arn
       Topics:
         - !Ref SNSTopic
+  DLQ:
+    Type: AWS::SQS::Queue
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      # Defaults:
+      # DelaySeconds (delay queue) = 0s (time before messages appear in the queue)
+      # MessageRetentionPeriod = 4 days (345,600s) (time messages stays in the queue)
+      # VisibilityTimeout = 30s (time before messages reappear in the queue)
+      MessageRetentionPeriod: 345600
+      ReceiveMessageWaitTimeSeconds: 5 # long polling if > 0
+      SqsManagedSseEnabled: true
+  DLQPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      # Allow EventBridge to send messages to the DLQ
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt DLQ.Arn
+            Condition:
+              ArnEquals:
+                "aws:SourceArn": !GetAtt EventBridgeRule.Arn
+      Queues:
+        - !Ref DLQ
+Outputs:
+  DLQURL:
+    Description: DLQ URL for EventBridge
+    Value: !Ref DLQ
