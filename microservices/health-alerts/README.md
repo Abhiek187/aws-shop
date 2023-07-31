@@ -4,7 +4,7 @@
 
 ## About
 
-The Health Alerts microservice subscribes to health events from AWS Health using SNS. If any of the services listed in `template.yaml` goes down in the us-east-1 region, you will get an email notifying you of the incident, allowing system administrators to promptly take action.
+The Health Alerts microservice subscribes to health events from AWS Health using SNS. If any of the services listed in `template.yaml` goes down in the us-east-1 region, you will get an email notifying you of the incident, allowing system administrators to promptly take action. A dead-letter queue (DLQ) is used to catch any errors from EventBridge.
 
 ## Directions
 
