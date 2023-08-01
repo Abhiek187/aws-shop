@@ -59,7 +59,8 @@ Resources:
       PolicyDocument:
         Statement:
           # Allow EventBridge to send email alerts using SNS
-          - Effect: Allow
+          - Sid: AllowEventBridgeServicePrincipalWriteOnly
+            Effect: Allow
             Principal:
               Service: events.amazonaws.com
             Action: sns:Publish
@@ -67,7 +68,8 @@ Resources:
             Condition:
               ArnEquals:
                 "aws:SourceArn": !GetAtt EventBridgeRule.Arn
-          - Effect: Deny
+          - Sid: AllowSSLRequestsOnly
+            Effect: Deny
             Principal: "*"
             Action: sns:Publish
             Resource: !Ref SNSTopic
@@ -94,7 +96,8 @@ Resources:
       # Allow EventBridge to send messages to the DLQ
       PolicyDocument:
         Statement:
-          - Effect: Allow
+          - Sid: AllowEventBridgeServicePrincipalWriteOnly
+            Effect: Allow
             Principal:
               Service: events.amazonaws.com
             Action: sqs:SendMessage
@@ -102,7 +105,8 @@ Resources:
             Condition:
               ArnEquals:
                 "aws:SourceArn": !GetAtt EventBridgeRule.Arn
-          - Effect: Deny
+          - Sid: AllowSSLRequestsOnly
+            Effect: Deny
             Principal: "*"
             Action: "sqs:*"
             Resource: !GetAtt DLQ.Arn
