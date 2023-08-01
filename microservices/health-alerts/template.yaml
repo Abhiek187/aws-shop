@@ -67,6 +67,13 @@ Resources:
             Condition:
               ArnEquals:
                 "aws:SourceArn": !GetAtt EventBridgeRule.Arn
+          - Effect: Deny
+            Principal: "*"
+            Action: sns:Publish
+            Resource: !Ref SNSTopic
+            Condition:
+              Bool:
+                "aws:SecureTransport": false
       Topics:
         - !Ref SNSTopic
   DLQ:
@@ -95,6 +102,13 @@ Resources:
             Condition:
               ArnEquals:
                 "aws:SourceArn": !GetAtt EventBridgeRule.Arn
+          - Effect: Deny
+            Principal: "*"
+            Action: "sqs:*"
+            Resource: !GetAtt DLQ.Arn
+            Condition:
+              Bool:
+                "aws:SecureTransport": false
       Queues:
         - !Ref DLQ
 Outputs:
