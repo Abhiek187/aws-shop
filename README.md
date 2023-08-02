@@ -38,6 +38,7 @@ _Created using [draw.io](https://www.draw.io/?splash=0&libs=aws4)_
 - Information about all the AWS services is stored in a DynamoDB table. Global Secondary Indexes (GSIs) are used to help improve the performance of queries by certain filters, such as searching for services by price or category.
 - A Lambda function handles the logic by the client to perform the appropriate CRUD operations on the DynamoDB table.
 - The API is exposed to the client using API Gateway. An OpenAPI spec defines which endpoints the client can call and how API Gateway transforms the requests and responses from Lambda. Rate limiting is applied to prevent heavy usage of the API.
+- On failure, a dead-letter queue (DLQ) is used to collect error messages from Lambda.
 
 ## Pipeline Diagrams
 

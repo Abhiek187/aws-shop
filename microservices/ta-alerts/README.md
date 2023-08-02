@@ -4,7 +4,7 @@
 
 ## About
 
-The TA Alerts microservice subscribes to Trusted Advisor errors and warnings using SNS. This ensures developers are following the best practices for cost optimization, performance, security, fault tolerance, and service limits. On a Basic or Developer support plan, this will notify you of service limits and _some_ security alerts. A Business support plan or higher is required to subscribe to all checks from Trusted Advisor.
+The TA Alerts microservice subscribes to Trusted Advisor errors and warnings using SNS. This ensures developers are following the best practices for cost optimization, performance, security, fault tolerance, and service limits. On a Basic or Developer support plan, this will notify you of service limits and _some_ security alerts. A Business support plan or higher is required to subscribe to all checks from Trusted Advisor. A dead-letter queue (DLQ) is used to catch any errors from EventBridge.
 
 ## Directions
 
