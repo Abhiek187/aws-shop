@@ -4,7 +4,7 @@ if ! aws cloudformation describe-stacks --stack-name $STACK_NAME &> /dev/null ; 
 fi
 
 # Start stack drift detection
-DRIFT_ID=$(aws cloudformation detect-stack-drift --stack-name $STACK_NAME | jq -r ".StackDriftDetectionId" )
+DRIFT_ID=$(aws cloudformation detect-stack-drift --stack-name $STACK_NAME | jq -r ".StackDriftDetectionId")
 
 while : ; do
     # Wait until the drift check is complete

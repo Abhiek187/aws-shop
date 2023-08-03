@@ -286,6 +286,26 @@ Update table:
 aws dynamodb batch-write-item --request-items file://aws-services.json --return-consumed-capacity INDEXES --return-item-collection-metrics SIZE
 ```
 
+### SQS Commands
+
+Receive messages:
+
+```bash
+aws sqs receive-message --queue-url URL --attribute-names All --message-attribute-names All --max-number-of-messages 10
+```
+
+Delete message:
+
+```bash
+aws sqs delete-message --queue-url URL --receipt-handle HANDLE
+```
+
+Purge queue:
+
+```bash
+aws sqs purge-queue --queue-url URL
+```
+
 ## Rotating Access Keys
 
 Rotate your access keys every 60 days by running the following shell script ([jq](https://stedolan.github.io/jq/) is required):
