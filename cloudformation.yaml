@@ -224,7 +224,7 @@ Resources:
               SSEAlgorithm: AES256
       AccessControl: Private # don't give public access to the S3 bucket directly
       LoggingConfiguration:
-        DestinationBucketName: !Ref LoggingBucket
+        DestinationBucketName: !Ref S3LoggingBucket
         LogFilePrefix: !Ref ReactAppBucketName
       # Some access settings need to be enabled to add bucket policies
       PublicAccessBlockConfiguration:
@@ -273,7 +273,7 @@ Resources:
             Condition:
               Bool:
                 "aws:SecureTransport": false
-  LoggingBucket:
+  S3LoggingBucket:
     Type: AWS::S3::Bucket
     Metadata:
       guard:
@@ -291,12 +291,54 @@ Resources:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
       AccessControl: Private
-      # Some access settings need to be enabled to add bucket policies
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
-        BlockPublicPolicy: true # set to false when creating a bucket policy
+        BlockPublicPolicy: true
         IgnorePublicAcls: true
-        RestrictPublicBuckets: true # set to false when creating a bucket policy
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+      # Save money by deleting older copies of objects
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldVersionsRule
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 1
+      # Enable WORM (write once, read many)
+      ObjectLockEnabled: true
+      ObjectLockConfiguration:
+        ObjectLockEnabled: Enabled
+        Rule:
+          DefaultRetention:
+            Mode: GOVERNANCE # more lax than compliance mode
+            Days: 30
+  CloudFrontLoggingBucket:
+    Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+          # Reliability suppressions
+          - S3_BUCKET_REPLICATION_ENABLED # stay within 435 MB
+          # Security suppressions
+          - S3_BUCKET_LOGGING_ENABLED # this is a logging bucket
+    # Can't delete an S3 bucket until all its objects are deleted
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      # ACLs must be enabled for CloudFront logs
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
       VersioningConfiguration:
         Status: Enabled
       # Save money by deleting older copies of objects
@@ -338,11 +380,14 @@ Resources:
           CachePolicyId: !Ref CloudFrontCachePolicy
           ViewerProtocolPolicy: redirect-to-https
         PriceClass: PriceClass_100 # only use edge locations in North America, Europe, and Israel
-        # CustomErrorResponses:
-        #   - ErrorCachingMinTTL: 300 # 5 minutes
-        #     ErrorCode: 403
-        #     ResponseCode: 404
-        #     ResponsePagePath: error.html
+        CustomErrorResponses:
+          - ErrorCachingMinTTL: 300 # 5 minutes
+            ErrorCode: 403
+            ResponseCode: 404
+            ResponsePagePath: /index.html
+        Logging:
+          Bucket: !GetAtt CloudFrontLoggingBucket.DomainName
+          IncludeCookies: false
   CloudFrontOriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
