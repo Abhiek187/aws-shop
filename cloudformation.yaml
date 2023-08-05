@@ -8,7 +8,15 @@ Parameters:
     Description: The name of the S3 bucket to store the React code
     Default: aws-shop-bucket-jlkafn93hvo0a3f
 #Rules
-#Mappings
+Mappings:
+  CloudFront:
+    # Managed policies from: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-response-headers-policies.html
+    ResponseHeadersPolicies:
+      CORSAndSecurityHeadersPolicy: e61eb60c-9c35-4d20-a928-2b84e02af89c
+      CORSWithPreflight: 5cc3b908-e619-4b99-88e5-2cf7f45965bd
+      CORSWithPreflightAndSecurityHeadersPolicy: eaab4381-ed33-4a86-88ca-d9558dc6cd63
+      SecurityHeadersPolicy: 67f7725c-6f97-4210-82d7-5512b31e9d03
+      SimpleCORS: 60669652-455b-4ae9-85a4-c4c02393f86c
 #Conditions
 #Transform
 Resources:
@@ -224,7 +232,7 @@ Resources:
               SSEAlgorithm: AES256
       AccessControl: Private # don't give public access to the S3 bucket directly
       LoggingConfiguration:
-        DestinationBucketName: !Ref LoggingBucket
+        DestinationBucketName: !Ref S3LoggingBucket
         LogFilePrefix: !Ref ReactAppBucketName
       # Some access settings need to be enabled to add bucket policies
       PublicAccessBlockConfiguration:
@@ -273,7 +281,7 @@ Resources:
             Condition:
               Bool:
                 "aws:SecureTransport": false
-  LoggingBucket:
+  S3LoggingBucket:
     Type: AWS::S3::Bucket
     Metadata:
       guard:
@@ -291,12 +299,54 @@ Resources:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
       AccessControl: Private
-      # Some access settings need to be enabled to add bucket policies
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
-        BlockPublicPolicy: true # set to false when creating a bucket policy
+        BlockPublicPolicy: true
         IgnorePublicAcls: true
-        RestrictPublicBuckets: true # set to false when creating a bucket policy
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+      # Save money by deleting older copies of objects
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldVersionsRule
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 1
+      # Enable WORM (write once, read many)
+      ObjectLockEnabled: true
+      ObjectLockConfiguration:
+        ObjectLockEnabled: Enabled
+        Rule:
+          DefaultRetention:
+            Mode: GOVERNANCE # more lax than compliance mode
+            Days: 30
+  CloudFrontLoggingBucket:
+    Type: AWS::S3::Bucket
+    Metadata:
+      guard:
+        SuppressedRules:
+          # Reliability suppressions
+          - S3_BUCKET_REPLICATION_ENABLED # stay within 435 MB
+          # Security suppressions
+          - S3_BUCKET_LOGGING_ENABLED # this is a logging bucket
+    # Can't delete an S3 bucket until all its objects are deleted
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      # ACLs must be enabled for CloudFront logs
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
       VersioningConfiguration:
         Status: Enabled
       # Save money by deleting older copies of objects
@@ -337,12 +387,24 @@ Resources:
           TargetOriginId: ReactAppS3Origin
           CachePolicyId: !Ref CloudFrontCachePolicy
           ViewerProtocolPolicy: redirect-to-https
+          # Add the necessary security headers to pass Mozilla Observatory
+          # Missing Content-Security-Policy: "default-src 'none'; img-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'"
+          ResponseHeadersPolicyId:
+            !FindInMap [
+              CloudFront,
+              ResponseHeadersPolicies,
+              SecurityHeadersPolicy,
+            ]
         PriceClass: PriceClass_100 # only use edge locations in North America, Europe, and Israel
-        # CustomErrorResponses:
-        #   - ErrorCachingMinTTL: 300 # 5 minutes
-        #     ErrorCode: 403
-        #     ResponseCode: 404
-        #     ResponsePagePath: error.html
+        CustomErrorResponses:
+          - ErrorCachingMinTTL: 300 # 5 minutes
+            # Redirect 403 errors (forbidden) to a 404 page (not found)
+            ErrorCode: 403
+            ResponseCode: 404
+            ResponsePagePath: /index.html
+        Logging:
+          Bucket: !GetAtt CloudFrontLoggingBucket.DomainName
+          IncludeCookies: false
   CloudFrontOriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:

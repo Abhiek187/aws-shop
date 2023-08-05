@@ -260,6 +260,14 @@ Stop build:
 aws codebuild stop-build --id BUILD_ID
 ```
 
+### S3 Commands
+
+List objects:
+
+```bash
+aws s3 ls S3_URI
+```
+
 ### DynamoDB Commands
 
 List tables:
