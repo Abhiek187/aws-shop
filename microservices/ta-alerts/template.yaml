@@ -26,8 +26,9 @@ Resources:
         - Id: EmailTarget
           Arn: !Ref SNSTopic
           # Failed events are retried up to 185 times within 24 hours by default
-          DeadLetterConfig:
-            Arn: !GetAtt DLQ.Arn
+          # This causes false drift detection :(
+          # DeadLetterConfig:
+          #   Arn: !GetAtt DLQ.Arn
   SNSTopic:
     Type: AWS::SNS::Topic
     Properties:
