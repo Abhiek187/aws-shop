@@ -424,6 +424,20 @@ Resources:
         OriginAccessControlOriginType: s3
         SigningBehavior: always
         SigningProtocol: sigv4
+  # Route 53
+  HealthCheck:
+    Type: AWS::Route53::HealthCheck
+    Properties:
+      HealthCheckConfig:
+        # 3 health checks every 30s by default
+        Type: HTTPS
+        # AlarmIdentifier:
+        #   Name:
+        #   Region: !Ref AWS::Region
+        EnableSNI: true # (server name indication) send the FQDN during TLS negotiation
+        FullyQualifiedDomainName: !GetAtt CloudFrontDistribution.DomainName
+        Port: 443
+        ResourcePath: /
   ### Backend ###
   # API Gateway
   # SQS
