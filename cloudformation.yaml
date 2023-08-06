@@ -10,7 +10,14 @@ Parameters:
 #Rules
 Mappings:
   CloudFront:
-    # Managed policies from: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-response-headers-policies.html
+    # Managed cache policies: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html
+    CachePolicies:
+      Amplify: 2e54312d-136d-493c-8eb9-b001f22f67d2
+      CachingDisabled: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+      CachingOptimized: 658327ea-f89d-4fab-a63d-7e88639e58f6
+      CachingOptimizedForUncompressedObjects: b2884449-e4de-46a7-ac36-70bc7f1ddd6d
+      ElementalMediaPackage: 08627262-05a9-4f76-9ded-b50ca2e3a84f
+    # Managed response policies: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-response-headers-policies.html
     ResponseHeadersPolicies:
       CORSAndSecurityHeadersPolicy: e61eb60c-9c35-4d20-a928-2b84e02af89c
       CORSWithPreflight: 5cc3b908-e619-4b99-88e5-2cf7f45965bd
@@ -385,7 +392,10 @@ Resources:
             - HEAD
             - OPTIONS
           TargetOriginId: ReactAppS3Origin
-          CachePolicyId: !Ref CloudFrontCachePolicy
+          # TTL: min = 1s, default = 1d, max = 1y; brotli+gzip compression
+          # No cookies, headers (except Accept-Encoding), or queries in the cache key
+          CachePolicyId:
+            !FindInMap [CloudFront, CachePolicies, CachingOptimized]
           ViewerProtocolPolicy: redirect-to-https
           # Add the necessary security headers to pass Mozilla Observatory
           # Missing Content-Security-Policy: "default-src 'none'; img-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'"
@@ -414,25 +424,6 @@ Resources:
         OriginAccessControlOriginType: s3
         SigningBehavior: always
         SigningProtocol: sigv4
-  CloudFrontCachePolicy:
-    Type: AWS::CloudFront::CachePolicy
-    Properties:
-      CachePolicyConfig:
-        # TTL in seconds
-        DefaultTTL: 86400 # 1 day
-        MaxTTL: 31536000 # 1 year
-        MinTTL: 86400
-        Name: ReactAppCachePolicy
-        ParametersInCacheKeyAndForwardedToOrigin:
-          CookiesConfig:
-            CookieBehavior: none
-          # Brotli has better compression than gzip
-          EnableAcceptEncodingBrotli: true
-          EnableAcceptEncodingGzip: false
-          HeadersConfig:
-            HeaderBehavior: none
-          QueryStringsConfig:
-            QueryStringBehavior: none
   ### Backend ###
   # API Gateway
   # SQS
