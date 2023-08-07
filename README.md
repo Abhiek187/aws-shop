@@ -19,7 +19,7 @@ The front-end is a React app where users can browse many different AWS services 
 
 The back-end is a collection of microservices written in Python. The main one is an API that manages the AWS services stored in a database to display on the front-end. Other microservices help with automating everyday tasks and managing the AWS environment, including monitoring the health of AWS services, the age of access keys, and configurations that aren't compliant with AWS's best practices.
 
-For each service, CI/CD pipelines are written using GitHub Actions to automate unit testing, integration testing, security testing, and deployments of both applications and infrastructure.
+For each service, CI/CD pipelines are written using GitHub Actions to automate unit testing, integration testing, security testing, and deployments of both applications and infrastructure. Health checks are used to monitor both the front-end and back-end, and email notifications are sent if any resource is unhealthy.
 
 ## Architecture Diagram
 
@@ -312,6 +312,14 @@ Purge queue:
 
 ```bash
 aws sqs purge-queue --queue-url URL
+```
+
+### KMS Commands
+
+List aliases:
+
+```bash
+aws kms list-aliases
 ```
 
 ## Rotating Access Keys
