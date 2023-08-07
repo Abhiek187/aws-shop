@@ -79,22 +79,12 @@ Resources:
       # Automatically update the runtime version
       # Timeout after 3 seconds
       Tracing: Active
-      # TODO: modify once SQS becomes the event source
       DeadLetterQueue:
         TargetArn: !GetAtt LambdaDLQ.Arn # automatically applies permissions to the execution role
         Type: SQS
   # DynamoDB
   AWSServiceTable:
-    # SAM Version
-    # Type: AWS::Serverless::SimpleTable
-    # Properties:
-    #   # PrimaryKey will be an id of type String by default
-    #   # Provisioned Mode (under free tier)
-    #   # ProvisionedThroughput:
-    #   #   ReadCapacityUnits: 25
-    #   #   WriteCapacityUnits: 25
-    #   # Use an AWS owned key
-    #   TableName: AWS-Services
+    # SAM Version is limited
     Type: AWS::DynamoDB::Table
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
@@ -105,8 +95,6 @@ Resources:
           AttributeType: S
         - AttributeName: Name
           AttributeType: S
-        # - AttributeName: Description
-        #   AttributeType: S
         - AttributeName: Price
           AttributeType: N
         - AttributeName: Category
