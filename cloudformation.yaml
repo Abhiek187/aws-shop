@@ -7,6 +7,11 @@ Parameters:
     Type: String
     Description: The name of the S3 bucket to store the React code
     Default: aws-shop-bucket-jlkafn93hvo0a3f
+  Email:
+    Type: String
+    Description: The email address that will receive SNS notifications for the health check alarm
+    # Simple regex from https://stackoverflow.com/a/201378
+    AllowedPattern: "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"
 #Rules
 Mappings:
   CloudFront:
@@ -215,8 +220,6 @@ Resources:
   #     Token: "{{resolve:ssm-secure:GitHubToken}}" # must be created outside CloudFormation
   #     ServerType: GITHUB
   #     AuthType: PERSONAL_ACCESS_TOKEN
-  # CloudWatch
-  # X-Ray
   ### Frontend ###
   # S3 bucket
   ReactAppBucket:
@@ -431,13 +434,42 @@ Resources:
       HealthCheckConfig:
         # 3 health checks every 30s by default
         Type: HTTPS
-        # AlarmIdentifier:
-        #   Name:
-        #   Region: !Ref AWS::Region
         EnableSNI: true # (server name indication) send the FQDN during TLS negotiation
         FullyQualifiedDomainName: !GetAtt CloudFrontDistribution.DomainName
         Port: 443
         ResourcePath: /
+  # CloudWatch
+  HealthCheckAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Check the health of the AWS Shop site and its API and send an email whenever it's unhealthy
+      # In Route 53, monitor the health check status in the past 5 minutes (either 0 or 1).
+      # If this unitless value is < 1 at any point, transition to an ALARM state.
+      # https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html
+      Namespace: AWS/Route53
+      MetricName: HealthCheckStatus
+      Dimensions:
+        - Name: HealthCheckId
+          Value: !Ref HealthCheck
+      Period: 300 # 5 minutes
+      EvaluationPeriods: 1
+      Statistic: Minimum
+      ComparisonOperator: LessThanThreshold
+      Threshold: 1
+      Unit: None
+      AlarmActions:
+        - !Ref SNSTopic
+  # SNS
+  SNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      # Encrypt using the default SNS SSE key
+      # Key aliases: aws kms list-aliases
+      KmsMasterKeyId: alias/aws/sns
+      Subscription:
+        - Endpoint: !Ref Email
+          Protocol: email
+  # X-Ray
   ### Backend ###
   # API Gateway
   # SQS
