@@ -434,10 +434,10 @@ Resources:
     Properties:
       HealthCheckConfig:
         # 3 health checks every 30s by default
-        Type: HTTPS
-        EnableSNI: true # (server name indication) send the FQDN during TLS negotiation
+        # Optional features: HTTPS, STR_MATCH, RequestInterval < 30, MeasureLatency
+        Type: HTTP
         FullyQualifiedDomainName: !GetAtt CloudFrontDistribution.DomainName
-        Port: 443
+        Port: 80
         ResourcePath: /
   # CloudWatch
   HealthCheckAlarm:
