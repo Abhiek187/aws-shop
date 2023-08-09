@@ -429,37 +429,37 @@ Resources:
         SigningBehavior: always
         SigningProtocol: sigv4
   # Route 53
-  HealthCheck:
-    Type: AWS::Route53::HealthCheck
-    Properties:
-      HealthCheckConfig:
-        # 3 health checks every 30s by default
-        # Optional features: HTTPS, STR_MATCH, RequestInterval < 30, MeasureLatency
-        Type: HTTP
-        FullyQualifiedDomainName: !GetAtt CloudFrontDistribution.DomainName
-        Port: 80
-        ResourcePath: /
-  # CloudWatch
-  HealthCheckAlarm:
-    Type: AWS::CloudWatch::Alarm
-    Properties:
-      AlarmDescription: Check the health of the AWS Shop site and send an email whenever it's unhealthy
-      # In Route 53, monitor the health check status in the past 5 minutes (either 0 or 1).
-      # If this unitless value is < 1 at any point, transition to an ALARM state.
-      # https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html
-      Namespace: AWS/Route53
-      MetricName: HealthCheckStatus
-      Dimensions:
-        - Name: HealthCheckId
-          Value: !Ref HealthCheck
-      Period: 300 # 5 minutes
-      EvaluationPeriods: 1
-      Statistic: Minimum
-      ComparisonOperator: LessThanThreshold
-      Threshold: 1
-      Unit: None
-      AlarmActions:
-        - !Ref SNSTopic
+  # HealthCheck:
+  #   Type: AWS::Route53::HealthCheck
+  #   Properties:
+  #     HealthCheckConfig:
+  #       # 3 health checks every 30s by default
+  #       # Optional features: HTTPS, STR_MATCH, RequestInterval < 30, MeasureLatency
+  #       Type: HTTP
+  #       FullyQualifiedDomainName: !GetAtt CloudFrontDistribution.DomainName
+  #       Port: 80
+  #       ResourcePath: /
+  # # CloudWatch
+  # HealthCheckAlarm:
+  #   Type: AWS::CloudWatch::Alarm
+  #   Properties:
+  #     AlarmDescription: Check the health of the AWS Shop site and send an email whenever it's unhealthy
+  #     # In Route 53, monitor the health check status in the past 5 minutes (either 0 or 1).
+  #     # If this unitless value is < 1 at any point, transition to an ALARM state.
+  #     # https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/aws-services-cloudwatch-metrics.html
+  #     Namespace: AWS/Route53
+  #     MetricName: HealthCheckStatus
+  #     Dimensions:
+  #       - Name: HealthCheckId
+  #         Value: !Ref HealthCheck
+  #     Period: 300 # 5 minutes
+  #     EvaluationPeriods: 1
+  #     Statistic: Minimum
+  #     ComparisonOperator: LessThanThreshold
+  #     Threshold: 1
+  #     Unit: None
+  #     AlarmActions:
+  #       - !Ref SNSTopic
   # SNS
   SNSTopic:
     Type: AWS::SNS::Topic
