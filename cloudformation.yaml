@@ -416,9 +416,9 @@ Resources:
             ErrorCode: 403
             ResponseCode: 404
             ResponsePagePath: /index.html
-        Logging:
-          Bucket: !GetAtt CloudFrontLoggingBucket.DomainName
-          IncludeCookies: false
+        # Logging:
+        #   Bucket: !GetAtt CloudFrontLoggingBucket.DomainName
+        #   IncludeCookies: false
   CloudFrontOriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
