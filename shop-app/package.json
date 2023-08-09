@@ -11,7 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@aws-sdk/util-dynamodb": "^3.387.0",
+    "@aws-sdk/util-dynamodb": "^3.388.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.14.4",
