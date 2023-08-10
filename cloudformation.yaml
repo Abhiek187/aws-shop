@@ -365,7 +365,7 @@ Resources:
         RestrictPublicBuckets: true
       VersioningConfiguration:
         Status: Enabled
-      # Save money by deleting older copies of objects
+      # Temporarily store logs for 1 day
       LifecycleConfiguration:
         Rules:
           - Id: DeleteRule
