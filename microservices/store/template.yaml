@@ -17,7 +17,12 @@ Resources:
     Properties:
       AccessLogSettings:
         DestinationArn: !GetAtt AccessLogs.Arn
-        Format: $context.requestId
+        # $context variables: https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-logging-variables.html
+        Format: >-
+          { "requestId":"$context.requestId", "ip":"$context.identity.sourceIp",
+          "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod",
+          "routeKey":"$context.routeKey", "status":"$context.status",
+          "protocol":"$context.protocol", "responseLength":"$context.responseLength" }
       DefaultRouteSettings:
         ThrottlingBurstLimit: 100 # max # of concurrent requests
         ThrottlingRateLimit: 100 # max # of requests/sec
