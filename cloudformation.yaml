@@ -337,7 +337,7 @@ Resources:
         Rule:
           DefaultRetention:
             Mode: GOVERNANCE # more lax than compliance mode
-            Days: 30
+            Days: 1
   CloudFrontLoggingBucket:
     Type: AWS::S3::Bucket
     Metadata:
@@ -383,7 +383,7 @@ Resources:
         Rule:
           DefaultRetention:
             Mode: GOVERNANCE # more lax than compliance mode
-            Days: 30
+            Days: 1
   # CloudFront
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
