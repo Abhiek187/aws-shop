@@ -258,6 +258,8 @@ Resources:
         Rules:
           - Id: DeleteOldVersionsRule
             Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
             NoncurrentVersionExpiration:
               NoncurrentDays: 1
   ReactAppBucketPolicy:
