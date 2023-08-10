@@ -317,11 +317,14 @@ Resources:
         RestrictPublicBuckets: true
       VersioningConfiguration:
         Status: Enabled
-      # Save money by deleting older copies of objects
+      # Temporarily store logs for 1 day
       LifecycleConfiguration:
         Rules:
-          - Id: DeleteOldVersionsRule
+          - Id: DeleteRule
             Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
+            ExpirationInDays: 1
             NoncurrentVersionExpiration:
               NoncurrentDays: 1
       # Enable WORM (write once, read many)
@@ -363,8 +366,11 @@ Resources:
       # Save money by deleting older copies of objects
       LifecycleConfiguration:
         Rules:
-          - Id: DeleteOldVersionsRule
+          - Id: DeleteRule
             Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
+            ExpirationInDays: 1
             NoncurrentVersionExpiration:
               NoncurrentDays: 1
       # Enable WORM (write once, read many)
