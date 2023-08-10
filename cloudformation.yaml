@@ -260,6 +260,7 @@ Resources:
             Status: Enabled
             AbortIncompleteMultipartUpload:
               DaysAfterInitiation: 1
+            ExpiredObjectDeleteMarker: true
             NoncurrentVersionExpiration:
               NoncurrentDays: 1
   ReactAppBucketPolicy:
