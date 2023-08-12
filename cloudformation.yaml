@@ -479,6 +479,21 @@ Resources:
       Subscription:
         - Endpoint: !Ref Email
           Protocol: email
+  SNSTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Sid: AllowSSLRequestsOnly
+            Effect: Deny
+            Principal: "*"
+            Action: sns:Publish
+            Resource: !Ref SNSTopic
+            Condition:
+              Bool:
+                "aws:SecureTransport": false
+      Topics:
+        - !Ref SNSTopic
   # X-Ray
   ### Backend ###
   # API Gateway

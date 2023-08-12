@@ -72,6 +72,21 @@ Resources:
         - Endpoint: !Ref Email
           Protocol: email
       TopicName: RotateAccessKeys
+  SNSTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Sid: AllowSSLRequestsOnly
+            Effect: Deny
+            Principal: "*"
+            Action: sns:Publish
+            Resource: !Ref SNSTopic
+            Condition:
+              Bool:
+                "aws:SecureTransport": false
+      Topics:
+        - !Ref SNSTopic
   SchedulerDLQ:
     Type: AWS::SQS::Queue
     DeletionPolicy: Delete
