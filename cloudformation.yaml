@@ -411,7 +411,7 @@ Resources:
             !FindInMap [CloudFront, CachePolicies, CachingOptimized]
           ViewerProtocolPolicy: redirect-to-https
           # Add the necessary security headers to pass Mozilla Observatory
-          # Missing Content-Security-Policy: "default-src 'none'; img-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'"
+          # Missing Content-Security-Policy
           ResponseHeadersPolicyId:
             !FindInMap [
               CloudFront,
@@ -509,6 +509,6 @@ Outputs:
     Value: !GetAtt ReactAppBucket.WebsiteURL
   CloudFrontURL:
     Description: The URL of the React app hosted over HTTPS using CloudFront
-    Value: !Sub "https://${CloudFrontDistribution.DomainName}/"
+    Value: !Sub "https://${CloudFrontDistribution.DomainName}"
   GitHubRoleArn:
     Value: !GetAtt GitHubRole.Arn

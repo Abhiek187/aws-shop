@@ -171,6 +171,12 @@ Update stack:
 aws cloudformation update-stack --stack-name NAME --template-body FILE_PATH --parameters PARAM_FILE_PATH --capabilities CAPABILITY_NAMED_IAM
 ```
 
+Continue update rollback:
+
+```bash
+aws cloudformation continue-update-rollback --stack-name NAME
+```
+
 Delete stack:
 
 ```bash
