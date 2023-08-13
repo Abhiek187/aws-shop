@@ -60,7 +60,7 @@ Resources:
             !FindInMap [
               CloudFront,
               ResponseHeadersPolicies,
-              CORSAndSecurityHeadersPolicy,
+              CORSWithPreflightAndSecurityHeadersPolicy,
             ]
         PriceClass: PriceClass_100 # only use edge locations in North America, Europe, and Israel
         # Logging:
@@ -81,7 +81,11 @@ Resources:
           EnableAcceptEncodingBrotli: true
           EnableAcceptEncodingGzip: true
           HeadersConfig:
-            HeaderBehavior: none
+            HeaderBehavior: whitelist
+            Headers:
+              - Access-Control-Request-Headers
+              - Access-Control-Request-Method
+              - Origin
           QueryStringsConfig:
             QueryStringBehavior: all
   # API Gateway
