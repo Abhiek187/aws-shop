@@ -40,13 +40,12 @@ Resources:
           Compress: true
           CachePolicyId: !Ref CloudFrontCachePolicy
           ViewerProtocolPolicy: redirect-to-https
-          # Add the necessary security headers to pass Mozilla Observatory
-          # Missing Content-Security-Policy
+          # Add the necessary security & CORS headers to call from the front-end
           ResponseHeadersPolicyId:
             !FindInMap [
               CloudFront,
               ResponseHeadersPolicies,
-              SecurityHeadersPolicy,
+              CORSAndSecurityHeadersPolicy,
             ]
         PriceClass: PriceClass_100 # only use edge locations in North America, Europe, and Israel
         # Logging:

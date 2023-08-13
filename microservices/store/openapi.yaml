@@ -56,7 +56,8 @@ components:
 
 x-amazon-apigateway-cors:
   allowOrigins:
-    - "https://d23f1hp5lvetow.cloudfront.net"
+    - "https://dovshfcety3as.cloudfront.net"
+    # For testing API Gateway directly
     - "http://localhost:4173"
     - "http://localhost:5173"
   allowCredentials: true
