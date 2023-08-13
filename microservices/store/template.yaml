@@ -6,9 +6,69 @@ Description: >-
 #Metadata
 #Parameters
 #Rules
-#Mappings
+Mappings:
+  CloudFront:
+    # Managed response policies: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-response-headers-policies.html
+    ResponseHeadersPolicies:
+      CORSAndSecurityHeadersPolicy: e61eb60c-9c35-4d20-a928-2b84e02af89c
+      CORSWithPreflight: 5cc3b908-e619-4b99-88e5-2cf7f45965bd
+      CORSWithPreflightAndSecurityHeadersPolicy: eaab4381-ed33-4a86-88ca-d9558dc6cd63
+      SecurityHeadersPolicy: 67f7725c-6f97-4210-82d7-5512b31e9d03
+      SimpleCORS: 60669652-455b-4ae9-85a4-c4c02393f86c
 #Conditions
 Resources:
+  # CloudFront
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !Sub "${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"
+            Id: StoreAPIOrigin
+            CustomOriginConfig:
+              # Keep TCP connections alive for 5s, timeout after 30s
+              OriginProtocolPolicy: https-only
+        Enabled: true
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          TargetOriginId: StoreAPIOrigin
+          Compress: true
+          CachePolicyId: !Ref CloudFrontCachePolicy
+          ViewerProtocolPolicy: redirect-to-https
+          # Add the necessary security & CORS headers to call from the front-end
+          ResponseHeadersPolicyId:
+            !FindInMap [
+              CloudFront,
+              ResponseHeadersPolicies,
+              CORSAndSecurityHeadersPolicy,
+            ]
+        PriceClass: PriceClass_100 # only use edge locations in North America, Europe, and Israel
+        # Logging:
+        #   Bucket: !GetAtt CloudFrontLoggingBucket.DomainName
+        #   IncludeCookies: false
+  CloudFrontCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        MinTTL: 1
+        DefaultTTL: 86400 # 1 day
+        MaxTTL: 31536000 # 1 year
+        Name: StoreMicroserviceCachePolicy
+        ParametersInCacheKeyAndForwardedToOrigin:
+          # Create separate cache keys for different query strings
+          CookiesConfig:
+            CookieBehavior: none
+          EnableAcceptEncodingBrotli: true
+          EnableAcceptEncodingGzip: true
+          HeadersConfig:
+            HeaderBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: all
   # API Gateway
   HttpApi:
     # Creates AWS::ApiGatewayV2::Stage/Api
@@ -136,9 +196,12 @@ Resources:
       TableClass: STANDARD
       TableName: AWS-Services
 Outputs:
+  CloudFrontURL:
+    Description: CloudFront URL of the API
+    Value: !Sub "https://${CloudFrontDistribution.DomainName}"
   HttpApiUrl:
     Description: URL of the API endpoint
-    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"
+    Value: !Sub "https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}"
   LambdaDLQURL:
     Description: DLQ URL for Lambda
     Value: !Ref LambdaDLQ
