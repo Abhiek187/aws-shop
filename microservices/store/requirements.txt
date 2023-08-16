@@ -27,5 +27,5 @@ tomli==2.0.1
 types-PyYAML==6.0.12.11
 urllib3==1.26.16
 websocket-client==1.6.1
-Werkzeug==2.3.6
+Werkzeug==2.3.7
 xmltodict==0.13.0
