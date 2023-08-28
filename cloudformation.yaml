@@ -22,13 +22,6 @@ Mappings:
       CachingOptimized: 658327ea-f89d-4fab-a63d-7e88639e58f6
       CachingOptimizedForUncompressedObjects: b2884449-e4de-46a7-ac36-70bc7f1ddd6d
       ElementalMediaPackage: 08627262-05a9-4f76-9ded-b50ca2e3a84f
-    # Managed response policies: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-response-headers-policies.html
-    ResponseHeadersPolicies:
-      CORSAndSecurityHeadersPolicy: e61eb60c-9c35-4d20-a928-2b84e02af89c
-      CORSWithPreflight: 5cc3b908-e619-4b99-88e5-2cf7f45965bd
-      CORSWithPreflightAndSecurityHeadersPolicy: eaab4381-ed33-4a86-88ca-d9558dc6cd63
-      SecurityHeadersPolicy: 67f7725c-6f97-4210-82d7-5512b31e9d03
-      SimpleCORS: 60669652-455b-4ae9-85a4-c4c02393f86c
 #Conditions
 #Transform
 Resources:
@@ -410,14 +403,7 @@ Resources:
           CachePolicyId:
             !FindInMap [CloudFront, CachePolicies, CachingOptimized]
           ViewerProtocolPolicy: redirect-to-https
-          # Add the necessary security headers to pass Mozilla Observatory
-          # Missing Content-Security-Policy
-          ResponseHeadersPolicyId:
-            !FindInMap [
-              CloudFront,
-              ResponseHeadersPolicies,
-              SecurityHeadersPolicy,
-            ]
+          ResponseHeadersPolicyId: !Ref CloudFrontResponseHeadersPolicy
         PriceClass: PriceClass_100 # only use edge locations in North America, Europe, and Israel
         CustomErrorResponses:
           - ErrorCachingMinTTL: 300 # 5 minutes
@@ -437,6 +423,50 @@ Resources:
         OriginAccessControlOriginType: s3
         SigningBehavior: always
         SigningProtocol: sigv4
+  CloudFrontResponseHeadersPolicy:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: ReactAppHeaders
+        # CustomHeadersConfig:
+        #   Items:
+        #     - Header: Content-Security-Policy-Report-Only
+        #       Override: true
+        #       Value: >-
+        SecurityHeadersConfig:
+          # Add the necessary security headers to pass Mozilla Observatory
+          ContentSecurityPolicy:
+            # Test using Content-Security-Policy-Report-Only
+            ContentSecurityPolicy: >-
+              default-src 'none';
+              img-src 'self';
+              script-src 'self';
+              style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+              object-src 'none';
+              font-src 'self' https://fonts.gstatic.com;
+              manifest-src 'self';
+              connect-src 'self' https://dovshfcety3as.cloudfront.net;
+              frame-ancestors 'self';
+              base-uri 'self';
+              form-action 'self'
+            Override: true
+          # X-Content-Type-Options
+          ContentTypeOptions:
+            Override: true # set to nosniff
+          # X-Frame-Options
+          FrameOptions:
+            FrameOption: SAMEORIGIN
+            Override: true
+          ReferrerPolicy:
+            Override: true
+            ReferrerPolicy: strict-origin-when-cross-origin
+          # Strict-Transport-Security: max-age=31536000; includeSubDomains
+          StrictTransportSecurity:
+            AccessControlMaxAgeSec: 31536000 # 1 year
+            IncludeSubdomains: true
+            Override: true
+            Preload: false # not standard
+          # X-XSS-Protection is non-standard and can cause vulnerabilities
   # Route 53
   # HealthCheck:
   #   Type: AWS::Route53::HealthCheck
