@@ -380,6 +380,13 @@
     "Category": "trial"
   },
   {
+    "Name": "Security Hub",
+    "Description": "Dashboard of security findings from GuardDuty, Inspector, Systems Manager, Health, Config, Firewall Manager, IAM Access Analyzer, and Macie",
+    "Price": 1e-3,
+    "Unit": "security check",
+    "Category": "trial"
+  },
+  {
     "Name": "App Runner",
     "Description": "Quickly build and deploy containerized applications",
     "Price": 5.21,
