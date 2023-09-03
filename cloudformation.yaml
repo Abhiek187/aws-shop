@@ -331,6 +331,39 @@ Resources:
           DefaultRetention:
             Mode: GOVERNANCE # more lax than compliance mode
             Days: 1
+  LoggingBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Metadata:
+      guard:
+        SuppressedRules:
+          - S3_BUCKET_SSL_REQUESTS_ONLY # Resource: "*" isn't valid
+    Properties:
+      Bucket: !Ref S3LoggingBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          # Allow the frontend bucket to store server access logs in this bucket
+          - Sid: AllowS3Logs
+            Action: s3:PutObject
+            Effect: Allow
+            Principal:
+              Service: logging.s3.amazonaws.com
+            Resource: !Sub "${S3LoggingBucket.Arn}/*"
+            Condition:
+              ArnLike:
+                "aws:SourceArn": !GetAtt ReactAppBucket.Arn
+              StringEquals:
+                "aws:SourceAccount": !Ref AWS::AccountId
+          - Sid: AllowSSLRequestsOnly
+            Effect: Deny
+            Principal: "*"
+            Action: "s3:*"
+            Resource:
+              - !GetAtt S3LoggingBucket.Arn
+              - !Sub "${S3LoggingBucket.Arn}/*"
+            Condition:
+              Bool:
+                "aws:SecureTransport": false
   CloudFrontLoggingBucket:
     Type: AWS::S3::Bucket
     Metadata:
