@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: >-
-  A stack to host the frontend and configure the backend of the AWS Shopping App
+  A stack to host the frontend of the AWS Shopping App
 #Metadata
 Parameters:
   ReactAppBucketName:
