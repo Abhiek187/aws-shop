@@ -12,6 +12,7 @@ Install the [SAM CLI](https://docs.aws.amazon.com/serverless-application-model/l
    3. Run the unit and integration tests: `python3 -m pytest`
    4. Deactivate the virtual environment: `deactivate`
 6. Deploy the serverless code using CloudFormation: `sam deploy --guided`
+   - When first creating the stack, run `sam deploy --parameter-overrides ParameterKey=Email,ParameterValue=YOUR_EMAIL_ADDRESS`, replacing YOUR_EMAIL_ADDRESS with your email address. You need to confirm your email subscription to get added to the SNS topic.
 
 To delete all resources, run `sam delete`
 

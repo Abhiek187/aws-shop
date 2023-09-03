@@ -56,13 +56,17 @@ def handler(event, context):
         #     body = f"Put item {request_json['id']}"
         if route_key == "GET /":
             body = get_all_aws_services()
+        elif route_key == "GET /health":
+            body = ""
         else:
             raise Exception(f'Unsupported route: "{route_key}"')
     except Exception as e:
         status_code = 400
         body = str(e)
     finally:
-        body = json.dumps(body)
+        # Don't stringify empty bodies
+        if body:
+            body = json.dumps(body)
 
     return {"statusCode": status_code, "headers": headers, "body": body}
 

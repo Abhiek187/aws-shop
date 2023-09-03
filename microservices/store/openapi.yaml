@@ -20,6 +20,15 @@ paths:
       # https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html
       x-amazon-apigateway-integration:
         $ref: "#/components/x-amazon-apigateway-integrations/lambda"
+  /health:
+    get:
+      summary: Health check for this API
+      responses:
+        "200":
+          description: The API is healthy
+          # Empty body
+      x-amazon-apigateway-integration:
+        $ref: "#/components/x-amazon-apigateway-integrations/lambda"
 
 components:
   schemas:
@@ -41,9 +50,20 @@ components:
             type: number
             minimum: 0
             description: The price of the AWS service
+          Unit:
+            type: string
+            description: The unit of the AWS service when purchasing
           Category:
             type: string
-            description: Whether the service is under a free tier, trial, or paid plan
+            description: >-
+              Whether the service is under a free tier, trial, or paid plan.
+              Possible values: free, trial, paid
+          FreeTier:
+            type: string
+            nullable: true
+            description: >-
+              If the category is free, how much of the service you can buy for free.
+              If the price is 0, this value is null (since you can buy infinite items for free).
   x-amazon-apigateway-integrations:
     lambda:
       type: aws_proxy

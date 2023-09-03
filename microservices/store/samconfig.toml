@@ -18,6 +18,7 @@ stack_name = "AWS-Shop-Store-Service"
 s3_prefix = "AWS-Shop-Store-Service"
 region = "us-east-1"
 image_repositories = []
+parameter_overrides = "ParameterKey=Email,UsePreviousValue=true"
 
 [default.package.parameters]
 resolve_s3 = true
