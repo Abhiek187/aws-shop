@@ -186,7 +186,7 @@ Resources:
       ServiceRole: !GetAtt CodeBuildRole.Arn
       # Upload the build to the S3 bucket
       Artifacts:
-        Location: !Ref ReactAppBucketName
+        Location: !Ref ReactAppBucket
         Name: "/" # store the build in the root directory of the bucket (not zipped)
         Type: S3
         # Don't override S3's default SSE-S3 encryption with a KMS key
