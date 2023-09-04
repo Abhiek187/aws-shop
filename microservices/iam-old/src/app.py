@@ -2,7 +2,7 @@ import boto3
 from datetime import datetime, timezone
 import os
 
-# It's more efficient to only initilize boto3 clients during cold starts
+# It's more efficient to only initialize boto3 clients during cold starts
 iam = boto3.client("iam")
 sns = boto3.client("sns")
 
