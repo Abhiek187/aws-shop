@@ -431,6 +431,7 @@ Resources:
             - HEAD
             - OPTIONS
           TargetOriginId: ReactAppS3Origin
+          Compress: true
           # TTL: min = 1s, default = 1d, max = 1y; brotli+gzip compression
           # No cookies, headers (except Accept-Encoding), or queries in the cache key
           CachePolicyId:
