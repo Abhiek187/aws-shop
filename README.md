@@ -52,7 +52,7 @@ A --> B
 
 subgraph A [Build]
 direction TB
-C(Checkout repository) -->|16.x, 18.x, 20.x| D(Install Node.js)
+C(Checkout repository) -->|18.x, 20.x| D(Install Node.js)
 D --> E(Install dependencies:\nnpm ci)
 E --> F(Run tests:\nnpm test)
 end
