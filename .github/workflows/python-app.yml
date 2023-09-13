@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: aws-actions/configure-aws-credentials@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.GH_OIDC_ROLE }}
           aws-region: ${{ vars.AWS_REGION }}
@@ -73,7 +73,7 @@ jobs:
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
-      - uses: aws-actions/configure-aws-credentials@v3
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.GH_OIDC_ROLE }}
           aws-region: ${{ vars.AWS_REGION }}
