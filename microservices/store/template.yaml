@@ -60,7 +60,7 @@ Resources:
               AllViewerExceptHostHeader,
             ]
           ViewerProtocolPolicy: redirect-to-https
-          # Add the necessary security & CORS headers to call from the front-end
+          # Add the necessary security & CORS headers to call from the front end
           ResponseHeadersPolicyId:
             !FindInMap [
               CloudFront,
@@ -272,7 +272,7 @@ Resources:
           KeyType: RANGE
       DeletionProtectionEnabled: true
       PointInTimeRecoverySpecification:
-        # Back up table every second for 35 days (only charged based on table+index size)
+        # Back up the table every second for 35 days (only charged based on table+index size)
         PointInTimeRecoveryEnabled: true
       TableClass: STANDARD
       TableName: AWS-Services

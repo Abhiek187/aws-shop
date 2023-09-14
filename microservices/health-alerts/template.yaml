@@ -87,7 +87,7 @@ Resources:
     Properties:
       # Defaults:
       # DelaySeconds (delay queue) = 0s (time before messages appear in the queue)
-      # MessageRetentionPeriod = 4 days (345,600s) (time messages stays in the queue)
+      # MessageRetentionPeriod = 4 days (345,600s) (time messages stay in the queue)
       # VisibilityTimeout = 30s (time before messages reappear in the queue)
       MessageRetentionPeriod: 345600
       ReceiveMessageWaitTimeSeconds: 5 # long polling if > 0

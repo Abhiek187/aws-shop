@@ -329,7 +329,7 @@ Resources:
         ObjectLockEnabled: Enabled
         Rule:
           DefaultRetention:
-            Mode: GOVERNANCE # more lax than compliance mode
+            Mode: GOVERNANCE # laxer than compliance mode
             Days: 1
   LoggingBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -408,7 +408,7 @@ Resources:
         ObjectLockEnabled: Enabled
         Rule:
           DefaultRetention:
-            Mode: GOVERNANCE # more lax than compliance mode
+            Mode: GOVERNANCE # laxer than compliance mode
             Days: 1
   # CloudFront
   CloudFrontDistribution:
