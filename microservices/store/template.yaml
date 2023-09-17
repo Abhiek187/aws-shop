@@ -230,7 +230,7 @@ Resources:
         Type: SQS
   # DynamoDB
   AWSServiceTable:
-    # SAM Version is limited
+    # SAM version is limited
     Type: AWS::DynamoDB::Table
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
