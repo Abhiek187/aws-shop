@@ -1,7 +1,4 @@
-import {
-  NativeAttributeValue,
-  NativeScalarAttributeValue,
-} from "@aws-sdk/util-dynamodb";
+import { NativeAttributeValue } from "@aws-sdk/util-dynamodb";
 
 //Record<string, Record<string, string | boolean>>
 type RawAWSService = {
