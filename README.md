@@ -54,23 +54,24 @@ subgraph A [Build]
 direction TB
 C(Checkout repository) -->|18.x, 20.x| D(Install Node.js)
 D --> E(Install dependencies:\nnpm ci)
-E --> F(Run tests:\nnpm test)
+E --> F(Build app:\nnpm run build --if-present)
+F --> G(Run tests:\nnpm test)
 end
 
 subgraph B [Deploy]
 direction TB
-G(Checkout repository) --> H(Configure AWS credentials)
-H --> I
+H(Checkout repository) --> I(Configure AWS credentials)
+I --> J
 end
 
-subgraph I [Run CodeBuild Project]
+subgraph J [Run CodeBuild Project]
 direction TB
-J(Install Node 18) --> K(Install dependencies:\nnpm ci)
-K --> L(Run tests:\nnpm test)
-L --> M(Build app:\nnpm run build)
-M --> N(Delete old code in S3)
-N --> O(Upload new code to S3)
-O --> P(Invalidate cache in CloudFront)
+K(Install Node 18) --> L(Install dependencies:\nnpm ci)
+L --> M(Run tests:\nnpm test)
+M --> N(Build app:\nnpm run build)
+N --> O(Delete old code in S3)
+O --> P(Upload new code to S3)
+P --> Q(Invalidate cache in CloudFront)
 end
 ```
 
@@ -327,6 +328,20 @@ List aliases:
 
 ```bash
 aws kms list-aliases
+```
+
+### Route 53 Commands
+
+List all health checks:
+
+```bash
+aws route53 list-health-checks
+```
+
+Get health check status:
+
+```bash
+aws route53 get-health-check-status --health-check-id ID
 ```
 
 ## Rotating Access Keys

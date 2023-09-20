@@ -1,4 +1,4 @@
-import { unmarshall } from "@aws-sdk/util-dynamodb";
+import { NativeAttributeValue, unmarshall } from "@aws-sdk/util-dynamodb";
 import { AppDispatch } from "../store";
 import AWSService from "../types/AWSService";
 import { Constants } from "../utils/constants";
@@ -12,7 +12,10 @@ export const loadAllServices = () => async (dispatch: AppDispatch) => {
     // Remove the type strings from the resulting scan
     const awsServices = json.map(
       // Unmarshall only works on individual items, not an array of items
-      (service) => unmarshall(service) as AWSService
+      (service) =>
+        unmarshall(
+          service as Record<string, NativeAttributeValue>
+        ) as AWSService
     );
 
     dispatch({

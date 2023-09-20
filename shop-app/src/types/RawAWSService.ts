@@ -1,14 +1,12 @@
-import { NativeAttributeValue } from "@aws-sdk/util-dynamodb";
-
 //Record<string, Record<string, string | boolean>>
 type RawAWSService = {
-  Id: NativeAttributeValue;
-  Name: NativeAttributeValue;
-  Description: NativeAttributeValue;
-  Price: NativeAttributeValue;
-  Unit: NativeAttributeValue;
-  Category: NativeAttributeValue;
-  FreeTier?: NativeAttributeValue;
+  Id: Record<string, string>;
+  Name: Record<string, string>;
+  Description: Record<string, string>;
+  Price: Record<string, string>;
+  Unit: Record<string, string>;
+  Category: Record<string, string>;
+  FreeTier?: Record<string, string | boolean>;
 };
 
 export default RawAWSService;
