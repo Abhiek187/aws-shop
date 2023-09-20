@@ -45,6 +45,7 @@ jobs:
           cache: "npm"
           cache-dependency-path: "./shop-app/package-lock.json"
       - run: npm ci
+      - run: npm run build --if-present
       - run: npm test
 
   # If the tests were successful and we're pushing to main, deploy to S3 using CodeBuild
