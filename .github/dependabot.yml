@@ -31,6 +31,7 @@ updates:
         patterns:
           - "boto3"
           - "botocore"
+          - "s3transfer"
 
   - package-ecosystem: "pip"
     directory: "/microservices/store"
@@ -42,3 +43,4 @@ updates:
         patterns:
           - "boto3"
           - "botocore"
+          - "s3transfer"
