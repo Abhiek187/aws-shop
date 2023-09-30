@@ -35,7 +35,7 @@ describe("ServiceCard", () => {
     expect(serviceUnit).toBeInTheDocument();
     expect(serviceCategory).toBeInTheDocument();
 
-    if (service.FreeTier !== null) {
+    if (service.FreeTier !== null && service.FreeTier !== undefined) {
       expect(serviceFreeTier).toBeInTheDocument();
     } else {
       expect(serviceFreeTier).not.toBeInTheDocument();
