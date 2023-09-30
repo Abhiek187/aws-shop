@@ -1,8 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import rootReducer from "../reducers";
+import { storeApi } from "../services/store";
 
 const store = configureStore({
-  reducer: rootReducer,
+  reducer: {
+    [storeApi.reducerPath]: storeApi.reducer,
+  },
+  // Enable caching, invalidation, polling, and other useful features
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(storeApi.middleware),
 });
 
 export default store;
