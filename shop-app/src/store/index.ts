@@ -1,14 +1,18 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { storeApi } from "../services/store";
 
-const store = configureStore({
-  reducer: {
-    [storeApi.reducerPath]: storeApi.reducer,
-  },
-  // Enable caching, invalidation, polling, and other useful features
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(storeApi.middleware),
-});
+// Allow tests to start fresh with a Redux store to avoid caching data
+export const createStore = () =>
+  configureStore({
+    reducer: {
+      [storeApi.reducerPath]: storeApi.reducer,
+    },
+    // Enable caching, invalidation, polling, and other useful features
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(storeApi.middleware),
+  });
+
+const store = createStore();
 
 export default store;
 

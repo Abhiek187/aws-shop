@@ -4,12 +4,12 @@ import { Provider } from "react-redux";
 import { describe, expect, it } from "vitest";
 
 import App from "./App";
-import store from "./store";
+import { createStore } from "./store";
 
 describe("App", () => {
   it("should render the store page", () => {
     render(
-      <Provider store={store}>
+      <Provider store={createStore()}>
         <App />
       </Provider>
     );

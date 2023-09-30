@@ -20,14 +20,12 @@ describe("ServiceCard", () => {
 
     const serviceName = screen.getByText(service.Name);
     const serviceDescription = screen.getByText(service.Description);
-    const servicePrice = screen.getByText(RegExp(`${service.Price}`, "i"));
+    const servicePrice = screen.getByText(RegExp(`${service.Price}`));
     const serviceUnit = screen.getByText(service.Unit);
     const serviceCategory = screen.getByText(
-      RegExp(`Category: ${service.Category}`, "i")
+      RegExp(`Category: ${service.Category}`)
     );
-    const serviceFreeTier = screen.queryByText(
-      RegExp(`${service.FreeTier}`, "i")
-    );
+    const serviceFreeTier = screen.queryByText(RegExp(`${service.FreeTier}`));
 
     expect(serviceName).toBeInTheDocument();
     expect(serviceDescription).toBeInTheDocument();
