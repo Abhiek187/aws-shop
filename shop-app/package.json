@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "@aws-sdk/util-dynamodb": "^3.421.0",
@@ -28,6 +28,7 @@
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
     "@vitejs/plugin-react-swc": "^3.4.0",
+    "@vitest/coverage-v8": "^0.34.6",
     "autoprefixer": "^10.4.15",
     "eslint": "^8.49.0",
     "eslint-plugin-react-hooks": "^4.6.0",

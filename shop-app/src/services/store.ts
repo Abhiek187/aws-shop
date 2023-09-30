@@ -12,7 +12,7 @@ export const storeApi = createApi({
     // void = no parameters in query
     getAllAWSServices: builder.query<AWSService[], void>({
       query: () => "/",
-      transformResponse: (response: RawAWSService[], _meta, _arg) =>
+      transformResponse: (response: RawAWSService[]) =>
         response.map(
           // Unmarshall only works on individual items, not an array of items
           (service) =>

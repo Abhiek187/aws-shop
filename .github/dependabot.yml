@@ -17,6 +17,9 @@ updates:
       interval: "weekly"
       day: "wednesday"
     groups:
+      types:
+        patterns:
+          - "@types/*"
       typescript-eslint:
         patterns:
           - "@typescript-eslint*"
