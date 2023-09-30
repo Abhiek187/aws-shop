@@ -61,18 +61,18 @@ end
 
 subgraph B [Deploy]
 direction TB
-H(Checkout repository) --> I(Configure AWS credentials)
-I --> J
+I(Checkout repository) --> J(Configure AWS credentials)
+J --> K
 end
 
-subgraph J [Run CodeBuild Project]
+subgraph K [Run CodeBuild Project]
 direction TB
-K(Install Node 18) --> L(Install dependencies:\nnpm ci)
-L --> M(Run tests:\nnpm test)
-M --> N(Build app:\nnpm run build)
-N --> O(Delete old code in S3)
-O --> P(Upload new code to S3)
-P --> Q(Invalidate cache in CloudFront)
+L(Install Node 18) --> M(Install dependencies:\nnpm ci)
+M --> N(Run tests:\nnpm test)
+N --> O(Build app:\nnpm run build)
+O --> P(Delete old code in S3)
+P --> Q(Upload new code to S3)
+Q --> R(Invalidate cache in CloudFront)
 end
 ```
 
