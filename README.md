@@ -54,8 +54,9 @@ subgraph A [Build]
 direction TB
 C(Checkout repository) -->|18.x, 20.x| D(Install Node.js)
 D --> E(Install dependencies:\nnpm ci)
-E --> F(Build app:\nnpm run build --if-present)
-F --> G(Run tests:\nnpm test)
+E --> F(Lint app:\nnpm run lint --if-present)
+F --> G(Build app:\nnpm run build --if-present)
+G --> H(Run tests:\nnpm test)
 end
 
 subgraph B [Deploy]
