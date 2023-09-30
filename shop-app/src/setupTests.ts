@@ -10,6 +10,7 @@ import nodeFetch, { Request, Response } from "node-fetch";
 
 import { server } from "./mocks/server.js";
 
+// Fixes https://github.com/reduxjs/redux-toolkit/issues/3254#issuecomment-1587624955
 Object.assign(global, { fetch: nodeFetch, Request, Response });
 
 // Establish API mocking before all tests
