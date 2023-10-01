@@ -54,24 +54,25 @@ subgraph A [Build]
 direction TB
 C(Checkout repository) -->|18.x, 20.x| D(Install Node.js)
 D --> E(Install dependencies:\nnpm ci)
-E --> F(Build app:\nnpm run build --if-present)
-F --> G(Run tests:\nnpm test)
+E --> F(Lint app:\nnpm run lint --if-present)
+F --> G(Build app:\nnpm run build --if-present)
+G --> H(Run tests:\nnpm test)
 end
 
 subgraph B [Deploy]
 direction TB
-H(Checkout repository) --> I(Configure AWS credentials)
-I --> J
+I(Checkout repository) --> J(Configure AWS credentials)
+J --> K
 end
 
-subgraph J [Run CodeBuild Project]
+subgraph K [Run CodeBuild Project]
 direction TB
-K(Install Node 18) --> L(Install dependencies:\nnpm ci)
-L --> M(Run tests:\nnpm test)
-M --> N(Build app:\nnpm run build)
-N --> O(Delete old code in S3)
-O --> P(Upload new code to S3)
-P --> Q(Invalidate cache in CloudFront)
+L(Install Node 18) --> M(Install dependencies:\nnpm ci)
+M --> N(Run tests:\nnpm test)
+N --> O(Build app:\nnpm run build)
+O --> P(Delete old code in S3)
+P --> Q(Upload new code to S3)
+Q --> R(Invalidate cache in CloudFront)
 end
 ```
 
