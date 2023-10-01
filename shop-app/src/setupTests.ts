@@ -6,8 +6,11 @@ import { afterAll, afterEach, beforeAll } from "vitest";
 import { cleanup } from "@testing-library/react";
 // extends Vitest's expect method with methods from react-testing-library
 import "@testing-library/jest-dom/vitest";
+import nodeFetch from "node-fetch";
 
 import { server } from "./mocks/server.js";
+
+Object.assign(global, { fetch: nodeFetch, Request, Response });
 
 // Establish API mocking before all tests
 beforeAll(() => server.listen());
