@@ -17,12 +17,18 @@ updates:
       interval: "weekly"
       day: "wednesday"
     groups:
+      emotion:
+        patterns:
+          - "@emotion/*"
+      mui:
+        patterns:
+          - "@mui/*"
       types:
         patterns:
           - "@types/*"
       typescript-eslint:
         patterns:
-          - "@typescript-eslint*"
+          - "@typescript-eslint/*"
 
   - package-ecosystem: "pip"
     directory: "/microservices/iam-old"
