@@ -12,9 +12,12 @@ export const dollarFormat = (amount: number): string => {
     // Show all fraction digits otherwise
     const numberStr = amount.toString();
     if (numberStr.toLowerCase().includes("e")) {
-      const [, exponent] = numberStr.split("e");
-      const decimalCount = Math.max(0, -parseInt(exponent));
-      return `$${amount.toFixed(decimalCount)}`;
+      const [mantissa, exponent] = numberStr.split("e");
+      let precision = Math.max(0, -parseInt(exponent));
+      precision += mantissa.includes(".")
+        ? mantissa.length - 2
+        : mantissa.length - 1;
+      return `$${amount.toFixed(precision)}`;
     } else {
       return `$${amount}`;
     }
