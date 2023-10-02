@@ -1,16 +1,18 @@
 import {
-  Card,
-  CardContent,
-  Typography,
-  CardActions,
   Button,
+  Card,
+  CardActions,
+  CardContent,
   Divider,
+  Typography,
 } from "@mui/material";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import { yellow } from "@mui/material/colors";
+import pluralize from "pluralize";
 import React from "react";
 
 import AWSService from "../../types/AWSService";
+import { commaFormat, dollarFormat } from "../../utils/number";
 
 type ServiceProps = {
   service: AWSService;
@@ -25,10 +27,17 @@ const ServiceCard: React.FC<ServiceProps> = ({ service }) => {
         </Typography>
         <Typography>{service.Description}</Typography>
       </CardContent>
-      <CardActions sx={{ display: "flex", justifyContent: "space-around" }}>
-        <Typography color="text.secondary">{service.Category}</Typography>
+      <CardActions className="flex justify-around">
+        {/* Show the category faded and in all caps */}
+        <Typography
+          color="text.secondary"
+          variant="subtitle2"
+          className="uppercase"
+        >
+          {service.Category}
+        </Typography>
         <Button size="small" className="text-teal-600">
-          ${service.Price} per {service.Unit}
+          {dollarFormat(service.Price)} per {service.Unit}
         </Button>
       </CardActions>
       {service.FreeTier !== null && service.FreeTier !== undefined && (
@@ -36,8 +45,11 @@ const ServiceCard: React.FC<ServiceProps> = ({ service }) => {
           <Divider />
           <CardActions>
             <AutoAwesomeIcon sx={{ color: yellow[700], mr: 1.5 }} />
-            <Typography sx={{ textAlign: "right" }}>
-              Free Tier: {service.FreeTier} {service.Unit}s
+            <Typography variant="caption">
+              {`Free Tier: ${commaFormat(service.FreeTier)} ${pluralize(
+                service.Unit,
+                service.FreeTier
+              )}`}
             </Typography>
           </CardActions>
         </>
