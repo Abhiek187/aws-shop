@@ -277,6 +277,34 @@ List objects:
 aws s3 ls S3_URI
 ```
 
+### Lambda Commands
+
+Invoke function:
+
+```bash
+aws lambda invoke --cli-binary-format raw-in-base64-out --function-name FUNCTION --payload EVENT_FILE_PATH response.json [--log-type Tail] [--endpoint-url http://localhost:3001] [--query 'LogResult' --output text | base64 --decode]
+```
+
+### CloudWatch Logs Commands
+
+Get log groups:
+
+```bash
+aws logs describe-log-groups --query logGroups[*].logGroupName
+```
+
+Get log streams:
+
+```bash
+aws logs describe-log-streams --log-group-name GROUP --query logStreams[*].logStreamName
+```
+
+Get log events:
+
+```bash
+aws logs get-log-events --log-group-name GROUP --log-stream-name STREAM
+```
+
 ### DynamoDB Commands
 
 List tables:
