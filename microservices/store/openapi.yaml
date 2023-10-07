@@ -3,12 +3,46 @@ openapi: 3.0.3
 info:
   title: AWS Service Store
   description: An API that fetches AWS service pricing
-  version: 1.0.0
+  version: 1.1.0
 
 paths:
   /:
     get:
+      # GET /?query={}&category={}&min-price={}&max-price={}&free-tier
       summary: Get all AWS services
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: Filter by service name or description
+        - in: query
+          name: category
+          schema:
+            type: string
+            enum: [free, trial, paid]
+          description: Filter by service category
+        - in: query
+          name: min-price
+          schema:
+            type: number
+            minimum: 0
+            default: 0
+          description: The minimum price in dollars for a service
+        - in: query
+          name: max-price
+          schema:
+            type: number
+            nullable: true
+            minimum: 0
+            default: null # Infinity serializes to null
+          description: The maximum price in dollars for a service
+        - in: query
+          name: free-tier
+          schema:
+            type: boolean
+          allowEmptyValue: true
+          description: Filter services with a free tier
       responses:
         "200":
           description: Successfully returned all services
@@ -55,9 +89,9 @@ components:
             description: The unit of the AWS service when purchasing
           Category:
             type: string
+            enum: [free, trial, paid]
             description: >-
               Whether the service is under a free tier, trial, or paid plan.
-              Possible values: free, trial, paid
           FreeTier:
             type: string
             nullable: true

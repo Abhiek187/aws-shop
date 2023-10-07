@@ -21,7 +21,7 @@ def apigw_event(request):
 def test_get_all_aws_services(dynamodb_table, table_name):
     # Given a DynamoDB table
     # When a GET / request is called
-    items = app.get_all_aws_services(table_name)
+    items = app.get_aws_services(table_name)
     # Then the entire table is returned
     assert len(items) > 0
     assert items[0] == dynamodb_table
