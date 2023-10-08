@@ -58,8 +58,10 @@ def handler(event, context):
 
 
 def get_aws_services(query_parameters, table_name=table_name):
+    # Don't return the lowercase columns to the frontend. They're only for querying.
+    projection = "Id, Name, Description, Price, Unit, Category, FreeTier"
     if not query_parameters:
-        response = dynamodb.scan(TableName=table_name)
+        response = dynamodb.scan(TableName=table_name, ProjectionExpression=projection)
         return response["Items"]
 
     query = query_parameters.get("query")
@@ -71,14 +73,14 @@ def get_aws_services(query_parameters, table_name=table_name):
     # ProjectionExpression = columns, KeyConditionExpression = rows, FilterExpression = less rows
     # Expression functions: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.OperatorsAndFunctions.html
     # PartiQL syntax: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ql-reference.select.html
-    projection = "*"
     table = f'"{table_name}"'  # table name must be surrounded in double quotes
     conditions = []
 
     if query is not None:
+        # Case insensitive searching
         # Values must be in single quotes
         conditions.append(
-            f"(contains(\"Name\", '{query}') OR contains(\"Description\", '{query}'))"
+            f"(contains(\"NameLower\", '{query.lower()}') OR contains(\"DescriptionLower\", '{query.lower()}'))"
         )
     if category is not None:
         conditions.append(f"Category = '{category}'")
