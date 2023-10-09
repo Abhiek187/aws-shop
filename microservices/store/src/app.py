@@ -57,12 +57,23 @@ def handler(event, context):
     return {"statusCode": status_code, "headers": headers, "body": body}
 
 
-def get_aws_services(query_parameters, table_name=table_name):
+def scan_table(table_name=table_name):
     # Don't return the lowercase columns to the frontend. They're only for querying.
-    projection = "Id, Name, Description, Price, Unit, Category, FreeTier"
+    # Name and Unit are reserved words
+    projection = "Id, #name, Description, Price, #unit, Category, FreeTier"
+    attribute_names = {"#name": "Name", "#unit": "Unit"}
+
+    response = dynamodb.scan(
+        TableName=table_name,
+        ProjectionExpression=projection,
+        ExpressionAttributeNames=attribute_names,
+    )
+    return response["Items"]
+
+
+def get_aws_services(query_parameters, table_name=table_name):
     if not query_parameters:
-        response = dynamodb.scan(TableName=table_name, ProjectionExpression=projection)
-        return response["Items"]
+        return scan_table()
 
     query = query_parameters.get("query")
     category = query_parameters.get("category")
@@ -98,6 +109,7 @@ def get_aws_services(query_parameters, table_name=table_name):
         table += '."PriceIndex"'
 
     condition_expression = " AND ".join(conditions)
+    projection = "Id, Name, Description, Price, Unit, Category, FreeTier"
     partiql_statement = f"SELECT {projection} FROM {table} WHERE {condition_expression}"
     LOG.info(f"{partiql_statement=}")
     response = dynamodb.execute_statement(Statement=partiql_statement)
