@@ -1,4 +1,5 @@
 import boto3
+import json
 from moto import mock_dynamodb
 import os
 import pytest
@@ -39,3 +40,13 @@ def dynamodb_table(dynamodb_client, table_name):
         Item=item,
     )
     return item
+
+
+@pytest.fixture()
+def apigw_event(request):
+    # Mock API Gateway event
+    current_dir = os.path.dirname(__file__)
+    event_path = os.path.join(current_dir, "..", "..", "events", request.param)
+
+    with open(event_path, "r") as event_file:
+        return json.load(event_file)
