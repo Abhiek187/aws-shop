@@ -253,8 +253,6 @@ Resources:
           AttributeType: S
         - AttributeName: Name
           AttributeType: S
-        - AttributeName: Description
-          AttributeType: S
         - AttributeName: Price
           AttributeType: N
         - AttributeName: Category
