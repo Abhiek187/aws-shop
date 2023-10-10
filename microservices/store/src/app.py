@@ -47,6 +47,7 @@ def handler(event, context):
         else:
             raise Exception(f'Unsupported route: "{route_key}"')
     except Exception as e:
+        # Catch-all for errors
         status_code = 400
         body = str(e)
     finally:
@@ -54,7 +55,9 @@ def handler(event, context):
         if body:
             body = json.dumps(body)
 
-    return {"statusCode": status_code, "headers": headers, "body": body}
+    response = {"statusCode": status_code, "headers": headers, "body": body}
+    LOG.info(f"{response=}")
+    return response
 
 
 def scan_table(table_name=table_name):
@@ -81,6 +84,12 @@ def get_aws_services(query_parameters, table_name=table_name):
     max_price = query_parameters.get("max-price")
     free_tier = query_parameters.get("free-tier")
 
+    # If min-price or max-price is passed, check to make sure they're numeric
+    if min_price is not None and not is_number(min_price):
+        raise Exception(f'min-price "{min_price}" is not numeric')
+    if max_price is not None and not is_number(max_price):
+        raise Exception(f'max-price "{max_price}" is not numeric')
+
     # ProjectionExpression = columns, KeyConditionExpression = rows, FilterExpression = less rows
     # Expression functions: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.OperatorsAndFunctions.html
     # PartiQL syntax: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ql-reference.select.html
@@ -104,6 +113,9 @@ def get_aws_services(query_parameters, table_name=table_name):
             "FreeTier IS NOT MISSING AND attribute_type(\"FreeTier\", 'N')"
         )
 
+    if not conditions:
+        raise Exception(f"Invalid query parameters passed")
+
     if query == free_tier == None and None not in {category, min_price, max_price}:
         # Utilize the index created to perform a query instead of a scan
         table += '."PriceIndex"'
@@ -114,3 +126,11 @@ def get_aws_services(query_parameters, table_name=table_name):
     LOG.info(f"{partiql_statement=}")
     response = dynamodb.execute_statement(Statement=partiql_statement)
     return response["Items"]
+
+
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False

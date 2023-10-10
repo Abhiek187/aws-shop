@@ -50,6 +50,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/services"
+        "400":
+          description: Passed invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
       # OpenAPI extensions for API Gateway:
       # https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html
       x-amazon-apigateway-integration:
@@ -98,6 +104,9 @@ components:
             description: >-
               If the category is free, how much of the service you can buy for free.
               If the price is 0, this value is null (since you can buy infinite items for free).
+    error:
+      type: string
+      description: The error message
   x-amazon-apigateway-integrations:
     lambda:
       type: aws_proxy
