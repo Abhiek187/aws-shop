@@ -8,7 +8,9 @@ from src import app
 
 
 # Tests related to the main handler function
-@pytest.mark.parametrize("apigw_event", ["dev.json", "prod.json"], indirect=True)
+@pytest.mark.parametrize(
+    "apigw_event", ["dev.json", "prod.json", "query-params.json"], indirect=True
+)
 def test_lambda_handler(apigw_event):
     # Given an API Gateway event
     # When the Lambda function is called with GET /
