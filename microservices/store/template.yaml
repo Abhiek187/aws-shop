@@ -220,6 +220,18 @@ Resources:
         # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
         - DynamoDBReadPolicy:
             TableName: !Ref AWSServiceTable
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:PartiQLSelect
+              Resource:
+                - !Sub
+                  - "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}"
+                  - tableName: !Ref AWSServiceTable
+                - !Sub
+                  - "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}/index/*"
+                  - tableName: !Ref AWSServiceTable
       # Can use function URLs if API Gateway isn't necessary
       # 128 MB of memory allocated by default
       # Automatically update the runtime version
@@ -247,24 +259,16 @@ Resources:
           AttributeType: S
       BillingMode: PAY_PER_REQUEST # on-demand mode
       # GSIs are preferred over LSIs (unless strong consistency is required)
-      # Query by price and category in addition to by name
+      # Query by category where price can be in range
       GlobalSecondaryIndexes:
         - IndexName: PriceIndex
           KeySchema:
-            - AttributeName: Id
+            - AttributeName: Category
               KeyType: HASH # HASH = partition key, RANGE = sort key
             - AttributeName: Price
               KeyType: RANGE
           Projection:
             ProjectionType: ALL # project all keys to the index
-        - IndexName: CategoryIndex
-          KeySchema:
-            - AttributeName: Id
-              KeyType: HASH
-            - AttributeName: Category
-              KeyType: RANGE
-          Projection:
-            ProjectionType: ALL
       KeySchema:
         - AttributeName: Id
           KeyType: HASH

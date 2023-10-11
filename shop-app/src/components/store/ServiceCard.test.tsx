@@ -20,18 +20,14 @@ describe("ServiceCard", () => {
 
     const serviceName = screen.getByText(service.Name);
     const serviceDescription = screen.getByText(service.Description);
-    const servicePrice = screen.getByText(RegExp(`${service.Price}`));
-    const serviceUnit = screen.getByText(service.Unit);
-    const serviceCategory = screen.getByText(
-      RegExp(`Category: ${service.Category}`)
-    );
-    const serviceFreeTier = screen.queryByText(RegExp(`${service.FreeTier}`));
+    const serviceCategory = screen.getByText(service.Category);
+    const serviceUnit = screen.queryAllByText(RegExp(service.Unit)); // can appear multiple times
+    const serviceFreeTier = screen.queryByText(/Free Tier:/);
 
     expect(serviceName).toBeInTheDocument();
     expect(serviceDescription).toBeInTheDocument();
-    expect(servicePrice).toBeInTheDocument();
-    expect(serviceUnit).toBeInTheDocument();
     expect(serviceCategory).toBeInTheDocument();
+    expect(serviceUnit.length).toBeGreaterThan(0);
 
     if (service.FreeTier !== null && service.FreeTier !== undefined) {
       expect(serviceFreeTier).toBeInTheDocument();

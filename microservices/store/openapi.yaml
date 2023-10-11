@@ -3,12 +3,46 @@ openapi: 3.0.3
 info:
   title: AWS Service Store
   description: An API that fetches AWS service pricing
-  version: 1.0.0
+  version: 1.1.0
 
 paths:
   /:
     get:
+      # GET /?query={}&category={}&min-price={}&max-price={}&free-tier
       summary: Get all AWS services
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: Filter by service name or description
+        - in: query
+          name: category
+          schema:
+            type: string
+            enum: [free, trial, paid]
+          description: Filter by service category
+        - in: query
+          name: min-price
+          schema:
+            type: number
+            minimum: 0
+            default: 0
+          description: The minimum price in dollars for a service
+        - in: query
+          name: max-price
+          schema:
+            type: number
+            nullable: true
+            minimum: 0
+            default: null # Infinity serializes to null
+          description: The maximum price in dollars for a service
+        - in: query
+          name: free-tier
+          schema:
+            type: boolean
+          allowEmptyValue: true
+          description: Filter services with a free tier
       responses:
         "200":
           description: Successfully returned all services
@@ -16,6 +50,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/services"
+        "400":
+          description: Passed invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
       # OpenAPI extensions for API Gateway:
       # https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions.html
       x-amazon-apigateway-integration:
@@ -55,15 +95,18 @@ components:
             description: The unit of the AWS service when purchasing
           Category:
             type: string
+            enum: [free, trial, paid]
             description: >-
               Whether the service is under a free tier, trial, or paid plan.
-              Possible values: free, trial, paid
           FreeTier:
             type: string
             nullable: true
             description: >-
               If the category is free, how much of the service you can buy for free.
               If the price is 0, this value is null (since you can buy infinite items for free).
+    error:
+      type: string
+      description: The error message
   x-amazon-apigateway-integrations:
     lambda:
       type: aws_proxy
@@ -71,7 +114,7 @@ components:
       # !Sub "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations"
       uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:701157632481:function:aws-service-handler/invocations
       passthroughBehavior: when_no_templates
-      payloadFormatVersion: 2.0
+      payloadFormatVersion: "2.0"
       timeoutInMillis: 3000
 
 x-amazon-apigateway-cors:

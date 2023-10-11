@@ -1,7 +1,6 @@
 from __future__ import annotations  # support list and dict types in Python < 3.9
 import boto3
 from botocore.exceptions import ClientError
-from distutils.util import strtobool
 import json
 from math import ceil, isclose
 from typing import Any, Dict
@@ -61,9 +60,13 @@ def add_services(
         service for service in local_services if service["Name"] in services_to_create
     ]
 
-    # Add a random UUID to each item as the partition key
     for service in filtered_services:
+        # Add a random UUID to each item as the partition key
         service["Id"] = str(uuid4())
+        # Add the name and description in lowercase to help with case insensitive querying
+        service["NameLower"] = service["Name"].lower()
+        service["DescriptionLower"] = service["Description"].lower()
+
         service_with_types: RemoteService = {}
 
         for key, value in service.items():
@@ -121,9 +124,12 @@ def is_equal(
         ):
             keys_to_update.append(key)
 
-    # All keys that are only defined in DynamoDB should be deleted (except the ID field)
+    # All keys that are only defined in DynamoDB should be deleted (except reserved fields)
+    reserved_fields = ["Id", "NameLower", "DescriptionLower"]
     keys_to_delete = [
-        key for key in remote_service if key not in local_service and key != "Id"
+        key
+        for key in remote_service
+        if key not in local_service and key not in reserved_fields
     ]
     is_eq = not (keys_to_update or keys_to_delete)
     return is_eq, keys_to_update, keys_to_delete
@@ -164,6 +170,14 @@ def create_update_expression(
             expression_values[attribute_value] = {"S": local_service[key]}
         else:
             expression_values[attribute_value] = {"N": str(local_service[key])}
+
+        # If the Name or Description is updated, update the lowercase variants as well
+        if key == "Name" or key == "Description":
+            lower_key = f"{key}Lower"
+            attribute_value = f":{lower_key.lower()}"
+
+            set_expression += f", {lower_key} = {attribute_value}"
+            expression_values[attribute_value] = {"S": local_service[key].lower()}
 
         if i < len(keys_to_update) - 1:
             set_expression += ", "
@@ -242,7 +256,7 @@ def update_services(
 
         update_requests.append(update_request)
 
-    updated_services = [service["Name"] for service in filtered_services]
+    updated_services = {service["Name"] for service in filtered_services}
     print(f"Updating the following services: {updated_services}")
     return update_requests
 
@@ -305,6 +319,22 @@ def perform_transaction(
             )
         except ClientError as error:
             print(f"transact-write-items client error: {error}")
+
+
+def strtobool(val):
+    """Convert a string representation of truth to true (1) or false (0).
+
+    True values are 'y', 'yes', 't', 'true', 'on', and '1'; false values
+    are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
+    'val' is anything else.
+    """
+    val = val.lower()
+    if val in ("y", "yes", "t", "true", "on", "1"):
+        return 1
+    elif val in ("n", "no", "f", "false", "off", "0"):
+        return 0
+    else:
+        raise ValueError("invalid truth value %r" % (val,))
 
 
 def main():

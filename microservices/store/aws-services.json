@@ -221,7 +221,7 @@
     "Name": "API Gateway",
     "Description": "Protect APIs at scale",
     "Price": 1e-6,
-    "Unit": "HTTP API call, Apigee-like",
+    "Unit": "HTTP API call",
     "Category": "trial"
   },
   {

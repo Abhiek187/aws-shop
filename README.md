@@ -277,6 +277,34 @@ List objects:
 aws s3 ls S3_URI
 ```
 
+### Lambda Commands
+
+Invoke function:
+
+```bash
+aws lambda invoke --cli-binary-format raw-in-base64-out --function-name FUNCTION --payload EVENT_FILE_PATH response.json [--log-type Tail] [--endpoint-url http://localhost:3001] [--query 'LogResult' --output text | base64 --decode]
+```
+
+### CloudWatch Logs Commands
+
+Get log groups:
+
+```bash
+aws logs describe-log-groups --query logGroups[*].logGroupName
+```
+
+Get log streams:
+
+```bash
+aws logs describe-log-streams --log-group-name GROUP --query logStreams[*].logStreamName
+```
+
+Get log events:
+
+```bash
+aws logs get-log-events --log-group-name GROUP --log-stream-name STREAM
+```
+
 ### DynamoDB Commands
 
 List tables:
@@ -291,10 +319,22 @@ Describe table:
 aws dynamodb describe-table --table-name TABLE_NAME
 ```
 
+Scan table:
+
+```bash
+aws dynamodb scan --table-name AWS-Services --index-name INDEX --projection-expression "Name, Price" --filter-expression "Category = :free" --expression-attribute-values file://attributes.json --return-consumed-capacity TOTAL
+```
+
 Query table:
 
 ```bash
-aws dynamodb query --table-name AWS-Services --projection-expression "Name,Price" --key-condition-expression "Category = :free" --expression-attribute-values file://expression-attributes.json --return-consumed-capacity TOTAL
+aws dynamodb query --table-name AWS-Services --index-name INDEX --projection-expression "Name, Price" --key-condition-expression "Category = :free" --expression-attribute-values file://attributes.json --return-consumed-capacity TOTAL
+```
+
+Query table using PartiQL:
+
+```bash
+aws dynamodb execute-statement --statement "SELECT Name, Price FROM \"AWS-Services\".\"INDEX\" WHERE Category = 'free'" --return-consumed-capacity TOTAL --return-values-on-condition-check-failure ALL_OLD
 ```
 
 Update table:

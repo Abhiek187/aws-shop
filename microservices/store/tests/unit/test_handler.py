@@ -1,5 +1,4 @@
 import json
-import os
 import pytest
 import sys
 
@@ -8,26 +7,10 @@ sys.path.append("..")
 from src import app
 
 
-@pytest.fixture()
-def apigw_event(request):
-    # Mock API Gateway event
-    current_dir = os.path.dirname(__file__)
-    event_path = os.path.join(current_dir, "..", "..", "events", request.param)
-
-    with open(event_path, "r") as event_file:
-        return json.load(event_file)
-
-
-def test_get_all_aws_services(dynamodb_table, table_name):
-    # Given a DynamoDB table
-    # When a GET / request is called
-    items = app.get_all_aws_services(table_name)
-    # Then the entire table is returned
-    assert len(items) > 0
-    assert items[0] == dynamodb_table
-
-
-@pytest.mark.parametrize("apigw_event", ["dev.json", "prod.json"], indirect=True)
+# Tests related to the main handler function
+@pytest.mark.parametrize(
+    "apigw_event", ["dev.json", "prod.json", "query-params.json"], indirect=True
+)
 def test_lambda_handler(apigw_event):
     # Given an API Gateway event
     # When the Lambda function is called with GET /
