@@ -6,14 +6,53 @@ sys.path.append("..")
 from src import app
 
 
+def filter_item(item):
+    # Only return the columns projected in each DynamoDB query
+    return {
+        key: value
+        for key, value in item.items()
+        if key not in ["NameLower", "DescriptionLower"]
+    }
+
+
 # Tests related to helper methods within the Lambda function
-def test_get_all_aws_services(dynamodb_table, table_name):
+def test_scan_table(dynamodb_table, table_name):
+    # Given a DynamoDB table
+    # When scanned
+    items = app.scan_table(table_name)
+    # Then the entire table except for the lowercase keys is returned
+    assert len(items) > 0
+    projected_items = [filter_item(item) for item in dynamodb_table]
+    assert items == projected_items
+
+
+def test_query_all_services(dynamodb_table, table_name):
     # Given a DynamoDB table
     # When a GET / request is called
-    items = app.get_aws_services(table_name)
+    items = app.get_aws_services(None, table_name)
     # Then the entire table is returned
     assert len(items) > 0
-    assert items[0] == dynamodb_table
+    assert items == app.scan_table(table_name)
+
+
+def test_query_services_with_all_params(dynamodb_table, table_name):
+    # Given a DynamoDB table and query parameters
+    query_params = {
+        "query": "code",
+        "category": "free",
+        "min-price": "0",
+        "max-price": "1",
+        "free-tier": "",
+    }
+
+    # When a GET / request is called with those query parameters
+    items = app.get_aws_services(query_params, table_name)
+
+    # Then the table is filtered by that query
+    assert len(items) == 1
+    assert items[0] == next(
+        filter_item(item) for item in dynamodb_table if item["Name"]["S"] == "Lambda"
+    )
 
 
 @pytest.mark.parametrize(

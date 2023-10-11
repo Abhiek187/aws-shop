@@ -60,7 +60,7 @@ def handler(event, context):
     return response
 
 
-def scan_table(table_name=table_name):
+def scan_table(table_name):
     # Don't return the lowercase columns to the frontend. They're only for querying.
     # Name and Unit are reserved words
     projection = "Id, #name, Description, Price, #unit, Category, FreeTier"
@@ -76,7 +76,7 @@ def scan_table(table_name=table_name):
 
 def get_aws_services(query_parameters, table_name=table_name):
     if not query_parameters:
-        return scan_table()
+        return scan_table(table_name)
 
     query = query_parameters.get("query")
     category = query_parameters.get("category")
