@@ -9,7 +9,6 @@ import {
   Toolbar,
   IconButton,
   Typography,
-  Badge,
   AppBar,
   InputBase,
   alpha,
@@ -143,17 +142,13 @@ const TopBar = () => {
     >
       <MenuItem>
         <IconButton size="large" aria-label="filter search" color="inherit">
-          <Badge badgeContent={0} color="error">
-            <FilterListIcon />
-          </Badge>
+          <FilterListIcon />
         </IconButton>
         <p>Filter Search</p>
       </MenuItem>
       <MenuItem>
         <IconButton size="large" aria-label="open cart" color="inherit">
-          <Badge badgeContent={0} color="error">
-            <ShoppingCartIcon />
-          </Badge>
+          <ShoppingCartIcon />
         </IconButton>
         <p>Open Cart</p>
       </MenuItem>
@@ -174,7 +169,7 @@ const TopBar = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" className="bg-teal-600">
+      <AppBar position="static">
         <Toolbar>
           <Typography
             variant="h6"
@@ -195,14 +190,10 @@ const TopBar = () => {
           </Search>
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <IconButton size="large" aria-label="filter search" color="inherit">
-              <Badge badgeContent={0} color="error">
-                <FilterListIcon />
-              </Badge>
+              <FilterListIcon />
             </IconButton>
             <IconButton size="large" aria-label="open cart" color="inherit">
-              <Badge badgeContent={0} color="error">
-                <ShoppingCartIcon />
-              </Badge>
+              <ShoppingCartIcon />
             </IconButton>
             <IconButton
               size="large"
@@ -230,7 +221,7 @@ const TopBar = () => {
           </Box>
         </Toolbar>
         <Toolbar className="flex justify-around">
-          <FormControl sx={{ m: 1, minWidth: 130 }}>
+          <FormControl color="secondary" sx={{ m: 1, minWidth: 130 }}>
             <InputLabel id="demo-simple-select-label">Category</InputLabel>
             <Select
               labelId="demo-simple-select-label"
@@ -254,6 +245,7 @@ const TopBar = () => {
               type="number"
               placeholder="0"
               size="small"
+              color="secondary"
               sx={{ width: "15ch" }}
               InputProps={{
                 startAdornment: (
@@ -269,6 +261,7 @@ const TopBar = () => {
               type="number"
               placeholder="∞"
               size="small"
+              color="secondary"
               sx={{ width: "15ch" }}
               InputProps={{
                 startAdornment: (
@@ -278,7 +271,10 @@ const TopBar = () => {
               }}
             />
           </Box>
-          <FormControlLabel control={<Checkbox />} label="Free Tier" />
+          <FormControlLabel
+            control={<Checkbox color="secondary" />}
+            label="Free Tier"
+          />
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
