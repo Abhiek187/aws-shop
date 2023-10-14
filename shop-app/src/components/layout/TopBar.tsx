@@ -141,13 +141,13 @@ const TopBar = () => {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton size="large" aria-label="filter search" color="inherit">
+        <IconButton size="large" color="inherit">
           <FilterListIcon />
         </IconButton>
         <p>Filter Search</p>
       </MenuItem>
       <MenuItem>
-        <IconButton size="large" aria-label="open cart" color="inherit">
+        <IconButton size="large" color="inherit">
           <ShoppingCartIcon />
         </IconButton>
         <p>Open Cart</p>
@@ -155,7 +155,6 @@ const TopBar = () => {
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           size="large"
-          aria-label="account of current user"
           aria-controls="primary-search-account-menu"
           aria-haspopup="true"
           color="inherit"
@@ -183,10 +182,7 @@ const TopBar = () => {
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-            />
+            <StyledInputBase placeholder="Search…" id="query" />
           </Search>
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <IconButton size="large" aria-label="filter search" color="inherit">
@@ -272,7 +268,7 @@ const TopBar = () => {
             />
           </Box>
           <FormControlLabel
-            control={<Checkbox color="secondary" />}
+            control={<Checkbox color="secondary" id="free-tier" />}
             label="Free Tier"
           />
         </Toolbar>
