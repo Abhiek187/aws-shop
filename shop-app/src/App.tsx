@@ -1,15 +1,13 @@
+import TopBar from "./components/layout/TopBar";
 import Store from "./components/store/Store";
-import { Typography } from "@mui/material";
 
 function App() {
   return (
     <>
-      <header>
-        <Typography variant="h2" component="h1" align="center">
-          AWS Shop
-        </Typography>
+      <header className="sticky top-0 z-10">
+        <TopBar />
       </header>
-      <main>
+      <main className="m-2">
         <Store />
       </main>
     </>

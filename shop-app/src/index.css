@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Remove all margin from the body tag */
+@layer base {
+  body {
+    @apply m-0;
+  }
+}
