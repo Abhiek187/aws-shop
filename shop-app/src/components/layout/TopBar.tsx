@@ -41,6 +41,7 @@ const Search = styled("div")(({ theme }) => ({
     marginLeft: theme.spacing(3),
     width: "auto",
   },
+  flexGrow: 1,
 }));
 
 const SearchIconWrapper = styled("div")(({ theme }) => ({
@@ -55,12 +56,12 @@ const SearchIconWrapper = styled("div")(({ theme }) => ({
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
+  width: "100%",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
-    width: "100%",
     [theme.breakpoints.up("md")]: {
       width: "20ch",
     },
@@ -119,7 +120,7 @@ const TopBar = () => {
       onClose={handleMenuClose}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleMenuClose}>My Account</MenuItem>
     </Menu>
   );
 
@@ -192,7 +193,6 @@ const TopBar = () => {
               inputProps={{ "aria-label": "search" }}
             />
           </Search>
-          <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <IconButton size="large" aria-label="filter search" color="inherit">
               <Badge badgeContent={0} color="error">
@@ -230,7 +230,7 @@ const TopBar = () => {
           </Box>
         </Toolbar>
         <Toolbar className="flex justify-around">
-          <FormControl sx={{ m: 1, minWidth: 120 }}>
+          <FormControl sx={{ m: 1, minWidth: 130 }}>
             <InputLabel id="demo-simple-select-label">Category</InputLabel>
             <Select
               labelId="demo-simple-select-label"
@@ -239,6 +239,9 @@ const TopBar = () => {
               label="Category"
               onChange={onChangeCategory}
             >
+              <MenuItem value="">
+                <em>Any</em>
+              </MenuItem>
               <MenuItem value="free">Free</MenuItem>
               <MenuItem value="trial">Trial</MenuItem>
               <MenuItem value="paid">Paid</MenuItem>
@@ -251,11 +254,12 @@ const TopBar = () => {
               type="number"
               placeholder="0"
               size="small"
-              sx={{ width: "10ch" }}
+              sx={{ width: "15ch" }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">$</InputAdornment>
                 ),
+                inputProps: { min: 0 },
               }}
             />
             <Typography> ≤ Price ≤ </Typography>
@@ -265,11 +269,12 @@ const TopBar = () => {
               type="number"
               placeholder="∞"
               size="small"
-              sx={{ width: "10ch" }}
+              sx={{ width: "15ch" }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">$</InputAdornment>
                 ),
+                inputProps: { min: 0 },
               }}
             />
           </Box>
