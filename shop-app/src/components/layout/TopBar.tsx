@@ -24,7 +24,7 @@ import {
   FormControl,
   InputAdornment,
 } from "@mui/material";
-import { MouseEvent, useState } from "react";
+import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -72,13 +72,22 @@ const TopBar = () => {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     useState<null | HTMLElement>(null);
 
+  const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(Infinity);
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
   const [isFreeTier, setIsFreeTier] = useState(false);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  useEffect(() => {
+    console.log(
+      `?query=${query}&category=${category}&min-price=${minPrice}&max-price=${maxPrice}${
+        isFreeTier ? "&free-tier" : ""
+      }`
+    );
+  }, [query, category, minPrice, maxPrice, isFreeTier]);
 
   const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -97,8 +106,33 @@ const TopBar = () => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const onChangeQuery = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setQuery(event.target.value);
+  };
+
   const onChangeCategory = (event: SelectChangeEvent) => {
     setCategory(event.target.value);
+  };
+
+  const onChangeMinPrice = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setMinPrice(event.target.value);
+  };
+
+  const onChangeMaxPrice = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setMaxPrice(event.target.value);
+  };
+
+  const onChangeIsFreeTier = (
+    _: ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
+    setIsFreeTier(checked);
   };
 
   const menuId = "primary-search-account-menu";
@@ -182,7 +216,12 @@ const TopBar = () => {
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
-            <StyledInputBase placeholder="Search…" id="query" />
+            <StyledInputBase
+              placeholder="Search…"
+              id="query"
+              value={query}
+              onChange={onChangeQuery}
+            />
           </Search>
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <IconButton size="large" aria-label="filter search" color="inherit">
@@ -242,6 +281,8 @@ const TopBar = () => {
               placeholder="0"
               size="small"
               color="secondary"
+              value={minPrice}
+              onChange={onChangeMinPrice}
               sx={{ width: "15ch" }}
               InputProps={{
                 startAdornment: (
@@ -258,6 +299,8 @@ const TopBar = () => {
               placeholder="∞"
               size="small"
               color="secondary"
+              value={maxPrice}
+              onChange={onChangeMaxPrice}
               sx={{ width: "15ch" }}
               InputProps={{
                 startAdornment: (
@@ -268,7 +311,14 @@ const TopBar = () => {
             />
           </Box>
           <FormControlLabel
-            control={<Checkbox color="secondary" id="free-tier" />}
+            control={
+              <Checkbox
+                color="secondary"
+                id="free-tier"
+                value={isFreeTier}
+                onChange={onChangeIsFreeTier}
+              />
+            }
             label="Free Tier"
           />
         </Toolbar>
