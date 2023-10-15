@@ -11,6 +11,7 @@ import { Provider } from "react-redux";
 import App from "./App.tsx";
 import "./index.css";
 import store from "./store";
+import { BrowserRouter } from "react-router-dom";
 
 const theme = createTheme({
   palette: {
@@ -30,13 +31,15 @@ const theme = createTheme({
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    {/* Inject Emotion before JSS to override Material UI styles */}
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <Provider store={store}>
-          <App />
-        </Provider>
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <BrowserRouter>
+      {/* Inject Emotion before JSS to override Material UI styles */}
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <Provider store={store}>
+            <App />
+          </Provider>
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );

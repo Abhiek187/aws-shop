@@ -25,6 +25,8 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useDebounce } from "use-debounce";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -61,9 +63,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
-    },
   },
 }));
 
@@ -72,22 +71,22 @@ const TopBar = () => {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     useState<null | HTMLElement>(null);
 
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [isFreeTier, setIsFreeTier] = useState(false);
+  // Save form state to URL, easier to share & better SEO compared to useState
+  const [searchParams, setSearchParams] = useSearchParams();
+  // Throttle API calls for efficiency every time the input changes
+  const [debouncedSearchParams] = useDebounce(searchParams, 500);
+  const query = searchParams.get("query") ?? "";
+  const category = searchParams.get("category") ?? "";
+  const minPrice = searchParams.get("min-price") ?? "";
+  const maxPrice = searchParams.get("max-price") ?? "";
+  const isFreeTier = searchParams.has("free-tier");
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   useEffect(() => {
-    console.log(
-      `?query=${query}&category=${category}&min-price=${minPrice}&max-price=${maxPrice}${
-        isFreeTier ? "&free-tier" : ""
-      }`
-    );
-  }, [query, category, minPrice, maxPrice, isFreeTier]);
+    console.log("GET services");
+  }, [debouncedSearchParams]);
 
   const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -106,33 +105,58 @@ const TopBar = () => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const updateSearchParams = (key: string, value: string) => {
+    setSearchParams(
+      (params) => {
+        params.set(key, value);
+        return params;
+      },
+      {
+        replace: true,
+      }
+    );
+  };
+
   const onChangeQuery = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setQuery(event.target.value);
+    updateSearchParams("query", event.target.value);
   };
 
   const onChangeCategory = (event: SelectChangeEvent) => {
-    setCategory(event.target.value);
+    updateSearchParams("category", event.target.value);
   };
 
   const onChangeMinPrice = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setMinPrice(event.target.value);
+    updateSearchParams("min-price", event.target.value);
   };
 
   const onChangeMaxPrice = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setMaxPrice(event.target.value);
+    updateSearchParams("max-price", event.target.value);
   };
 
   const onChangeIsFreeTier = (
     _: ChangeEvent<HTMLInputElement>,
     checked: boolean
   ) => {
-    setIsFreeTier(checked);
+    setSearchParams(
+      (params) => {
+        if (checked) {
+          params.set("free-tier", "");
+        } else {
+          params.delete("free-tier");
+        }
+
+        return params;
+      },
+      {
+        replace: true,
+      }
+    );
   };
 
   const menuId = "primary-search-account-menu";
@@ -261,8 +285,8 @@ const TopBar = () => {
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={category}
               label="Category"
+              value={category}
               onChange={onChangeCategory}
             >
               <MenuItem value="">
