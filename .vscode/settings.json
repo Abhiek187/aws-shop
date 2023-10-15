@@ -4,5 +4,6 @@
   },
   "files.associations": {
     "*.css": "tailwindcss"
-  }
+  },
+  "python.analysis.autoImportCompletions": true
 }
