@@ -1,10 +1,10 @@
 import { CircularProgress, Grid } from "@mui/material";
 import ServiceCard from "./ServiceCard";
-import { useGetAllAWSServicesQuery } from "../../services/store";
+import { useGetAWSServicesQuery } from "../../services/store";
 import { createErrorString } from "../../utils/error";
 
 const Store = () => {
-  const { data: services, error, isLoading } = useGetAllAWSServicesQuery();
+  const { data: services, error, isLoading } = useGetAWSServicesQuery();
 
   if (isLoading) {
     return <CircularProgress />;

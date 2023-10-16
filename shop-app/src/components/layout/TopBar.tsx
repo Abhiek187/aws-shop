@@ -28,6 +28,8 @@ import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDebounce } from "use-debounce";
 
+import { useGetAWSServicesQuery } from "../../services/store";
+
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -84,9 +86,14 @@ const TopBar = () => {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
+  const result = useGetAWSServicesQuery(
+    // Convert URLSearchParams to a serializable object
+    Object.fromEntries(debouncedSearchParams.entries())
+  );
+
   useEffect(() => {
-    console.log("GET services");
-  }, [debouncedSearchParams]);
+    console.log("result:", result);
+  }, [result]);
 
   const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -108,7 +115,13 @@ const TopBar = () => {
   const updateSearchParams = (key: string, value: string) => {
     setSearchParams(
       (params) => {
-        params.set(key, value);
+        // Don't add a query parameter if it's empty
+        if (value.length > 0) {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+
         return params;
       },
       {

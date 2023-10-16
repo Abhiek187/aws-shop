@@ -22,11 +22,16 @@ export const storeApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: Constants.BASE_URL }),
   endpoints: (builder) => ({
     // void = no parameters in query
-    getAllAWSServices: builder.query<AWSService[], void>({
-      query: () => "/",
+    getAWSServices: builder.query<AWSService[], Record<string, string> | void>({
+      // params = first argument passed to use...Query()
+      // Return object based on AxiosRequestConfig: https://axios-http.com/docs/req_config
+      query: (params) => ({
+        url: "/",
+        params: params ?? undefined,
+      }),
       transformResponse: unmarshallAWSServices,
     }),
   }),
 });
 
-export const { useGetAllAWSServicesQuery } = storeApi;
+export const { useGetAWSServicesQuery } = storeApi;
