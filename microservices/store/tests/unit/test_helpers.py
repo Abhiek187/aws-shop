@@ -106,6 +106,20 @@ def test_query_services_by_min_price(dynamodb_table, table_name):
     assert items == [filter_item(item) for item in dynamodb_table]
 
 
+@pytest.mark.skip(reason=">= not supported yet")
+def test_query_services_with_empty_response(dynamodb_table, table_name):
+    # Given a DynamoDB table and query parameters
+    query_params = {
+        "min-price": "10",
+    }
+
+    # When a GET / request is called with those query parameters
+    items = app.get_aws_services(query_params, table_name)
+
+    # Then the table is filtered by that query
+    assert len(items) == 0
+
+
 @pytest.mark.skip(reason="<= not supported yet")
 def test_query_services_by_max_price(dynamodb_table, table_name):
     # Given a DynamoDB table and query parameters
@@ -125,7 +139,7 @@ def test_query_services_by_max_price(dynamodb_table, table_name):
     ]
 
 
-@pytest.mark.skip(reason="NOT MISSING & attribute_type not supported yet")
+@pytest.mark.skip(reason="IS NOT MISSING & attribute_type not supported yet")
 def test_query_services_by_free_tier(dynamodb_table, table_name):
     # Given a DynamoDB table and query parameters
     query_params = {
