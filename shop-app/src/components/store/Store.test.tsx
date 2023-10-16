@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
 import Store from "./Store";
@@ -7,7 +8,6 @@ import { errorHandlers, mockStoreResponse } from "../../mocks/handlers";
 import { server } from "../../mocks/server";
 import { Provider } from "react-redux";
 import { createStore } from "../../store";
-import { BrowserRouter } from "react-router-dom";
 
 describe("Store", () => {
   it("should render the store component on success", async () => {
