@@ -24,11 +24,8 @@ import {
   FormControl,
   InputAdornment,
 } from "@mui/material";
-import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
+import { ChangeEvent, MouseEvent, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useDebounce } from "use-debounce";
-
-import { useGetAWSServicesQuery } from "../../services/store";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -75,8 +72,6 @@ const TopBar = () => {
 
   // Save form state to URL, easier to share & better SEO compared to useState
   const [searchParams, setSearchParams] = useSearchParams();
-  // Throttle API calls for efficiency every time the input changes
-  const [debouncedSearchParams] = useDebounce(searchParams, 500);
   const query = searchParams.get("query") ?? "";
   const category = searchParams.get("category") ?? "";
   const minPrice = searchParams.get("min-price") ?? "";
@@ -85,15 +80,6 @@ const TopBar = () => {
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const result = useGetAWSServicesQuery(
-    // Convert URLSearchParams to a serializable object
-    Object.fromEntries(debouncedSearchParams.entries())
-  );
-
-  useEffect(() => {
-    console.log("result:", result);
-  }, [result]);
 
   const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
