@@ -51,8 +51,8 @@ def handler(event, context):
         status_code = 400
         body = str(e)
     finally:
-        # Don't stringify empty bodies
-        if body:
+        # Don't stringify empty bodies (but do so for empty arrays)
+        if body != "":
             body = json.dumps(body)
 
     response = {"statusCode": status_code, "headers": headers, "body": body}
