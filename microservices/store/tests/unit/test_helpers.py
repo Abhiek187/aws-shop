@@ -80,7 +80,7 @@ def test_query_services_by_category(dynamodb_table, table_name):
     }
 
     # When a GET / request is called with those query parameters
-    items = app.get_aws_services(query_params, table_name)
+    items = app.get_aws_services(query_params, table_name, use_index=False)
 
     # Then the table is filtered by that query
     assert len(items) == 2
