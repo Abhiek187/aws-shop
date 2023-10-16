@@ -7,13 +7,16 @@ import { errorHandlers, mockStoreResponse } from "../../mocks/handlers";
 import { server } from "../../mocks/server";
 import { Provider } from "react-redux";
 import { createStore } from "../../store";
+import { BrowserRouter } from "react-router-dom";
 
 describe("Store", () => {
   it("should render the store component on success", async () => {
     render(
-      <Provider store={createStore()}>
-        <Store />
-      </Provider>
+      <BrowserRouter>
+        <Provider store={createStore()}>
+          <Store />
+        </Provider>
+      </BrowserRouter>
     );
 
     // A circular progress bar should show while the services load
@@ -34,9 +37,11 @@ describe("Store", () => {
     // Use the mocked error responses
     server.use(...errorHandlers);
     render(
-      <Provider store={createStore()}>
-        <Store />
-      </Provider>
+      <BrowserRouter>
+        <Provider store={createStore()}>
+          <Store />
+        </Provider>
+      </BrowserRouter>
     );
 
     // A circular progress bar should show while the services load
