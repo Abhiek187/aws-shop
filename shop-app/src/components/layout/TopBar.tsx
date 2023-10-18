@@ -111,7 +111,7 @@ const TopBar = () => {
         return params;
       },
       {
-        replace: true,
+        replace: true, // don't undo every character change when navigating back and forward
       }
     );
   };
