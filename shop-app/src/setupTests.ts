@@ -8,7 +8,7 @@ import { cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import nodeFetch, { Request, Response } from "node-fetch";
 
-import { server } from "./mocks/server.js";
+import { server } from "./mocks/server";
 
 // Fixes https://github.com/reduxjs/redux-toolkit/issues/3254#issuecomment-1587624955
 Object.assign(global, { fetch: nodeFetch, Request, Response });
