@@ -242,6 +242,9 @@ const TopBar = () => {
             <StyledInputBase
               placeholder="Search…"
               id="query"
+              type="search"
+              autoCapitalize="none"
+              spellCheck={false}
               value={query}
               onChange={onChangeQuery}
             />
