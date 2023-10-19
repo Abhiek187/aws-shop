@@ -199,12 +199,6 @@ const TopBar = () => {
     >
       <MenuItem>
         <IconButton size="large" color="inherit">
-          <FilterListIcon />
-        </IconButton>
-        <p>Filter Search</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton size="large" color="inherit">
           <ShoppingCartIcon />
         </IconButton>
         <p>Open Cart</p>
@@ -231,6 +225,7 @@ const TopBar = () => {
             variant="h6"
             noWrap
             component="div"
+            // Don't show the app name on small screens
             sx={{ display: { xs: "none", sm: "block" } }}
           >
             AWS Shop
@@ -249,10 +244,8 @@ const TopBar = () => {
               onChange={onChangeQuery}
             />
           </Search>
+          {/* Show the other menu buttons on large screens */}
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton size="large" aria-label="filter search" color="inherit">
-              <FilterListIcon />
-            </IconButton>
             <IconButton size="large" aria-label="open cart" color="inherit">
               <ShoppingCartIcon />
             </IconButton>
@@ -268,7 +261,11 @@ const TopBar = () => {
               <AccountCircleIcon />
             </IconButton>
           </Box>
+          {/* On small screens, show a filter and triple dot icon */}
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
+            <IconButton size="large" aria-label="filter search" color="inherit">
+              <FilterListIcon />
+            </IconButton>
             <IconButton
               size="large"
               aria-label="show more"
@@ -281,7 +278,10 @@ const TopBar = () => {
             </IconButton>
           </Box>
         </Toolbar>
-        <Toolbar className="flex justify-around">
+        <Toolbar
+          className="justify-around"
+          sx={{ display: { xs: "none", md: "flex" } }}
+        >
           <FormControl color="secondary" sx={{ m: 1, minWidth: 130 }}>
             <InputLabel id="demo-simple-select-label">Category</InputLabel>
             <Select

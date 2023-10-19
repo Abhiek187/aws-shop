@@ -37,9 +37,12 @@ describe("TopBar", () => {
     // Check that all the UI elements in the top bar are present
     expect(screen.getByText("AWS Shop")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Search…")).toBeInTheDocument();
-    expect(screen.getByLabelText("filter search")).toBeInTheDocument();
     expect(screen.getByLabelText("open cart")).toBeInTheDocument();
     expect(screen.getByLabelText(/account/)).toBeInTheDocument();
+    // Ignore breakpoints
+    expect(screen.getByLabelText("filter search")).toBeInTheDocument();
+    expect(screen.getByLabelText("show more")).toBeInTheDocument();
+
     expect(screen.getByLabelText("Category")).toBeInTheDocument();
     expect(screen.getByLabelText("Min")).toBeInTheDocument();
     expect(screen.getByText(/≤ Price ≤/)).toBeInTheDocument();
