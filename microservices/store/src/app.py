@@ -51,8 +51,8 @@ def handler(event, context):
         status_code = 400
         body = str(e)
     finally:
-        # Don't stringify empty bodies
-        if body:
+        # Don't stringify empty bodies (but do so for empty arrays)
+        if body != "":
             body = json.dumps(body)
 
     response = {"statusCode": status_code, "headers": headers, "body": body}
@@ -74,7 +74,7 @@ def scan_table(table_name):
     return response["Items"]
 
 
-def get_aws_services(query_parameters, table_name=table_name):
+def get_aws_services(query_parameters, table_name=table_name, use_index=True):
     if not query_parameters:
         return scan_table(table_name)
 
@@ -116,7 +116,7 @@ def get_aws_services(query_parameters, table_name=table_name):
     if not conditions:
         raise Exception(f"Invalid query parameters passed")
 
-    if query == free_tier == None and None not in {category, min_price, max_price}:
+    if use_index and query == free_tier == None and category is not None:
         # Utilize the index created to perform a query instead of a scan
         table += '."PriceIndex"'
 

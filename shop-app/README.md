@@ -1,5 +1,7 @@
 # AWS Shop App Frontend
 
+![Shop app demo](aws-shop.gif)
+
 This is the frontend website for the AWS Shop app, built using React + Vite.
 
 ## Features

@@ -1,10 +1,23 @@
 import { CircularProgress, Grid } from "@mui/material";
+import { useSearchParams } from "react-router-dom";
+import { useDebounce } from "use-debounce";
+
 import ServiceCard from "./ServiceCard";
-import { useGetAllAWSServicesQuery } from "../../services/store";
+import { useGetAWSServicesQuery } from "../../services/store";
 import { createErrorString } from "../../utils/error";
 
 const Store = () => {
-  const { data: services, error, isLoading } = useGetAllAWSServicesQuery();
+  const [searchParams] = useSearchParams();
+  // Throttle API calls for efficiency every time the input changes
+  const [debouncedSearchParams] = useDebounce(searchParams, 500);
+  const {
+    data: services,
+    error,
+    isLoading,
+  } = useGetAWSServicesQuery(
+    // Convert URLSearchParams to a serializable object
+    Object.fromEntries(debouncedSearchParams.entries())
+  );
 
   if (isLoading) {
     return <CircularProgress />;

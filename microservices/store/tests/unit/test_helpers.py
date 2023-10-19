@@ -35,7 +35,7 @@ def test_query_all_services(dynamodb_table, table_name):
     assert items == app.scan_table(table_name)
 
 
-@pytest.mark.skip(reason="TypeError: Object of type Decimal is not JSON serializable")
+@pytest.mark.skip(reason="Complex WHERE clauses not supported yet")
 def test_query_services_with_all_params(dynamodb_table, table_name):
     # Given a DynamoDB table and query parameters
     query_params = {
@@ -51,9 +51,109 @@ def test_query_services_with_all_params(dynamodb_table, table_name):
 
     # Then the table is filtered by that query
     assert len(items) == 1
-    assert items[0] == next(
+    assert items == [
         filter_item(item) for item in dynamodb_table if item["Name"]["S"] == "Lambda"
-    )
+    ]
+
+
+@pytest.mark.skip(reason="contains not supported yet")
+def test_query_services_by_query(dynamodb_table, table_name):
+    # Given a DynamoDB table and query parameters
+    query_params = {
+        "query": "code",
+    }
+
+    # When a GET / request is called with those query parameters
+    items = app.get_aws_services(query_params, table_name)
+
+    # Then the table is filtered by that query
+    assert len(items) == 1
+    assert items == [
+        filter_item(item) for item in dynamodb_table if item["Name"]["S"] == "Lambda"
+    ]
+
+
+def test_query_services_by_category(dynamodb_table, table_name):
+    # Given a DynamoDB table and query parameters
+    query_params = {
+        "category": "free",
+    }
+
+    # When a GET / request is called with those query parameters
+    items = app.get_aws_services(query_params, table_name, use_index=False)
+
+    # Then the table is filtered by that query
+    assert len(items) == 2
+    assert items == [
+        filter_item(item)
+        for item in dynamodb_table
+        if item["Name"]["S"] in ["Lambda", "Auto Scaling"]
+    ]
+
+
+@pytest.mark.skip(reason=">= not supported yet")
+def test_query_services_by_min_price(dynamodb_table, table_name):
+    # Given a DynamoDB table and query parameters
+    query_params = {
+        "min-price": "0",
+    }
+
+    # When a GET / request is called with those query parameters
+    items = app.get_aws_services(query_params, table_name)
+
+    # Then the table is filtered by that query
+    assert len(items) == len(dynamodb_table)
+    assert items == [filter_item(item) for item in dynamodb_table]
+
+
+@pytest.mark.skip(reason=">= not supported yet")
+def test_query_services_with_empty_response(dynamodb_table, table_name):
+    # Given a DynamoDB table and query parameters
+    query_params = {
+        "min-price": "10",
+    }
+
+    # When a GET / request is called with those query parameters
+    items = app.get_aws_services(query_params, table_name)
+
+    # Then the table is filtered by that query
+    assert len(items) == 0
+
+
+@pytest.mark.skip(reason="<= not supported yet")
+def test_query_services_by_max_price(dynamodb_table, table_name):
+    # Given a DynamoDB table and query parameters
+    query_params = {
+        "max-price": "1",
+    }
+
+    # When a GET / request is called with those query parameters
+    items = app.get_aws_services(query_params, table_name)
+
+    # Then the table is filtered by that query
+    assert len(items) == 3
+    assert items == [
+        filter_item(item)
+        for item in dynamodb_table
+        if item["Name"]["S"] in ["Lambda", "Auto Scaling", "Config"]
+    ]
+
+
+@pytest.mark.skip(reason="IS NOT MISSING & attribute_type not supported yet")
+def test_query_services_by_free_tier(dynamodb_table, table_name):
+    # Given a DynamoDB table and query parameters
+    query_params = {
+        "free-tier": "",
+    }
+
+    # When a GET / request is called with those query parameters
+    items = app.get_aws_services(query_params, table_name)
+
+    # Then the table is filtered by that query
+    assert len(items) == 1
+    assert items == [
+        filter_item(item) for item in dynamodb_table if item["Name"]["S"] == "Lambda"
+    ]
 
 
 @pytest.mark.parametrize(

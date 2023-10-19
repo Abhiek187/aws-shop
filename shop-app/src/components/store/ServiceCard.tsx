@@ -36,7 +36,7 @@ const ServiceCard: React.FC<ServiceProps> = ({ service }) => {
         >
           {service.Category}
         </Typography>
-        <Button size="small" className="text-teal-600">
+        <Button size="small">
           {dollarFormat(service.Price)} per {service.Unit}
         </Button>
       </CardActions>

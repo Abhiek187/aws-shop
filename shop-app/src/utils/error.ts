@@ -3,9 +3,8 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 // FetchBaseQueryError = something went wrong with the request
 // SerializedError = something went wrong while parsing the response
-const isFetchError = (
-  error: FetchBaseQueryError | SerializedError
-): error is FetchBaseQueryError => Object.hasOwn(error, "status");
+const isFetchError = (error: unknown): error is FetchBaseQueryError =>
+  typeof error === "object" && error !== null && Object.hasOwn(error, "status");
 
 /**
  * Create a descriptive error message from an error object

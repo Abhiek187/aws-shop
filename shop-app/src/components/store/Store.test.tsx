@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 
 import Store from "./Store";
@@ -11,9 +12,11 @@ import { createStore } from "../../store";
 describe("Store", () => {
   it("should render the store component on success", async () => {
     render(
-      <Provider store={createStore()}>
-        <Store />
-      </Provider>
+      <BrowserRouter>
+        <Provider store={createStore()}>
+          <Store />
+        </Provider>
+      </BrowserRouter>
     );
 
     // A circular progress bar should show while the services load
@@ -34,9 +37,11 @@ describe("Store", () => {
     // Use the mocked error responses
     server.use(...errorHandlers);
     render(
-      <Provider store={createStore()}>
-        <Store />
-      </Provider>
+      <BrowserRouter>
+        <Provider store={createStore()}>
+          <Store />
+        </Provider>
+      </BrowserRouter>
     );
 
     // A circular progress bar should show while the services load
