@@ -157,7 +157,6 @@ const TopBar = () => {
     </Menu>
   );
 
-  const mobileFilterId = "mobile-filter";
   const renderMobileFilter = (
     <Dialog
       fullScreen
@@ -281,8 +280,6 @@ const TopBar = () => {
             <IconButton
               size="large"
               aria-label="filter search"
-              aria-controls={mobileFilterId}
-              aria-haspopup="true"
               onClick={handleFilterOpen}
               color="inherit"
             >
