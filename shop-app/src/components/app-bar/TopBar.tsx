@@ -16,20 +16,13 @@ import {
   styled,
   Menu,
   MenuItem,
-  InputLabel,
-  Select,
-  Checkbox,
-  FormControlLabel,
-  TextField,
-  SelectChangeEvent,
-  FormControl,
-  InputAdornment,
   Slide,
   Dialog,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import { ChangeEvent, MouseEvent, Ref, forwardRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import FilterFields from "./FilterFields";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -82,10 +75,6 @@ const TopBar = () => {
   // Save form state to URL, easier to share & better SEO compared to useState
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("query") ?? "";
-  const category = searchParams.get("category") ?? "";
-  const minPrice = searchParams.get("min-price") ?? "";
-  const maxPrice = searchParams.get("max-price") ?? "";
-  const isFreeTier = searchParams.has("free-tier");
 
   const [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(
     null
@@ -146,42 +135,6 @@ const TopBar = () => {
     updateSearchParams("query", event.target.value);
   };
 
-  const onChangeCategory = (event: SelectChangeEvent) => {
-    updateSearchParams("category", event.target.value);
-  };
-
-  const onChangeMinPrice = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    updateSearchParams("min-price", event.target.value);
-  };
-
-  const onChangeMaxPrice = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    updateSearchParams("max-price", event.target.value);
-  };
-
-  const onChangeIsFreeTier = (
-    _: ChangeEvent<HTMLInputElement>,
-    checked: boolean
-  ) => {
-    setSearchParams(
-      (params) => {
-        if (checked) {
-          params.set("free-tier", "");
-        } else {
-          params.delete("free-tier");
-        }
-
-        return params;
-      },
-      {
-        replace: true,
-      }
-    );
-  };
-
   const profileMenuId = "profile-menu";
   const renderProfileMenu = (
     <Menu
@@ -237,71 +190,7 @@ const TopBar = () => {
           minWidth: "100%",
         }}
       >
-        <FormControl color="secondary" sx={{ m: 1, minWidth: 130 }}>
-          <InputLabel id="demo-simple-select-label">Category</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            label="Category"
-            value={category}
-            onChange={onChangeCategory}
-          >
-            <MenuItem value="">
-              <em>Any</em>
-            </MenuItem>
-            <MenuItem value="free">Free</MenuItem>
-            <MenuItem value="trial">Trial</MenuItem>
-            <MenuItem value="paid">Paid</MenuItem>
-          </Select>
-        </FormControl>
-        <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <TextField
-            id="min-price"
-            label="Min"
-            type="number"
-            placeholder="0"
-            size="small"
-            color="secondary"
-            value={minPrice}
-            onChange={onChangeMinPrice}
-            sx={{ width: "10ch" }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">$</InputAdornment>
-              ),
-              inputProps: { min: 0 },
-            }}
-          />
-          <Typography> ≤ Price ≤ </Typography>
-          <TextField
-            id="max-price"
-            label="Max"
-            type="number"
-            placeholder="∞"
-            size="small"
-            color="secondary"
-            value={maxPrice}
-            onChange={onChangeMaxPrice}
-            sx={{ width: "10ch" }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">$</InputAdornment>
-              ),
-              inputProps: { min: 0 },
-            }}
-          />
-        </Box>
-        <FormControlLabel
-          control={
-            <Checkbox
-              color="secondary"
-              id="free-tier"
-              value={isFreeTier}
-              onChange={onChangeIsFreeTier}
-            />
-          }
-          label="Free Tier"
-        />
+        <FilterFields isMobile={true} />
       </Box>
     </Dialog>
   );
@@ -415,71 +304,7 @@ const TopBar = () => {
           className="justify-around"
           sx={{ display: { xs: "none", md: "flex" } }}
         >
-          <FormControl color="secondary" sx={{ m: 1, minWidth: 130 }}>
-            <InputLabel id="demo-simple-select-label">Category</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              label="Category"
-              value={category}
-              onChange={onChangeCategory}
-            >
-              <MenuItem value="">
-                <em>Any</em>
-              </MenuItem>
-              <MenuItem value="free">Free</MenuItem>
-              <MenuItem value="trial">Trial</MenuItem>
-              <MenuItem value="paid">Paid</MenuItem>
-            </Select>
-          </FormControl>
-          <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <TextField
-              id="min-price"
-              label="Min"
-              type="number"
-              placeholder="0"
-              size="small"
-              color="secondary"
-              value={minPrice}
-              onChange={onChangeMinPrice}
-              sx={{ width: "15ch" }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">$</InputAdornment>
-                ),
-                inputProps: { min: 0 },
-              }}
-            />
-            <Typography> ≤ Price ≤ </Typography>
-            <TextField
-              id="max-price"
-              label="Max"
-              type="number"
-              placeholder="∞"
-              size="small"
-              color="secondary"
-              value={maxPrice}
-              onChange={onChangeMaxPrice}
-              sx={{ width: "15ch" }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">$</InputAdornment>
-                ),
-                inputProps: { min: 0 },
-              }}
-            />
-          </Box>
-          <FormControlLabel
-            control={
-              <Checkbox
-                color="secondary"
-                id="free-tier"
-                value={isFreeTier}
-                onChange={onChangeIsFreeTier}
-              />
-            }
-            label="Free Tier"
-          />
+          <FilterFields isMobile={false} />
         </Toolbar>
       </AppBar>
       {renderMobileFilter}
