@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
+import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import {
   SpyInstance,
@@ -9,7 +10,9 @@ import {
   it,
   vi,
 } from "vitest";
+
 import TopBar from "./TopBar";
+import { createStore } from "../../store";
 
 describe("TopBar", () => {
   let setParamsSpy: SpyInstance<[name: string, value: string], void>;
@@ -21,7 +24,9 @@ describe("TopBar", () => {
   beforeEach(() => {
     render(
       <BrowserRouter>
-        <TopBar />
+        <Provider store={createStore()}>
+          <TopBar />
+        </Provider>
       </BrowserRouter>
     );
 

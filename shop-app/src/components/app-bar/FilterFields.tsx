@@ -142,7 +142,7 @@ const FilterFields: React.FC<FilterProps> = ({ isMobile }) => {
           <Checkbox
             color="secondary"
             id={freeTierId}
-            value={isFreeTier}
+            checked={isFreeTier}
             onChange={onChangeIsFreeTier}
           />
         }

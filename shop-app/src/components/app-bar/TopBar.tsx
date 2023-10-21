@@ -1,7 +1,9 @@
 import {
   AccountCircle,
   Close,
+  DarkMode,
   FilterList,
+  LightMode,
   MoreVert,
   Search,
   ShoppingCart,
@@ -22,8 +24,11 @@ import {
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import { ChangeEvent, MouseEvent, Ref, forwardRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
+
 import FilterFields from "./FilterFields";
+import { appActions, selectApp } from "../../store/appSlice";
 
 const SearchWrapper = styled("div")(({ theme }) => ({
   position: "relative",
@@ -77,6 +82,10 @@ const TopBar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("query") ?? "";
 
+  const { mode } = useSelector(selectApp);
+  const isDarkMode = mode === "dark";
+  const dispatch = useDispatch();
+
   const [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(
     null
   );
@@ -86,6 +95,10 @@ const TopBar = () => {
 
   const isProfileMenuOpen = Boolean(profileAnchorEl);
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
+
+  const handleToggleMode = () => {
+    dispatch(appActions.toggleMode());
+  };
 
   const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setProfileAnchorEl(event.currentTarget);
@@ -212,6 +225,12 @@ const TopBar = () => {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
+      <MenuItem onClick={handleToggleMode}>
+        <IconButton size="large" color="inherit">
+          {isDarkMode ? <LightMode /> : <DarkMode />}
+        </IconButton>
+        <p>{`${isDarkMode ? "Light" : "Dark"} Mode`}</p>
+      </MenuItem>
       <MenuItem>
         <IconButton size="large" color="inherit">
           <ShoppingCart />
@@ -261,6 +280,14 @@ const TopBar = () => {
           </SearchWrapper>
           {/* Show the other menu buttons on large screens */}
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
+            <IconButton
+              size="large"
+              aria-label={`switch to ${isDarkMode ? "light" : "dark"} mode`}
+              onClick={handleToggleMode}
+              color="inherit"
+            >
+              {isDarkMode ? <LightMode /> : <DarkMode />}
+            </IconButton>
             <IconButton size="large" aria-label="open cart" color="inherit">
               <ShoppingCart />
             </IconButton>
