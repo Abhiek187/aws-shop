@@ -1,7 +1,7 @@
 import { PaletteMode } from "@mui/material";
 import { createSlice } from "@reduxjs/toolkit";
 
-type AppSlice = {
+export type AppSlice = {
   mode: PaletteMode;
 };
 
