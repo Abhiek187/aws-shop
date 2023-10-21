@@ -1,3 +1,4 @@
+import { AutoAwesome } from "@mui/icons-material";
 import {
   Button,
   Card,
@@ -6,7 +7,6 @@ import {
   Divider,
   Typography,
 } from "@mui/material";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import { yellow } from "@mui/material/colors";
 import pluralize from "pluralize";
 import React from "react";
@@ -44,7 +44,7 @@ const ServiceCard: React.FC<ServiceProps> = ({ service }) => {
         <>
           <Divider />
           <CardActions>
-            <AutoAwesomeIcon sx={{ color: yellow[700], mr: 1.5 }} />
+            <AutoAwesome sx={{ color: yellow[700], mr: 1.5 }} />
             <Typography variant="caption">
               {`Free Tier: ${commaFormat(service.FreeTier)} ${pluralize(
                 service.Unit,

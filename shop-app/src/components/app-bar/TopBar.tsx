@@ -1,10 +1,11 @@
-import { AccountCircle } from "@mui/icons-material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import CloseIcon from "@mui/icons-material/Close";
-import FilterListIcon from "@mui/icons-material/FilterList";
-import MoreIcon from "@mui/icons-material/MoreVert";
-import SearchIcon from "@mui/icons-material/Search";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import {
+  AccountCircle,
+  Close,
+  FilterList,
+  MoreVert,
+  Search,
+  ShoppingCart,
+} from "@mui/icons-material";
 import {
   Box,
   Toolbar,
@@ -24,7 +25,7 @@ import { ChangeEvent, MouseEvent, Ref, forwardRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import FilterFields from "./FilterFields";
 
-const Search = styled("div")(({ theme }) => ({
+const SearchWrapper = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -172,7 +173,7 @@ const TopBar = () => {
             onClick={handleFilterClose}
             aria-label="close"
           >
-            <CloseIcon />
+            <Close />
           </IconButton>
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
             Search
@@ -213,7 +214,7 @@ const TopBar = () => {
     >
       <MenuItem>
         <IconButton size="large" color="inherit">
-          <ShoppingCartIcon />
+          <ShoppingCart />
         </IconButton>
         <p>Open Cart</p>
       </MenuItem>
@@ -244,9 +245,9 @@ const TopBar = () => {
           >
             AWS Shop
           </Typography>
-          <Search>
+          <SearchWrapper>
             <SearchIconWrapper>
-              <SearchIcon />
+              <Search />
             </SearchIconWrapper>
             <StyledInputBase
               placeholder="Search…"
@@ -257,11 +258,11 @@ const TopBar = () => {
               value={query}
               onChange={onChangeQuery}
             />
-          </Search>
+          </SearchWrapper>
           {/* Show the other menu buttons on large screens */}
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <IconButton size="large" aria-label="open cart" color="inherit">
-              <ShoppingCartIcon />
+              <ShoppingCart />
             </IconButton>
             <IconButton
               size="large"
@@ -272,7 +273,7 @@ const TopBar = () => {
               onClick={handleProfileMenuOpen}
               color="inherit"
             >
-              <AccountCircleIcon />
+              <AccountCircle />
             </IconButton>
           </Box>
           {/* On small screens, show a filter and triple dot icon */}
@@ -283,7 +284,7 @@ const TopBar = () => {
               onClick={handleFilterOpen}
               color="inherit"
             >
-              <FilterListIcon />
+              <FilterList />
             </IconButton>
             <IconButton
               size="large"
@@ -293,7 +294,7 @@ const TopBar = () => {
               onClick={handleMobileMenuOpen}
               color="inherit"
             >
-              <MoreIcon />
+              <MoreVert />
             </IconButton>
           </Box>
         </Toolbar>
