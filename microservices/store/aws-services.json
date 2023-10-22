@@ -359,6 +359,13 @@
     "Category": "trial"
   },
   {
+    "Name": "QuickSight",
+    "Description": "Unified BI (business intelligence)",
+    "Price": 9,
+    "Unit": "user",
+    "Category": "trial"
+  },
+  {
     "Name": "Redshift",
     "Description": "Data warehouse",
     "Price": 180,
