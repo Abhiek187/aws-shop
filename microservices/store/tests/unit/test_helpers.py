@@ -35,7 +35,6 @@ def test_query_all_services(dynamodb_table, table_name):
     assert items == app.scan_table(table_name)
 
 
-@pytest.mark.skip(reason="Complex WHERE clauses not supported yet")
 def test_query_services_with_all_params(dynamodb_table, table_name):
     # Given a DynamoDB table and query parameters
     query_params = {
@@ -56,7 +55,6 @@ def test_query_services_with_all_params(dynamodb_table, table_name):
     ]
 
 
-@pytest.mark.skip(reason="contains not supported yet")
 def test_query_services_by_query(dynamodb_table, table_name):
     # Given a DynamoDB table and query parameters
     query_params = {
@@ -91,7 +89,6 @@ def test_query_services_by_category(dynamodb_table, table_name):
     ]
 
 
-@pytest.mark.skip(reason=">= not supported yet")
 def test_query_services_by_min_price(dynamodb_table, table_name):
     # Given a DynamoDB table and query parameters
     query_params = {
@@ -106,7 +103,6 @@ def test_query_services_by_min_price(dynamodb_table, table_name):
     assert items == [filter_item(item) for item in dynamodb_table]
 
 
-@pytest.mark.skip(reason=">= not supported yet")
 def test_query_services_with_empty_response(dynamodb_table, table_name):
     # Given a DynamoDB table and query parameters
     query_params = {
@@ -120,7 +116,6 @@ def test_query_services_with_empty_response(dynamodb_table, table_name):
     assert len(items) == 0
 
 
-@pytest.mark.skip(reason="<= not supported yet")
 def test_query_services_by_max_price(dynamodb_table, table_name):
     # Given a DynamoDB table and query parameters
     query_params = {
@@ -139,7 +134,6 @@ def test_query_services_by_max_price(dynamodb_table, table_name):
     ]
 
 
-@pytest.mark.skip(reason="IS NOT MISSING & attribute_type not supported yet")
 def test_query_services_by_free_tier(dynamodb_table, table_name):
     # Given a DynamoDB table and query parameters
     query_params = {
