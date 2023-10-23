@@ -78,7 +78,7 @@ Resources:
         # SAM
         - "arn:aws:iam::aws:policy/AWSLambda_FullAccess" # 52
         - "arn:aws:iam::aws:policy/AmazonEventBridgeFullAccess" # 83
-        - "arn:aws:iam::aws:policy/CloudWatchFullAccess" # 36
+        - "arn:aws:iam::aws:policy/CloudWatchFullAccessV2" # 45
   GitHubRemainingPolicy:
     Type: AWS::IAM::ManagedPolicy
     Metadata:
