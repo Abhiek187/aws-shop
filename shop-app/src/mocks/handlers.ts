@@ -1,4 +1,4 @@
-import { rest } from "msw";
+import { http } from "msw";
 
 import { Constants } from "../utils/constants";
 import RawAWSService from "../types/RawAWSService";
@@ -94,14 +94,20 @@ export const mockStoreResponse: RawAWSService[] = [
 
 export const handlers = [
   // Mock the AWS store microservice for tests
-  rest.get(`${Constants.BASE_URL}/`, (_req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(mockStoreResponse));
+  http.get(`${Constants.BASE_URL}/`, () => {
+    return new Response(JSON.stringify(mockStoreResponse), { status: 200 });
+    // Don't know why HttpResponse doesn't work
+    //return HttpResponse.json(mockStoreResponse, { status: 200 });
   }),
 ];
 
 export const errorHandlers = [
   // Create mocked error responses for each API
-  rest.get(`${Constants.BASE_URL}/`, (_req, res, ctx) => {
-    return res(ctx.status(400), ctx.json("Unsupported route: GET /"));
+  http.get(`${Constants.BASE_URL}/`, () => {
+    return new Response(JSON.stringify("Unsupported route: GET /"), {
+      status: 400,
+    });
+    // Don't know why HttpResponse doesn't work
+    //return HttpResponse.json("Unsupported route: GET /", { status: 400 });
   }),
 ];
