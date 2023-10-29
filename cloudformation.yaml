@@ -621,6 +621,7 @@ Resources:
       AuthSessionValidity: 3 # session token validity in minutes
       CallbackURLs:
         - !Sub "https://${CloudFrontDistribution.DomainName}"
+      EnableTokenRevocation: true
       ExplicitAuthFlows:
         - ALLOW_REFRESH_TOKEN_AUTH
         - ALLOW_USER_SRP_AUTH # SRP = Secure Remote Password

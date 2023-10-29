@@ -385,6 +385,28 @@ Get health check status:
 aws route53 get-health-check-status --health-check-id ID
 ```
 
+### Cognito Commands
+
+List user pools:
+
+```bash
+aws cognito-idp list-user-pools --max-results 20
+aws cognito-idp describe-user-pool --user-pool-id ID
+```
+
+List user pool clients:
+
+```bash
+aws cognito-idp list-user-pool-clients --user-pool-id ID
+aws cognito-idp describe-user-pool-client --user-pool-id ID --client-id CLIENT_ID
+```
+
+List users:
+
+```bash
+aws cognito-idp list-users --user-pool-id ID
+```
+
 ## Rotating Access Keys
 
 Rotate your access keys every 60 days by running the following shell script ([jq](https://stedolan.github.io/jq/) is required):
