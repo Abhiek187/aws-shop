@@ -394,6 +394,12 @@ aws cognito-idp list-user-pools --max-results 20
 aws cognito-idp describe-user-pool --user-pool-id ID
 ```
 
+Describe user pool domain:
+
+```bash
+aws cognito-idp describe-user-pool-domain --domain DOMAIN
+```
+
 List user pool clients:
 
 ```bash
