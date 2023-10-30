@@ -109,6 +109,7 @@ const FilterFields: React.FC<FilterProps> = ({ isMobile }) => {
           id={minPriceId}
           label="Min"
           type="number"
+          inputMode="decimal"
           placeholder="0"
           size="small"
           color="secondary"
@@ -125,6 +126,7 @@ const FilterFields: React.FC<FilterProps> = ({ isMobile }) => {
           id={maxPriceId}
           label="Max"
           type="number"
+          inputMode="decimal"
           placeholder="∞"
           size="small"
           color="secondary"

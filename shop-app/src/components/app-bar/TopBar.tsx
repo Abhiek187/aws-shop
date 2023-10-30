@@ -272,7 +272,9 @@ const TopBar = () => {
               placeholder="Search…"
               id="query"
               type="search"
+              inputMode="search"
               autoCapitalize="none"
+              autoComplete="off"
               spellCheck={false}
               value={query}
               onChange={onChangeQuery}
