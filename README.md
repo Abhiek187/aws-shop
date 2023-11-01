@@ -413,6 +413,20 @@ List users:
 aws cognito-idp list-users --user-pool-id ID
 ```
 
+Sign in user (public):
+
+```bash
+aws cognito-idp initiate-auth --client-id CLIENT_ID --auth-flow [USER_SRP_AUTH|REFRESH_TOKEN_AUTH] --auth-parameters [USERNAME=EMAIL,SRP_A=SRP|REFRESH_TOKEN=TOKEN]
+aws cognito-idp respond-to-auth-challenge --client-id CLIENT_ID [--session SESSION] --challenge-name PASSWORD_VERIFIER --challenge-responses PASSWORD_CLAIM_SIGNATURE=SIGNATURE,PASSWORD_CLAIM_SECRET_BLOCK=BLOCK,TIMESTAMP=TIME,USERNAME=EMAIL
+```
+
+Sign in user (server-side):
+
+```bash
+aws cognito-idp admin-initiate-auth --user-pool-id ID --client-id CLIENT_ID --auth-flow [USER_SRP_AUTH|REFRESH_TOKEN_AUTH] --auth-parameters [USERNAME=EMAIL,SRP_A=SRP|REFRESH_TOKEN=TOKEN]
+aws cognito-idp admin-respond-to-auth-challenge --user-pool-id ID --client-id CLIENT_ID [--session SESSION] --challenge-name PASSWORD_VERIFIER --challenge-responses PASSWORD_CLAIM_SIGNATURE=SIGNATURE,PASSWORD_CLAIM_SECRET_BLOCK=BLOCK,TIMESTAMP=TIME,USERNAME=EMAIL
+```
+
 ## Rotating Access Keys
 
 Rotate your access keys every 60 days by running the following shell script ([jq](https://stedolan.github.io/jq/) is required):
