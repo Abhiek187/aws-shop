@@ -507,6 +507,13 @@
     "Category": "paid"
   },
   {
+    "Name": "Verified Permissions",
+    "Description": "Fine-grained access controls written in Cedar",
+    "Price": 1.5e-6,
+    "Unit": "authorization request",
+    "Category": "paid"
+  },
+  {
     "Name": "VPC",
     "Description": "Isolate cloud resources in a virtual network",
     "Price": 36,
