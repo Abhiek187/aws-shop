@@ -509,7 +509,7 @@
   {
     "Name": "Verified Permissions",
     "Description": "Fine-grained access controls written in Cedar",
-    "Price": 1.5e-6,
+    "Price": 1.5e-4,
     "Unit": "authorization request",
     "Category": "paid"
   },
