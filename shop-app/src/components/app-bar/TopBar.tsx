@@ -29,6 +29,7 @@ import { useSearchParams } from "react-router-dom";
 
 import FilterFields from "./FilterFields";
 import { appActions, selectApp } from "../../store/appSlice";
+import { openHostedUI } from "../../utils/oauth";
 
 const SearchWrapper = styled("div")(({ theme }) => ({
   position: "relative",
@@ -113,6 +114,10 @@ const TopBar = () => {
     handleMobileMenuClose();
   };
 
+  const handleSignIn = async () => {
+    await openHostedUI();
+  };
+
   const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setMobileMenuAnchorEl(event.currentTarget);
   };
@@ -166,8 +171,8 @@ const TopBar = () => {
       open={isProfileMenuOpen}
       onClose={handleProfileMenuClose}
     >
-      <MenuItem onClick={handleProfileMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleProfileMenuClose}>My Account</MenuItem>
+      <MenuItem onClick={() => void handleSignIn()}>Profile</MenuItem>
+      <MenuItem onClick={() => void handleSignIn()}>My Account</MenuItem>
     </Menu>
   );
 
