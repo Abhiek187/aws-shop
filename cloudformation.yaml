@@ -620,7 +620,8 @@ Resources:
         - email
       AuthSessionValidity: 3 # session token validity in minutes
       CallbackURLs:
-        - "http://localhost" # dev
+        - "http://localhost:5173" # dev
+        - "http://localhost:4173" # QA
         - !Sub "https://${CloudFrontDistribution.DomainName}" # prod
       EnableTokenRevocation: true
       ExplicitAuthFlows:
