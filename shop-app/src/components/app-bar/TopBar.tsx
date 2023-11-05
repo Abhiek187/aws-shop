@@ -23,13 +23,22 @@ import {
   Dialog,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
-import { ChangeEvent, MouseEvent, Ref, forwardRef, useState } from "react";
+import {
+  ChangeEvent,
+  MouseEvent,
+  Ref,
+  forwardRef,
+  useEffect,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
 import FilterFields from "./FilterFields";
 import { appActions, selectApp } from "../../store/appSlice";
 import { openHostedUI } from "../../utils/oauth";
+import { useRevokeTokenMutation } from "../../services/auth";
+import { Constants } from "../../utils/constants";
 
 const SearchWrapper = styled("div")(({ theme }) => ({
   position: "relative",
@@ -83,9 +92,11 @@ const TopBar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("query") ?? "";
 
-  const { mode } = useSelector(selectApp);
+  const { isLoggedIn, mode } = useSelector(selectApp);
   const isDarkMode = mode === "dark";
   const dispatch = useDispatch();
+
+  const [revokeToken, logoutResult] = useRevokeTokenMutation();
 
   const [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(
     null
@@ -96,6 +107,14 @@ const TopBar = () => {
 
   const isProfileMenuOpen = Boolean(profileAnchorEl);
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
+
+  useEffect(() => {
+    if (logoutResult.data !== undefined) {
+      // Reset back to a logged out state
+      localStorage.removeItem(Constants.LocalStorage.REFRESH_TOKEN);
+      dispatch(appActions.logOut());
+    }
+  }, [dispatch, logoutResult]);
 
   const handleToggleMode = () => {
     dispatch(appActions.toggleMode());
@@ -114,8 +133,16 @@ const TopBar = () => {
     handleMobileMenuClose();
   };
 
+  const handleOpenProfile = () => {
+    console.log("open profile");
+  };
+
   const handleSignIn = async () => {
     await openHostedUI();
+  };
+
+  const handleSignOut = async () => {
+    await revokeToken();
   };
 
   const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>) => {
@@ -171,8 +198,14 @@ const TopBar = () => {
       open={isProfileMenuOpen}
       onClose={handleProfileMenuClose}
     >
-      <MenuItem onClick={() => void handleSignIn()}>Profile</MenuItem>
-      <MenuItem onClick={() => void handleSignIn()}>My Account</MenuItem>
+      {isLoggedIn ? (
+        <>
+          <MenuItem onClick={handleOpenProfile}>Profile</MenuItem>
+          <MenuItem onClick={() => void handleSignOut()}>Log Out</MenuItem>
+        </>
+      ) : (
+        <MenuItem onClick={() => void handleSignIn()}>Log In</MenuItem>
+      )}
     </Menu>
   );
 

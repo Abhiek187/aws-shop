@@ -5,13 +5,13 @@ import TokenResponse from "../types/TokenResponse";
 
 const queryParams = new URLSearchParams(window.location.search);
 
-const createBody = {
+const createBody = (codeVerifier?: string) => ({
   grant_type: "authorization_code",
   client_id: Constants.Cognito.CLIENT_ID,
   code: queryParams.get("code"),
   redirect_uri: window.location.origin,
-  code_verifier: sessionStorage.getItem(Constants.SessionStorage.CODE_VERIFIER),
-};
+  code_verifier: codeVerifier ?? "", // can't reference state directly (circular dependency)
+});
 
 const refreshBody = {
   grant_type: "refresh_token",
@@ -28,14 +28,17 @@ export const authApi = createApi({
   reducerPath: "loginApi",
   baseQuery: fetchBaseQuery({ baseUrl: Constants.Cognito.BASE_URL }),
   endpoints: (builder) => ({
-    getToken: builder.mutation<TokenResponse, { refresh: boolean }>({
-      query: ({ refresh }) => ({
+    getToken: builder.mutation<
+      TokenResponse,
+      { refresh: boolean; codeVerifier?: string }
+    >({
+      query: ({ refresh, codeVerifier }) => ({
         url: "/oauth2/token",
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: Object.entries(refresh ? refreshBody : createBody)
+        body: Object.entries(refresh ? refreshBody : createBody(codeVerifier))
           .map(
             ([key, value]) =>
               encodeURIComponent(key) +

@@ -8,12 +8,6 @@ export abstract class Constants {
     static readonly SCOPES = "email openid phone";
   };
 
-  static SessionStorage = class {
-    static readonly STATE = "state";
-    static readonly CODE_VERIFIER = "codeVerifier";
-    static readonly NONCE = "nonce";
-  };
-
   static LocalStorage = class {
     static readonly REFRESH_TOKEN = "refreshToken";
   };

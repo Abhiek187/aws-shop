@@ -1,3 +1,5 @@
+import store from "../store";
+import { appActions } from "../store/appSlice";
 import { Constants } from "./constants";
 
 // Convert a binary string to a base64 URL-encoded string
@@ -30,13 +32,11 @@ const sha256 = async (message: string): Promise<ArrayBuffer> => {
 
 // Initiate and authorization code flow with PKCE
 export const openHostedUI = async () => {
-  // Save the state, code challenge, and nonce in session storage to verify upon signing in
+  // Save the state, code challenge, and nonce in memory to verify upon signing in
   const state = generateRandomString();
-  sessionStorage.setItem(Constants.SessionStorage.STATE, state);
   const codeVerifier = generateRandomString();
-  sessionStorage.setItem(Constants.SessionStorage.CODE_VERIFIER, codeVerifier);
   const nonce = generateRandomString();
-  sessionStorage.setItem(Constants.SessionStorage.NONCE, nonce);
+  store.dispatch(appActions.saveOauthParams({ state, codeVerifier, nonce }));
 
   const queryParams = {
     client_id: Constants.Cognito.CLIENT_ID,
