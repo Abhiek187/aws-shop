@@ -34,40 +34,4 @@ export const storeApi = createApi({
   }),
 });
 
-const createBody = {
-  grant_type: "authorization_code",
-  client_id: Constants.Cognito.CLIENT_ID,
-  code: "query param",
-  redirect_uri: Constants.Cognito.REDIRECT_URI,
-  code_verifier: "UUID",
-};
-
-const refreshBody = {
-  grant_type: "refresh_token",
-  client_id: Constants.Cognito.CLIENT_ID,
-  refresh_token: "eyJ...",
-};
-
-export const loginApi = createApi({
-  reducerPath: "loginApi",
-  baseQuery: fetchBaseQuery({ baseUrl: Constants.Cognito.BASE_URL }),
-  endpoints: (builder) => ({
-    getToken: builder.mutation({
-      query: ({ refresh }) => ({
-        url: "/oauth2/token",
-        method: "post",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: Object.entries(refresh ? refreshBody : createBody)
-          .map(
-            ([key, value]) =>
-              encodeURIComponent(key) + "=" + encodeURIComponent(value)
-          )
-          .join("&"),
-      }),
-    }),
-  }),
-});
-
 export const { useGetAWSServicesQuery } = storeApi;

@@ -1,11 +1,11 @@
 import { Constants } from "./constants";
 
-// Convert a string to a base-64 URL-encoded string
+// Convert a binary string to a base64 URL-encoded string
 // Based on: https://www.oauth.com/oauth2-servers/pkce/authorization-request/
-const base64URLEncode = (str: string): string =>
+const base64URLEncode = (buffer: ArrayBuffer): string =>
   window
     // Convert the binary string to a base64 string ([a-zA-Z0-9+/])
-    .btoa(String.fromCharCode(...new Uint8Array(new TextEncoder().encode(str))))
+    .btoa(String.fromCharCode(...new Uint8Array(buffer)))
     // Replace + and / with - and _ for easier URL encoding
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
@@ -15,41 +15,43 @@ const base64URLEncode = (str: string): string =>
 // Create a cryptographically secure random string of a specified length (64 by default)
 const generateRandomString = (length: number = 64): string => {
   return base64URLEncode(
-    // Convert each number to a character
-    String.fromCharCode(
-      // Generate random numbers between 0 and 255 (with some padding)
-      ...window.crypto.getRandomValues(new Uint8Array(length * 2))
-    )
+    // Generate random numbers between 0 and 255 (with some padding)
+    window.crypto.getRandomValues(new Uint8Array(length * 2))
   ).substring(0, length);
 };
 
 // Hash a given string using SHA-256
-const sha256 = async (message: string): Promise<string> => {
+const sha256 = async (message: string): Promise<ArrayBuffer> => {
   // Encode the message as an array of unsigned ints (buffer)
   const msgBuffer = new TextEncoder().encode(message);
   // Hash the buffer using SHA-256
-  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-  // Convert the ArrayBuffer to an array of numbers (bytes)
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  // Convert bytes to hex string (and ensure each byte is converted to a string of length 2)
-  return hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  return await crypto.subtle.digest("SHA-256", msgBuffer);
 };
 
+// Initiate and authorization code flow with PKCE
 export const openHostedUI = async () => {
+  // Save the state, code challenge, and nonce in session storage to verify upon signing in
+  const state = generateRandomString();
+  sessionStorage.setItem(Constants.SessionStorage.STATE, state);
+  const codeVerifier = generateRandomString();
+  sessionStorage.setItem(Constants.SessionStorage.CODE_VERIFIER, codeVerifier);
+  const nonce = generateRandomString();
+  sessionStorage.setItem(Constants.SessionStorage.NONCE, nonce);
+
   const queryParams = {
     client_id: Constants.Cognito.CLIENT_ID,
     response_type: "code",
     scope: Constants.Cognito.SCOPES,
-    redirect_uri: Constants.Cognito.REDIRECT_URI,
-    state: generateRandomString(),
-    code_challenge: base64URLEncode(await sha256(generateRandomString())),
+    redirect_uri: window.location.origin,
+    state, // protects against XSRF
+    code_challenge: base64URLEncode(await sha256(codeVerifier)), // PKCE
     code_challenge_method: "S256",
-    nonce: generateRandomString(),
+    nonce, // protects against relay attacks
   };
 
   const queryParamString = new URLSearchParams(queryParams);
   const url = `${
     Constants.Cognito.BASE_URL
   }/oauth2/authorize?${queryParamString.toString()}`;
-  window.open(url);
+  window.open(url); // open login page in a new tab so session storage persists
 };
