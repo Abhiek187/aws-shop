@@ -21,7 +21,7 @@ type AppState = {
 
 const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-const getInitialState = (): AppSlice => ({
+export const getInitialState = (): AppSlice => ({
   mode: prefersDark ? "dark" : "light",
   isLoggedIn:
     localStorage.getItem(Constants.LocalStorage.REFRESH_TOKEN) !== null,
