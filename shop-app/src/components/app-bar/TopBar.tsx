@@ -21,6 +21,8 @@ import {
   MenuItem,
   Slide,
   Dialog,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import {
@@ -108,11 +110,14 @@ const TopBar = () => {
   const isProfileMenuOpen = Boolean(profileAnchorEl);
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
 
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+
   useEffect(() => {
     if (logoutResult.data !== undefined) {
       // Reset back to a logged out state
       localStorage.removeItem(Constants.LocalStorage.REFRESH_TOKEN);
       dispatch(appActions.logOut());
+      setShowLogoutAlert(true);
     }
   }, [dispatch, logoutResult]);
 
@@ -157,6 +162,10 @@ const TopBar = () => {
     setFilterOpen(false);
   };
 
+  const handleCloseLogoutAlert = () => {
+    setShowLogoutAlert(false);
+  };
+
   const updateSearchParams = (key: string, value: string) => {
     setSearchParams(
       (params) => {
@@ -199,10 +208,10 @@ const TopBar = () => {
       onClose={handleProfileMenuClose}
     >
       {isLoggedIn ? (
-        <>
+        <Box>
           <MenuItem onClick={handleOpenProfile}>Profile</MenuItem>
           <MenuItem onClick={() => void handleSignOut()}>Log Out</MenuItem>
-        </>
+        </Box>
       ) : (
         <MenuItem onClick={() => void handleSignIn()}>Log In</MenuItem>
       )}
@@ -373,6 +382,19 @@ const TopBar = () => {
       {renderMobileFilter}
       {renderMobileMenu}
       {renderProfileMenu}
+      <Snackbar
+        open={showLogoutAlert}
+        autoHideDuration={3000}
+        onClose={handleCloseLogoutAlert}
+      >
+        <Alert
+          onClose={handleCloseLogoutAlert}
+          severity="success"
+          variant="filled"
+        >
+          Logged out successfully!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

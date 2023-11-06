@@ -1,6 +1,12 @@
-import { CircularProgress, Grow, Unstable_Grid2 } from "@mui/material";
+import {
+  Alert,
+  CircularProgress,
+  Grow,
+  Snackbar,
+  Unstable_Grid2,
+} from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { TransitionGroup } from "react-transition-group";
@@ -12,6 +18,7 @@ import { createErrorString } from "../../utils/error";
 import { useGetTokenMutation } from "../../services/auth";
 import { Constants } from "../../utils/constants";
 import { appActions, selectApp } from "../../store/appSlice";
+import AuthorizeResponse from "../../types/AuthorizeResponse";
 
 const Store = () => {
   const { oauth } = useSelector(selectApp);
@@ -32,10 +39,45 @@ const Store = () => {
   );
   const [getToken, loginResult] = useGetTokenMutation();
 
+  const [showLoginAlert, setShowLoginAlert] = useState(false);
+
+  const handleCloseLoginAlert = () => {
+    setShowLoginAlert(false);
+  };
+
   useEffect(() => {
-    // After getting redirected from the hosted UI, exchange the authorization code for JWTs
-    if (isRedirect && searchParams.get("state") === oauth.state) {
-      void getToken({ refresh: false, codeVerifier: oauth.codeVerifier });
+    const handleMessageEvent = (event: MessageEvent<AuthorizeResponse>) => {
+      if (
+        event.origin === window.location.origin &&
+        typeof event.data === "object" &&
+        Object.hasOwn(event.data, "code") &&
+        Object.hasOwn(event.data, "state") &&
+        event.data.state === oauth.state
+      ) {
+        // Exchange the authorization code for JWTs
+        // Don't call this more than once since the code will get invalidated
+        void getToken({
+          refresh: false,
+          code: event.data.code,
+          codeVerifier: oauth.codeVerifier,
+        });
+      }
+    };
+
+    window.addEventListener("message", handleMessageEvent);
+    return () => window.removeEventListener("message", handleMessageEvent);
+  }, [getToken, loginResult, oauth.codeVerifier, oauth.state]);
+
+  useEffect(() => {
+    // Close the current tab and alert the parent tab after getting redirected from the hosted UI
+    if (isRedirect) {
+      // window.opener === parent tab
+      // Enforce same-origin targets
+      (window.opener as Window | null)?.postMessage({
+        code: searchParams.get("code"),
+        state: searchParams.get("state"),
+      });
+      window.close();
     }
   }, [getToken, isRedirect, oauth.codeVerifier, oauth.state, searchParams]);
 
@@ -54,6 +96,7 @@ const Store = () => {
           idToken: loginResult.data.id_token,
         })
       );
+      setShowLoginAlert(true);
     }
   }, [dispatch, loginResult]);
 
@@ -67,25 +110,40 @@ const Store = () => {
     );
   } else {
     return (
-      // Each card takes up 4 columns
-      <Unstable_Grid2
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-      >
-        {/* TransitionGroup is needed to animate items disappearing */}
-        {/* Don't add an extra div to the grid */}
-        <TransitionGroup component={Fragment}>
-          {getServicesResult.data?.map((service) => (
-            // Show a smooth transition when cards appear or disappear
-            <Grow key={service.Id}>
-              <Unstable_Grid2 xs={4}>
-                <ServiceCard service={service} />
-              </Unstable_Grid2>
-            </Grow>
-          ))}
-        </TransitionGroup>
-      </Unstable_Grid2>
+      <>
+        {/* Each card takes up 4 columns */}
+        <Unstable_Grid2
+          container
+          spacing={{ xs: 2, md: 3 }}
+          columns={{ xs: 4, sm: 8, md: 12 }}
+        >
+          {/* TransitionGroup is needed to animate items disappearing */}
+          {/* Don't add an extra div to the grid */}
+          <TransitionGroup component={Fragment}>
+            {getServicesResult.data?.map((service) => (
+              // Show a smooth transition when cards appear or disappear
+              <Grow key={service.Id}>
+                <Unstable_Grid2 xs={4}>
+                  <ServiceCard service={service} />
+                </Unstable_Grid2>
+              </Grow>
+            ))}
+          </TransitionGroup>
+        </Unstable_Grid2>
+        <Snackbar
+          open={showLoginAlert}
+          autoHideDuration={3000}
+          onClose={handleCloseLoginAlert}
+        >
+          <Alert
+            onClose={handleCloseLoginAlert}
+            severity="success"
+            variant="filled"
+          >
+            Logged in successfully!
+          </Alert>
+        </Snackbar>
+      </>
     );
   }
 };
