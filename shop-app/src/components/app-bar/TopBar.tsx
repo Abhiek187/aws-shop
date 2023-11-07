@@ -118,6 +118,8 @@ const TopBar = () => {
       localStorage.removeItem(Constants.LocalStorage.REFRESH_TOKEN);
       dispatch(appActions.logOut());
       setShowLogoutAlert(true);
+    } else if (logoutResult.error !== undefined) {
+      setShowLogoutAlert(true);
     }
   }, [dispatch, logoutResult]);
 
@@ -389,10 +391,12 @@ const TopBar = () => {
       >
         <Alert
           onClose={handleCloseLogoutAlert}
-          severity="success"
+          severity={isLoggedIn ? "error" : "success"}
           variant="filled"
         >
-          Logged out successfully!
+          {isLoggedIn
+            ? "Failed to log out, please try again later."
+            : "Logged out successfully!"}
         </Alert>
       </Snackbar>
     </Box>

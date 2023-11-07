@@ -21,7 +21,7 @@ import { appActions, selectApp } from "../../store/appSlice";
 import AuthorizeResponse from "../../types/AuthorizeResponse";
 
 const Store = () => {
-  const { oauth } = useSelector(selectApp);
+  const { isLoggedIn, oauth } = useSelector(selectApp);
   const dispatch = useDispatch();
 
   const [searchParams] = useSearchParams();
@@ -66,7 +66,7 @@ const Store = () => {
 
     window.addEventListener("message", handleMessageEvent);
     return () => window.removeEventListener("message", handleMessageEvent);
-  }, [getToken, loginResult, oauth.codeVerifier, oauth.state]);
+  }, [getToken, oauth.codeVerifier, oauth.state]);
 
   useEffect(() => {
     // Close the current tab and alert the parent tab after getting redirected from the hosted UI
@@ -79,7 +79,7 @@ const Store = () => {
       });
       window.close();
     }
-  }, [getToken, isRedirect, oauth.codeVerifier, oauth.state, searchParams]);
+  }, [isRedirect, searchParams]);
 
   useEffect(() => {
     if (loginResult.data !== undefined) {
@@ -96,6 +96,8 @@ const Store = () => {
           idToken: loginResult.data.id_token,
         })
       );
+      setShowLoginAlert(true);
+    } else if (loginResult.error !== undefined) {
       setShowLoginAlert(true);
     }
   }, [dispatch, loginResult]);
@@ -137,10 +139,12 @@ const Store = () => {
         >
           <Alert
             onClose={handleCloseLoginAlert}
-            severity="success"
+            severity={isLoggedIn ? "success" : "error"}
             variant="filled"
           >
-            Logged in successfully!
+            {isLoggedIn
+              ? "Logged in successfully!"
+              : "Failed to log in, please try again later."}
           </Alert>
         </Snackbar>
       </>
