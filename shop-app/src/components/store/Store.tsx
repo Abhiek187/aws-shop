@@ -6,7 +6,7 @@ import {
   Unstable_Grid2,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { TransitionGroup } from "react-transition-group";
@@ -38,6 +38,8 @@ const Store = () => {
     isRedirect ? skipToken : searchParamsObject
   );
   const [getToken, loginResult] = useGetTokenMutation();
+  // Prevent the token API from being called twice in strict mode
+  const tokenApiCalled = useRef(false);
 
   const [showLoginAlert, setShowLoginAlert] = useState(false);
 
@@ -52,7 +54,8 @@ const Store = () => {
         typeof event.data === "object" &&
         Object.hasOwn(event.data, "code") &&
         Object.hasOwn(event.data, "state") &&
-        event.data.state === oauth.state
+        event.data.state === oauth.state &&
+        !tokenApiCalled.current
       ) {
         // Exchange the authorization code for JWTs
         // Don't call this more than once since the code will get invalidated
@@ -61,6 +64,7 @@ const Store = () => {
           code: event.data.code,
           codeVerifier: oauth.codeVerifier,
         });
+        tokenApiCalled.current = true;
       }
     };
 
@@ -97,8 +101,10 @@ const Store = () => {
         })
       );
       setShowLoginAlert(true);
+      tokenApiCalled.current = false;
     } else if (loginResult.error !== undefined) {
       setShowLoginAlert(true);
+      tokenApiCalled.current = false;
     }
   }, [dispatch, loginResult]);
 
