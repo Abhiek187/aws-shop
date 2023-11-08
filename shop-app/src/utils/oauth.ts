@@ -31,25 +31,6 @@ const sha256 = async (message: string): Promise<ArrayBuffer> => {
   return await crypto.subtle.digest("SHA-256", msgBuffer);
 };
 
-// Get the JSON payload from a JWT (either an ID or access token)
-export const parseJWT = <T extends TokenPayload>(token: string): T => {
-  // Get the payload part of the token
-  const base64Url = token.split(".")[1];
-  // Convert URL-encoded base64 to regular base64
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-  // Convert base64 to JSON string
-  const jsonPayload = decodeURIComponent(
-    window
-      .atob(base64)
-      .split("")
-      // Convert each char to its URL encoding (hex char code padded with 0s)
-      .map((char) => "%" + ("00" + char.charCodeAt(0).toString(16)).slice(-2))
-      .join("")
-  );
-
-  return JSON.parse(jsonPayload) as T;
-};
-
 // Initiate and authorization code flow with PKCE
 export const openHostedUI = async () => {
   // Save the state, code challenge, and nonce in memory to verify upon signing in
@@ -74,4 +55,23 @@ export const openHostedUI = async () => {
     Constants.Cognito.BASE_URL
   }/oauth2/authorize?${queryParamString.toString()}`;
   window.open(url); // open login page in a new tab so session storage persists
+};
+
+// Get the JSON payload from a JWT (either an ID or access token)
+export const parseJWT = <T extends TokenPayload>(token: string): T => {
+  // Get the payload part of the token
+  const base64Url = token.split(".")[1];
+  // Convert URL-encoded base64 to regular base64
+  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  // Convert base64 to JSON string
+  const jsonPayload = decodeURIComponent(
+    window
+      .atob(base64)
+      .split("")
+      // Convert each char to its URL encoding (hex char code padded with 0s)
+      .map((char) => "%" + ("00" + char.charCodeAt(0).toString(16)).slice(-2))
+      .join("")
+  );
+
+  return JSON.parse(jsonPayload) as T;
 };
