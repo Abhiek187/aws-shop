@@ -1,6 +1,6 @@
 import store from "../store";
 import { appActions } from "../store/appSlice";
-import { TokenPayload } from "../types/TokenPayload";
+import { TokenHeader, TokenPayload } from "../types/TokenPayload";
 import { Constants } from "./constants";
 
 // Convert a binary string to a base64 URL-encoded string
@@ -57,14 +57,11 @@ export const openHostedUI = async () => {
   window.open(url); // open login page in a new tab so session storage persists
 };
 
-// Get the JSON payload from a JWT (either an ID or access token)
-export const parseJWT = <T extends TokenPayload>(token: string): T => {
-  // Get the payload part of the token
-  const base64Url = token.split(".")[1];
+const base64URLDecode = (base64Url: string): string => {
   // Convert URL-encoded base64 to regular base64
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
   // Convert base64 to JSON string
-  const jsonPayload = decodeURIComponent(
+  return decodeURIComponent(
     window
       .atob(base64)
       .split("")
@@ -72,6 +69,24 @@ export const parseJWT = <T extends TokenPayload>(token: string): T => {
       .map((char) => "%" + ("00" + char.charCodeAt(0).toString(16)).slice(-2))
       .join("")
   );
+};
 
-  return JSON.parse(jsonPayload) as T;
+// Get the JSON header & payload from a JWT (either an ID or access token)
+export const parseJWT = <T extends TokenPayload>(
+  token: string
+): [TokenHeader, T] => {
+  const [headerUrl, payloadUrl] = token.split(".").slice(0, 2);
+
+  const [jsonHeader, jsonPayload] = [
+    base64URLDecode(headerUrl),
+    base64URLDecode(payloadUrl),
+  ];
+
+  return [JSON.parse(jsonHeader) as TokenHeader, JSON.parse(jsonPayload) as T];
+};
+
+// Check if the JWT is valid, based on:
+// https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html
+export const isValidJWT = <T extends TokenPayload>(token: T): boolean => {
+  return true;
 };

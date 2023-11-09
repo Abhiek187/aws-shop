@@ -1,3 +1,8 @@
+export type TokenHeader = {
+  kid: string; // key ID
+  alg: string; // signature or encryption algorithm
+};
+
 export interface TokenPayload {
   sub: string; // subject (whom the token refers to)
   iss: string; // issuer (who created and signed the token)

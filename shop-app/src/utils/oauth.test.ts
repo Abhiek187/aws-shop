@@ -1,7 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { openHostedUI, parseJWT } from "./oauth";
 import { Constants } from "./constants";
-import { AccessTokenPayload, IdTokenPayload } from "../types/TokenPayload";
+import {
+  AccessTokenPayload,
+  IdTokenPayload,
+  TokenHeader,
+} from "../types/TokenPayload";
 
 describe("oauth", () => {
   const windowOpenSpy = vi.spyOn(window, "open").mockReturnThis();
@@ -49,6 +53,11 @@ describe("oauth", () => {
       "eyJraWQiOiJqM0xxakdQK01HQkVGRnFcL29WdGhrOERpXC9XV1RGd3hWUyttVnVuQk53TUk9IiwiYWxnIjoiUlMyNTYifQ" +
       ".eyJzdWIiOiJ1c2VybmFtZSIsImlzcyI6Imh0dHBzOi8vY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vdXMtZWFzdC0xX3Bvb2wiLCJ2ZXJzaW9uIjoyLCJjbGllbnRfaWQiOiJjbGllbnQiLCJvcmlnaW5fanRpIjoiMzMyOTQzOGUtMzIwYy00ZDg4LTk4YWUtM2M4ZTMxMmY4YzE2IiwidG9rZW5fdXNlIjoiYWNjZXNzIiwic2NvcGUiOiJwaG9uZSBvcGVuaWQgZW1haWwiLCJhdXRoX3RpbWUiOjEwMDAwMDAwMDAsImV4cCI6MTAwMDAwMDAwMCwiaWF0IjoxMDAwMDAwMDAwLCJqdGkiOiI0ZDcxNjNkYS0wMGQwLTQxOWMtYjBmMS04YmJiNzUzYmY2ZjciLCJ1c2VybmFtZSI6InVzZXJuYW1lIn0" +
       ".naOiG7Hqu5HLmkgHMCRfQaG3L0WkLtbqkxI9sZ6xFcmtzaY7-sRoPzseaT7um838cAGiRPKfq2FxZcHXC-K6BaGwkjOPeXZ3eyrOnlbR6VR8MvmxwW_iHQzya_jZWWLPazeiAkDXRLOI59JXW5sspdAKban-HW7SR3XLwFCHv-E0yJbn8VWhHV3ha000YiE_cS8_70_o40DBSfee9ba1XmPRyHGAq4IormR4bZCh-RewHEHOg37i-6Fu5LlUGSYUrH3DhYDjdKrcHWb7eFf2S1Lf8g4QWQ_K7-eyWtJscgJ-RXuLTr25oo8c8d5tx44Z5dhecHT2ki22WtG-fDpvOQ";
+
+    const mockAccessTokenHeader: TokenHeader = {
+      kid: "j3LqjGP+MGBEFFq/oVthk8Di/WWTFwxVS+mVunBNwMI=",
+      alg: "RS256",
+    };
     const mockAccessTokenPayload: AccessTokenPayload = {
       sub: "username",
       iss: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_pool",
@@ -65,9 +74,11 @@ describe("oauth", () => {
     };
 
     // When decoded
-    const jwtPayload = parseJWT<AccessTokenPayload>(mockAccessToken);
+    const [jwtHeader, jwtPayload] =
+      parseJWT<AccessTokenPayload>(mockAccessToken);
 
-    // Then it should return the token's payload
+    // Then it should return the token's header & payload
+    expect(jwtHeader).toMatchObject(mockAccessTokenHeader);
     expect(jwtPayload).toMatchObject(mockAccessTokenPayload);
   });
 
@@ -77,6 +88,11 @@ describe("oauth", () => {
       "eyJraWQiOiJQQStWelNOT2p0OXhxR21vRXM5RXZ1U2kwQ0NzbUxlMDVpbmZXU2w5VGo4PSIsImFsZyI6IlJTMjU2In0" +
       ".eyJhdF9oYXNoIjoiMkxRQW0wbnl2ZlhRUnRrLXhuS2ZZZyIsInN1YiI6InVzZXJuYW1lIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImlzcyI6Imh0dHBzOi8vY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20vdXMtZWFzdC0xX3Bvb2wiLCJjb2duaXRvOnVzZXJuYW1lIjoidXNlcm5hbWUiLCJub25jZSI6IlcwU3BBUkMwRzY3akRaVnFWSkg2U0E5TGhKdzZheWVTQU83cDVzaUQ3amtqN2hSSDVNU0w2aDhvZkUwaEpMaFIiLCJvcmlnaW5fanRpIjoiMzMyOTQzOGUtMzIwYy00ZDg4LTk4YWUtM2M4ZTMxMmY4YzE2IiwiYXVkIjoiY2xpZW50IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjEwMDAwMDAwMDAsImV4cCI6MTAwMDAwMDAwMCwiaWF0IjoxMDAwMDAwMDAwLCJqdGkiOiI5ZjU1Njk2OC1lMzE4LTRiYjYtOWIzYy04MmU0ODViOGFiZGUiLCJlbWFpbCI6InVzZXJAbWFpbC5jb20ifQ" +
       ".vaHTLt0yqxb9YrZGQOGoquVkLQ3_Z3FD6Hg9Nx3qMFnyr4xL7V5Ea5Ure4I3sB2DOnV76IiZbzop3Q1ToMlTK6oYVlW1oEktPjf_MISAzWv7wxsSTG11koX3WLI8PiIqKfZXHyB6qdrI4j7LuGKtTK0lOVc8690Bc0Gq_qVVRW2TSabtHf3NrAANpAShMZGkPaDXkWFVHKoDobdNf-yph3Queclc2I2Eem0o--vO1K054XrM2379woJJySWm4b7fUjZulinfRpIggQaMg-jRYZa3PZKbscjfuPebgmo_FX7C4zZMoVe6p-H6NZRkeJs1suFCgnzv-hCmQCLCoY5j-w";
+
+    const mockIdTokenHeader: TokenHeader = {
+      kid: "PA+VzSNOjt9xqGmoEs9EvuSi0CCsmLe05infWSl9Tj8=",
+      alg: "RS256",
+    };
     const mockIdTokenPayload: IdTokenPayload = {
       at_hash: "2LQAm0nyvfXQRtk-xnKfYg",
       sub: "username",
@@ -95,9 +111,26 @@ describe("oauth", () => {
     };
 
     // When decoded
-    const jwtPayload = parseJWT<IdTokenPayload>(mockIdToken);
+    const [jwtHeader, jwtPayload] = parseJWT<IdTokenPayload>(mockIdToken);
 
-    // Then it should return the token's payload
+    // Then it should return the token's header & payload
+    expect(jwtHeader).toMatchObject(mockIdTokenHeader);
     expect(jwtPayload).toMatchObject(mockIdTokenPayload);
+  });
+
+  it.each([
+    "",
+    ".",
+    "..",
+    "...",
+    "asdfjkl;",
+    "This is not a JWT",
+    "🧑‍💻",
+    "eyJdkla;f.eyJla93nee.jalf",
+  ])("should throw an exception for invalid tokens", (token) => {
+    // Given an invalid JWT
+    // When decoded
+    // Then it should throw an error
+    expect(() => parseJWT(token)).toThrow();
   });
 });
