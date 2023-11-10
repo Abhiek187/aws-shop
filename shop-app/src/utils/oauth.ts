@@ -1,6 +1,12 @@
 import store from "../store";
 import { appActions } from "../store/appSlice";
-import { TokenHeader, TokenPayload } from "../types/TokenPayload";
+import JWK from "../types/JWK";
+import {
+  AccessTokenPayload,
+  IdTokenPayload,
+  TokenHeader,
+  TokenPayload,
+} from "../types/TokenPayload";
 import { Constants } from "./constants";
 
 // Convert a binary string to a base64 URL-encoded string
@@ -85,8 +91,82 @@ export const parseJWT = <T extends TokenPayload>(
   return [JSON.parse(jsonHeader) as TokenHeader, JSON.parse(jsonPayload) as T];
 };
 
+const isAccessToken = (token: TokenPayload): token is AccessTokenPayload =>
+  Object.hasOwn(token, "client_id");
+
+const isIdToken = (token: TokenPayload): token is IdTokenPayload =>
+  Object.hasOwn(token, "aud");
+
 // Check if the JWT is valid, based on:
 // https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-verifying-a-jwt.html
-export const isValidJWT = <T extends TokenPayload>(token: T): boolean => {
-  return true;
+export const isValidJWT = async (token: string): Promise<boolean> => {
+  try {
+    // Check if the JWT is in the format [header].[payload].[signature]
+    // (Can't validate the signature on the client side)
+    const [header, payload] = parseJWT(token);
+
+    // Check if the key ID comes from Cognito's JWKs
+    const tokenKid = header.kid;
+    const resp = await fetch(
+      `${Constants.Cognito.IDP_BASE_URL}/.well-known/jwks.json`,
+      {
+        signal: new AbortController().signal, // required for msw
+      }
+    );
+    const jwks = (await resp.json()) as JWK;
+
+    // Cognito uses more than one key pair
+    const publicKids = jwks.keys.map((jwk) => jwk.kid);
+
+    if (!publicKids.includes(tokenKid)) {
+      throw new Error(
+        `kid doesn't match Cognito's JWKs: [${publicKids.toString()}]`
+      );
+    }
+
+    // Check if the token is expired
+    const expireTimeMilli = payload.exp * 1000;
+
+    // Date.now() is in milliseconds, but JWT numbers are in seconds
+    if (Date.now() >= expireTimeMilli) {
+      throw new Error(
+        `Token has expired on ${new Date(expireTimeMilli).toDateString()}`
+      );
+    }
+
+    // Check if the issuer is Cognito
+    if (payload.iss !== Constants.Cognito.IDP_BASE_URL) {
+      throw new Error(`Issuer doesn't match ${Constants.Cognito.IDP_BASE_URL}`);
+    }
+
+    // Check if the token contains the client ID & token_use matches the token type
+    if (isAccessToken(payload)) {
+      if (payload.client_id !== Constants.Cognito.CLIENT_ID) {
+        throw new Error(
+          `Client ID doesn't match ${Constants.Cognito.CLIENT_ID}`
+        );
+      }
+
+      if (payload.token_use !== "access") {
+        throw new Error("Token can't be used as an access token");
+      }
+    } else if (isIdToken(payload)) {
+      if (payload.aud !== Constants.Cognito.CLIENT_ID) {
+        throw new Error(
+          `Client ID doesn't match ${Constants.Cognito.CLIENT_ID}`
+        );
+      }
+
+      if (payload.token_use !== "id") {
+        throw new Error("Token can't be used as an ID token");
+      }
+    } else {
+      throw new Error("Token is neither an access token nor an ID token");
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Invalid JWT:", error);
+    return false;
+  }
 };
