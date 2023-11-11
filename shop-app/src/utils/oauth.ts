@@ -8,6 +8,7 @@ import {
   TokenPayload,
 } from "../types/TokenPayload";
 import { Constants } from "./constants";
+import * as oauth from "./oauth";
 
 // Convert a binary string to a base64 URL-encoded string
 // Based on: https://www.oauth.com/oauth2-servers/pkce/authorization-request/
@@ -103,7 +104,8 @@ export const isValidJWT = async (token: string): Promise<boolean> => {
   try {
     // Check if the JWT is in the format [header].[payload].[signature]
     // (Can't validate the signature on the client side)
-    const [header, payload] = parseJWT(token);
+    // Can ony mock functions referenced by the module export
+    const [header, payload] = oauth.parseJWT(token);
 
     // Check if the key ID comes from Cognito's JWKs
     const tokenKid = header.kid;
@@ -153,7 +155,7 @@ export const isValidJWT = async (token: string): Promise<boolean> => {
     } else if (isIdToken(payload)) {
       if (payload.aud !== Constants.Cognito.CLIENT_ID) {
         throw new Error(
-          `Client ID doesn't match ${Constants.Cognito.CLIENT_ID}`
+          `Audience doesn't match ${Constants.Cognito.CLIENT_ID}`
         );
       }
 
