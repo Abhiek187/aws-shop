@@ -61,7 +61,13 @@ export const openHostedUI = async () => {
   const url = `${
     Constants.Cognito.BASE_URL
   }/oauth2/authorize?${queryParamString.toString()}`;
-  window.open(url); // open login page in a new tab so session storage persists
+  const newWindow = window.open(url); // open login page in a new tab so session storage persists
+
+  if (newWindow === null || newWindow.closed) {
+    alert(
+      "Pop-ups are required to sign in a new tab. Please enable them to continue."
+    );
+  }
 };
 
 const base64URLDecode = (base64Url: string): string => {
