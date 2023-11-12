@@ -386,7 +386,7 @@ const TopBar = () => {
       {renderProfileMenu}
       <Snackbar
         open={showLogoutAlert}
-        autoHideDuration={3000}
+        autoHideDuration={5000}
         onClose={handleCloseLogoutAlert}
       >
         <Alert

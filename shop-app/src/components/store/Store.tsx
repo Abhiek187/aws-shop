@@ -49,14 +49,18 @@ const Store = () => {
 
   useEffect(() => {
     const handleMessageEvent = (event: MessageEvent<AuthorizeResponse>) => {
+      // Discard messages that don't come from OAuth
       if (
-        event.origin === window.location.origin &&
-        typeof event.data === "object" &&
-        Object.hasOwn(event.data, "code") &&
-        Object.hasOwn(event.data, "state") &&
-        event.data.state === oauth.state &&
-        !tokenApiCalled.current
-      ) {
+        !(
+          event.origin === window.location.origin &&
+          typeof event.data === "object" &&
+          Object.hasOwn(event.data, "code") &&
+          Object.hasOwn(event.data, "state")
+        )
+      )
+        return;
+
+      if (event.data.state === oauth.state && !tokenApiCalled.current) {
         // Exchange the authorization code for JWTs
         // Don't call this more than once since the code will get invalidated
         void getToken({
@@ -65,6 +69,13 @@ const Store = () => {
           codeVerifier: oauth.codeVerifier,
         });
         tokenApiCalled.current = true;
+      } else if (event.data.state !== oauth.state) {
+        // This can also happen if the user refreshes the page before they finish entering their credentials
+        // (The Redux store is cleared and the client forgets what it generated.)
+        console.error(
+          "The authorization server didn't return the correct state. We just saved you from a CSRF attack! 😊"
+        );
+        setShowLoginAlert(true);
       }
     };
 
@@ -140,7 +151,7 @@ const Store = () => {
         </Unstable_Grid2>
         <Snackbar
           open={showLoginAlert}
-          autoHideDuration={3000}
+          autoHideDuration={5000}
           onClose={handleCloseLoginAlert}
         >
           <Alert
