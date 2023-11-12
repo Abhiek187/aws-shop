@@ -477,7 +477,7 @@ Resources:
           # Add the necessary security headers to pass Mozilla Observatory
           ContentSecurityPolicy:
             # Test using Content-Security-Policy-Report-Only
-            ContentSecurityPolicy: >-
+            ContentSecurityPolicy: !Sub >-
               default-src 'none';
               img-src 'self';
               script-src 'self';
@@ -485,7 +485,7 @@ Resources:
               object-src 'none';
               font-src 'self' https://fonts.gstatic.com;
               manifest-src 'self';
-              connect-src 'self' https://dovshfcety3as.cloudfront.net;
+              connect-src 'self' https://dovshfcety3as.cloudfront.net https://${AuthDomain}.auth.${AWS::Region}.amazoncognito.com https://cognito-idp.${AWS::Region}.amazonaws.com;
               frame-ancestors 'self';
               base-uri 'self';
               form-action 'self'
