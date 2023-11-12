@@ -32,6 +32,7 @@ _Created using [draw.io](https://www.draw.io/?splash=0&libs=aws4)_
 - CodeBuild is used to test the React app, build it, and deploy to S3.
 - The S3 bucket will hold the optimized production build for the React app. Since CloudFront will host the website, we don't need to enable static website hosting on the bucket. A bucket policy was created to only make the website accessible by a secure CloudFront distribution. This way, we can block public access from the S3 bucket.
 - CloudFront hosts the website across multiple edge locations across North America, Europe, and Israel (to save on costs). It uses Origin Access Control (OAC) to securely connect to S3 as its origin.
+- Cognito handles authentication so users can manage their profiles.
 
 ### Back End
 
