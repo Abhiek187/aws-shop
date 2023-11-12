@@ -51,10 +51,10 @@ export const openHostedUI = async () => {
     response_type: "code",
     scope: Constants.Cognito.SCOPES,
     redirect_uri: window.location.origin,
-    state, // protects against XSRF
+    state, // protects against CSRF attacks
     code_challenge: base64URLEncode(await sha256(codeVerifier)), // PKCE
     code_challenge_method: "S256",
-    nonce, // protects against relay attacks
+    nonce, // protects against replay attacks
   };
 
   const queryParamString = new URLSearchParams(queryParams);
@@ -122,7 +122,7 @@ export const isValidJWT = async (token: string): Promise<boolean> => {
 
     if (!publicKids.includes(tokenKid)) {
       throw new Error(
-        `kid doesn't match Cognito's JWKs: [${publicKids.toString()}]`
+        `kid doesn't match Cognito's JWKs: (expected: [${publicKids.toString()}], received: ${tokenKid})`
       );
     }
 
@@ -138,32 +138,48 @@ export const isValidJWT = async (token: string): Promise<boolean> => {
 
     // Check if the issuer is Cognito
     if (payload.iss !== Constants.Cognito.IDP_BASE_URL) {
-      throw new Error(`Issuer doesn't match ${Constants.Cognito.IDP_BASE_URL}`);
+      throw new Error(
+        `Issuer doesn't match (expected: ${Constants.Cognito.IDP_BASE_URL}, received: ${payload.iss})`
+      );
     }
 
     // Check if the token contains the client ID & token_use matches the token type
     if (isAccessToken(payload)) {
       if (payload.client_id !== Constants.Cognito.CLIENT_ID) {
         throw new Error(
-          `Client ID doesn't match ${Constants.Cognito.CLIENT_ID}`
+          `Client ID doesn't match (expected: ${Constants.Cognito.CLIENT_ID}, received: ${payload.client_id})`
         );
       }
 
       if (payload.token_use !== "access") {
-        throw new Error("Token can't be used as an access token");
+        throw new Error(
+          `Token use is invalid (expected: access, received: ${payload.token_use})`
+        );
       }
     } else if (isIdToken(payload)) {
       if (payload.aud !== Constants.Cognito.CLIENT_ID) {
         throw new Error(
-          `Audience doesn't match ${Constants.Cognito.CLIENT_ID}`
+          `Audience doesn't match (expected: ${Constants.Cognito.CLIENT_ID}, received: ${payload.aud})`
         );
       }
 
       if (payload.token_use !== "id") {
-        throw new Error("Token can't be used as an ID token");
+        throw new Error(
+          `Token use is invalid (expected: id, received: ${payload.token_use})`
+        );
+      }
+
+      // If the nonce is saved in Redux, check if it's present in the ID token
+      const savedNonce = store.getState().app.oauth.nonce;
+      if (savedNonce.length > 0 && payload.nonce !== savedNonce) {
+        throw new Error(
+          `Nonce doesn't match (expected: ${savedNonce}, received: ${payload.nonce})`
+        );
       }
     } else {
-      throw new Error("Token is neither an access token nor an ID token");
+      throw new Error(
+        `Token is neither an access token nor an ID token (received: ${token})`
+      );
     }
 
     return true;

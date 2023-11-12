@@ -1,4 +1,5 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { SpyInstance, afterEach, describe, expect, it, vi } from "vitest";
+
 import * as oauth from "./oauth";
 import { isValidJWT, openHostedUI, parseJWT } from "./oauth";
 import { Constants } from "./constants";
@@ -7,6 +8,8 @@ import {
   IdTokenPayload,
   TokenHeader,
 } from "../types/TokenPayload";
+import store from "../store";
+import { AppSlice } from "../store/appSlice";
 
 describe("oauth", () => {
   const windowOpenSpy = vi.spyOn(window, "open").mockReturnThis();
@@ -252,6 +255,30 @@ describe("oauth", () => {
       ...mockIdTokenPayload,
       token_use: "access",
     });
+
+    // When validated
+    // Then it should return invalid
+    await expect(isValidJWT(mockIdToken)).resolves.toBe(false);
+  });
+
+  it("should reject the ID token if the nonce doesn't match", async () => {
+    // Given an ID token with an invalid nonce
+    mockDate(mockIdTokenPayload.exp - 1);
+    const stateSpy = vi.spyOn(store, "getState") as SpyInstance<
+      [],
+      {
+        app: {
+          oauth: Pick<AppSlice["oauth"], "nonce">;
+        };
+      }
+    >;
+    stateSpy.mockImplementation(() => ({
+      app: {
+        oauth: {
+          nonce: "bad nonce",
+        },
+      },
+    }));
 
     // When validated
     // Then it should return invalid
