@@ -32,6 +32,7 @@ _Created using [draw.io](https://www.draw.io/?splash=0&libs=aws4)_
 - CodeBuild is used to test the React app, build it, and deploy to S3.
 - The S3 bucket will hold the optimized production build for the React app. Since CloudFront will host the website, we don't need to enable static website hosting on the bucket. A bucket policy was created to only make the website accessible by a secure CloudFront distribution. This way, we can block public access from the S3 bucket.
 - CloudFront hosts the website across multiple edge locations across North America, Europe, and Israel (to save on costs). It uses Origin Access Control (OAC) to securely connect to S3 as its origin.
+- Cognito handles authentication so users can manage their profiles.
 
 ### Back End
 
@@ -383,6 +384,48 @@ Get health check status:
 
 ```bash
 aws route53 get-health-check-status --health-check-id ID
+```
+
+### Cognito Commands
+
+List user pools:
+
+```bash
+aws cognito-idp list-user-pools --max-results 20
+aws cognito-idp describe-user-pool --user-pool-id ID
+```
+
+Describe user pool domain:
+
+```bash
+aws cognito-idp describe-user-pool-domain --domain DOMAIN
+```
+
+List user pool clients:
+
+```bash
+aws cognito-idp list-user-pool-clients --user-pool-id ID
+aws cognito-idp describe-user-pool-client --user-pool-id ID --client-id CLIENT_ID
+```
+
+List users:
+
+```bash
+aws cognito-idp list-users --user-pool-id ID
+```
+
+Sign in user (public):
+
+```bash
+aws cognito-idp initiate-auth --client-id CLIENT_ID --auth-flow [USER_SRP_AUTH|REFRESH_TOKEN_AUTH] --auth-parameters [USERNAME=EMAIL,SRP_A=SRP|REFRESH_TOKEN=TOKEN]
+aws cognito-idp respond-to-auth-challenge --client-id CLIENT_ID [--session SESSION] --challenge-name PASSWORD_VERIFIER --challenge-responses PASSWORD_CLAIM_SIGNATURE=SIGNATURE,PASSWORD_CLAIM_SECRET_BLOCK=BLOCK,TIMESTAMP=TIME,USERNAME=EMAIL
+```
+
+Sign in user (server-side):
+
+```bash
+aws cognito-idp admin-initiate-auth --user-pool-id ID --client-id CLIENT_ID --auth-flow [USER_SRP_AUTH|REFRESH_TOKEN_AUTH] --auth-parameters [USERNAME=EMAIL,SRP_A=SRP|REFRESH_TOKEN=TOKEN]
+aws cognito-idp admin-respond-to-auth-challenge --user-pool-id ID --client-id CLIENT_ID [--session SESSION] --challenge-name PASSWORD_VERIFIER --challenge-responses PASSWORD_CLAIM_SIGNATURE=SIGNATURE,PASSWORD_CLAIM_SECRET_BLOCK=BLOCK,TIMESTAMP=TIME,USERNAME=EMAIL
 ```
 
 ## Rotating Access Keys

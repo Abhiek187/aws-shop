@@ -21,14 +21,26 @@ import {
   MenuItem,
   Slide,
   Dialog,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
-import { ChangeEvent, MouseEvent, Ref, forwardRef, useState } from "react";
+import {
+  ChangeEvent,
+  MouseEvent,
+  Ref,
+  forwardRef,
+  useEffect,
+  useState,
+} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
 import FilterFields from "./FilterFields";
 import { appActions, selectApp } from "../../store/appSlice";
+import { openHostedUI } from "../../utils/oauth";
+import { useRevokeTokenMutation } from "../../services/auth";
+import { Constants } from "../../utils/constants";
 
 const SearchWrapper = styled("div")(({ theme }) => ({
   position: "relative",
@@ -82,9 +94,11 @@ const TopBar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("query") ?? "";
 
-  const { mode } = useSelector(selectApp);
+  const { isLoggedIn, mode } = useSelector(selectApp);
   const isDarkMode = mode === "dark";
   const dispatch = useDispatch();
+
+  const [revokeToken, logoutResult] = useRevokeTokenMutation();
 
   const [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(
     null
@@ -95,6 +109,19 @@ const TopBar = () => {
 
   const isProfileMenuOpen = Boolean(profileAnchorEl);
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
+
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+
+  useEffect(() => {
+    if (logoutResult.data !== undefined) {
+      // Reset back to a logged out state
+      localStorage.removeItem(Constants.LocalStorage.REFRESH_TOKEN);
+      dispatch(appActions.logOut());
+      setShowLogoutAlert(true);
+    } else if (logoutResult.error !== undefined) {
+      setShowLogoutAlert(true);
+    }
+  }, [dispatch, logoutResult]);
 
   const handleToggleMode = () => {
     dispatch(appActions.toggleMode());
@@ -113,6 +140,18 @@ const TopBar = () => {
     handleMobileMenuClose();
   };
 
+  const handleOpenProfile = () => {
+    console.log("open profile");
+  };
+
+  const handleSignIn = async () => {
+    await openHostedUI();
+  };
+
+  const handleSignOut = async () => {
+    await revokeToken();
+  };
+
   const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setMobileMenuAnchorEl(event.currentTarget);
   };
@@ -123,6 +162,10 @@ const TopBar = () => {
 
   const handleFilterClose = () => {
     setFilterOpen(false);
+  };
+
+  const handleCloseLogoutAlert = () => {
+    setShowLogoutAlert(false);
   };
 
   const updateSearchParams = (key: string, value: string) => {
@@ -166,8 +209,14 @@ const TopBar = () => {
       open={isProfileMenuOpen}
       onClose={handleProfileMenuClose}
     >
-      <MenuItem onClick={handleProfileMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleProfileMenuClose}>My Account</MenuItem>
+      {isLoggedIn ? (
+        <Box>
+          <MenuItem onClick={handleOpenProfile}>Profile</MenuItem>
+          <MenuItem onClick={() => void handleSignOut()}>Log Out</MenuItem>
+        </Box>
+      ) : (
+        <MenuItem onClick={() => void handleSignIn()}>Log In</MenuItem>
+      )}
     </Menu>
   );
 
@@ -337,6 +386,21 @@ const TopBar = () => {
       {renderMobileFilter}
       {renderMobileMenu}
       {renderProfileMenu}
+      <Snackbar
+        open={showLogoutAlert}
+        autoHideDuration={5000}
+        onClose={handleCloseLogoutAlert}
+      >
+        <Alert
+          onClose={handleCloseLogoutAlert}
+          severity={isLoggedIn ? "error" : "success"}
+          variant="filled"
+        >
+          {isLoggedIn
+            ? "Failed to log out, please try again later."
+            : "Logged out successfully!"}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

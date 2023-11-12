@@ -1,17 +1,20 @@
 import { configureStore } from "@reduxjs/toolkit";
+
 import { storeApi } from "../services/store";
 import { appReducer, appSlice } from "./appSlice";
+import { authApi } from "../services/auth";
 
 // Allow tests to start fresh with a Redux store to avoid caching data
 export const createStore = () =>
   configureStore({
     reducer: {
-      [storeApi.reducerPath]: storeApi.reducer,
       [appSlice.name]: appReducer,
+      [authApi.reducerPath]: authApi.reducer,
+      [storeApi.reducerPath]: storeApi.reducer,
     },
     // Enable caching, invalidation, polling, and other useful features
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(storeApi.middleware),
+      getDefaultMiddleware().concat([authApi.middleware, storeApi.middleware]),
   });
 
 const store = createStore();

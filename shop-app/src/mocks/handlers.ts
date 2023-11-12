@@ -2,6 +2,7 @@ import { http } from "msw";
 
 import { Constants } from "../utils/constants";
 import RawAWSService from "../types/RawAWSService";
+import JWK from "../types/JWK";
 
 export const mockStoreResponse: RawAWSService[] = [
   {
@@ -92,12 +93,36 @@ export const mockStoreResponse: RawAWSService[] = [
   },
 ];
 
+const mockJWKResponse: JWK = {
+  keys: [
+    {
+      alg: "RS256",
+      e: "AQAB",
+      kid: "PA+VzSNOjt9xqGmoEs9EvuSi0CCsmLe05infWSl9Tj8=",
+      kty: "RSA",
+      n: "vnN3ZiOOjHg-oyTXya2KmMYEtqpT9DGYPLXQLzjJG7uz0VOaYVKvgE8skoocPKsCdpCcvgCkgY1XGEvjf5GI6lfjh7p15AM82Hibq_Ek8NCbJ5AOfA4X5Ti8xGoqrPEhYAsd31aSNi92M6Kib-cPJDXaFo-hMsOBZ7v2_70joOW-w0hZnc68ADv_bF0ia9ccIUaO4wZKuAOdcdnz9pRX3_sL8CvAj05uuQQASUZRKzFiYuy5ZcMxygEeRQbd5Ylv-w03KpLLqc7AW5vJnscPzWzt9dyoH3mo-D457lq1W0BHaXiRIqMqF6ODDI6FrjSFAtAWQkTqqY3m6EByK7L1Ww",
+      use: "sig",
+    },
+    {
+      alg: "RS256",
+      e: "AQAB",
+      kid: "j3LqjGP+MGBEFFq/oVthk8Di/WWTFwxVS+mVunBNwMI=",
+      kty: "RSA",
+      n: "rmVj_mPGRss90ugMCRdoyCVPqjkyph0EekE4sBerFJe0P16B2pbI3Y5SCbHSkA7HdhhvA7W_g2TVVdG0J_6NNQ6n700QXhJhPetoiBGxfIFji77hHff3NBtj8TLi2tPoOrUFQWsep5fiMjs3-Tz41twYylQZKmjwXOStwTJjp-0LzhngOIP6epY3dQDVAH3KcrUz-KfHqaHzunYUv9POtHgHe12BG1RMX1Xp5lPnYGp3uvO_o9fkEwNUrJO66a1bIJUTwc1ZFHDJ7Ocs88gBysxm50IkmuS4DShWtqrQ9pHJOdApocfrGnOcoh4G5s4ZBlanKP_hTwbtmBz5y_Nxhw",
+      use: "sig",
+    },
+  ],
+};
+
 export const handlers = [
   // Mock the AWS store microservice for tests
   http.get(`${Constants.BASE_URL}/`, () => {
     return new Response(JSON.stringify(mockStoreResponse), { status: 200 });
-    // Don't know why HttpResponse doesn't work
     //return HttpResponse.json(mockStoreResponse, { status: 200 });
+  }),
+  http.get(`${Constants.Cognito.IDP_BASE_URL}/.well-known/jwks.json`, () => {
+    return new Response(JSON.stringify(mockJWKResponse), { status: 200 });
+    //return HttpResponse.json(mockJWKResponse, { status: 200 });
   }),
 ];
 
@@ -107,7 +132,6 @@ export const errorHandlers = [
     return new Response(JSON.stringify("Unsupported route: GET /"), {
       status: 400,
     });
-    // Don't know why HttpResponse doesn't work
     //return HttpResponse.json("Unsupported route: GET /", { status: 400 });
   }),
 ];

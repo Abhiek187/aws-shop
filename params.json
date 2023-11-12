@@ -2,5 +2,9 @@
   {
     "ParameterKey": "Email",
     "UsePreviousValue": true
+  },
+  {
+    "ParameterKey": "AuthDomain",
+    "UsePreviousValue": true
   }
 ]
