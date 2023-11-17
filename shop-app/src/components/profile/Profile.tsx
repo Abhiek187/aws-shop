@@ -5,13 +5,18 @@ import { useNavigate } from "react-router-dom";
 
 import { parseJWT } from "../../utils/oauth";
 import { selectApp } from "../../store/appSlice";
+import { AccessTokenPayload, IdTokenPayload } from "../../types/TokenPayload";
 
 const Profile = () => {
   const { oauth } = useSelector(selectApp);
   const navigate = useNavigate();
 
-  const [accessTokenHeader, accessTokenPayload] = parseJWT(oauth.accessToken);
-  const [idTokenHeader, idTokenPayload] = parseJWT(oauth.idToken);
+  const [accessTokenHeader, accessTokenPayload] = parseJWT<AccessTokenPayload>(
+    oauth.accessToken
+  );
+  const [idTokenHeader, idTokenPayload] = parseJWT<IdTokenPayload>(
+    oauth.idToken
+  );
 
   const handleCloseProfile = () => {
     navigate(-1);
@@ -33,7 +38,7 @@ const Profile = () => {
           <Typography variant="h2">Access Token</Typography>
           <Typography variant="h3">Header</Typography>
           <ul>
-            {Object.entries(accessTokenHeader).map(([key, value]) => (
+            {Object.entries(accessTokenHeader ?? {}).map(([key, value]) => (
               <li key={key}>
                 <strong>{key}:</strong> {value}
               </li>
@@ -41,7 +46,7 @@ const Profile = () => {
           </ul>
           <Typography variant="h3">Payload</Typography>
           <ul>
-            {Object.entries(accessTokenPayload).map(([key, value]) => (
+            {Object.entries(accessTokenPayload ?? {}).map(([key, value]) => (
               <li key={key}>
                 <strong>{key}:</strong> {value}
               </li>
@@ -52,7 +57,7 @@ const Profile = () => {
           <Typography variant="h2">ID Token</Typography>
           <Typography variant="h3">Header</Typography>
           <ul>
-            {Object.entries(idTokenHeader).map(([key, value]) => (
+            {Object.entries(idTokenHeader ?? {}).map(([key, value]) => (
               <li key={key}>
                 <strong>{key}:</strong> {value}
               </li>
@@ -60,7 +65,7 @@ const Profile = () => {
           </ul>
           <Typography variant="h3">Payload</Typography>
           <ul>
-            {Object.entries(idTokenPayload).map(([key, value]) => (
+            {Object.entries(idTokenPayload ?? {}).map(([key, value]) => (
               <li key={key}>
                 <strong>{key}:</strong> {value}
               </li>

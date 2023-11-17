@@ -148,11 +148,13 @@ describe("oauth", () => {
     "This is not a JWT",
     "🧑‍💻",
     "eyJdkla;f.eyJla93nee.jalf",
-  ])("should throw an exception for invalid tokens", (token) => {
+  ])("should return undefined for invalid token: %s", (token) => {
     // Given an invalid JWT
     // When decoded
-    // Then it should throw an error
-    expect(() => parseJWT(token)).toThrow();
+    const [header, payload] = parseJWT(token);
+    // Then it should return undefined
+    expect(header).toBeUndefined();
+    expect(payload).toBeUndefined();
   });
 
   it("should accept a valid access token", async () => {
