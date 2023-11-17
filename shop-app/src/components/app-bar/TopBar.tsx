@@ -30,16 +30,20 @@ import {
   MouseEvent,
   Ref,
   forwardRef,
+  useCallback,
   useEffect,
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import FilterFields from "./FilterFields";
 import { appActions, selectApp } from "../../store/appSlice";
-import { openHostedUI } from "../../utils/oauth";
-import { useRevokeTokenMutation } from "../../services/auth";
+import { isValidJWT, openHostedUI } from "../../utils/oauth";
+import {
+  useGetTokenMutation,
+  useRevokeTokenMutation,
+} from "../../services/auth";
 import { Constants } from "../../utils/constants";
 
 const SearchWrapper = styled("div")(({ theme }) => ({
@@ -93,12 +97,14 @@ const TopBar = () => {
   // Save form state to URL, easier to share & better SEO compared to useState
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("query") ?? "";
+  const navigate = useNavigate();
 
-  const { isLoggedIn, mode } = useSelector(selectApp);
+  const { isLoggedIn, mode, oauth } = useSelector(selectApp);
   const isDarkMode = mode === "dark";
   const dispatch = useDispatch();
 
   const [revokeToken, logoutResult] = useRevokeTokenMutation();
+  const [refreshToken, refreshResult] = useGetTokenMutation();
 
   const [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(
     null
@@ -112,6 +118,19 @@ const TopBar = () => {
 
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
 
+  const handleOpenProfile = useCallback(async () => {
+    // Check if the access & ID tokens are present & valid
+    const isValidAccessToken = await isValidJWT(oauth.accessToken);
+    const isValidIdToken = await isValidJWT(oauth.idToken);
+
+    if (isValidAccessToken && isValidIdToken) {
+      navigate("/profile");
+    } else {
+      // If not, try refreshing them
+      await refreshToken({ refresh: true });
+    }
+  }, [navigate, oauth.accessToken, oauth.idToken, refreshToken]);
+
   useEffect(() => {
     if (logoutResult.data !== undefined) {
       // Reset back to a logged out state
@@ -122,6 +141,23 @@ const TopBar = () => {
       setShowLogoutAlert(true);
     }
   }, [dispatch, logoutResult]);
+
+  useEffect(() => {
+    if (refreshResult.data !== undefined) {
+      // If refresh succeeded, save the tokens and resume the action
+      dispatch(
+        appActions.saveTokens({
+          accessToken: refreshResult.data.access_token,
+          idToken: refreshResult.data.id_token,
+        })
+      );
+      // TODO: use originalArgs to save the current action
+      void handleOpenProfile();
+    } else if (refreshResult.error !== undefined) {
+      // If refresh failed, log out
+      dispatch(appActions.logOut());
+    }
+  }, [dispatch, handleOpenProfile, refreshResult]);
 
   const handleToggleMode = () => {
     dispatch(appActions.toggleMode());
@@ -138,10 +174,6 @@ const TopBar = () => {
   const handleProfileMenuClose = () => {
     setProfileAnchorEl(null);
     handleMobileMenuClose();
-  };
-
-  const handleOpenProfile = () => {
-    console.log("open profile");
   };
 
   const handleSignIn = async () => {
@@ -211,7 +243,7 @@ const TopBar = () => {
     >
       {isLoggedIn ? (
         <Box>
-          <MenuItem onClick={handleOpenProfile}>Profile</MenuItem>
+          <MenuItem onClick={() => void handleOpenProfile()}>Profile</MenuItem>
           <MenuItem onClick={() => void handleSignOut()}>Log Out</MenuItem>
         </Box>
       ) : (
