@@ -1,5 +1,12 @@
 import { Cancel, CheckCircle, Close } from "@mui/icons-material";
-import { Box, IconButton, Typography } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  Table,
+  TableCell,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
 import { useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
@@ -42,7 +49,7 @@ const Profile = () => {
   return (
     <>
       <header className="flex justify-between items-center m-6">
-        <Typography variant="h3">Profile</Typography>
+        <Typography variant="h4">Profile</Typography>
         <IconButton
           edge="end"
           color="inherit"
@@ -54,32 +61,42 @@ const Profile = () => {
         </IconButton>
       </header>
       <main>
-        <ul>
-          <li>
-            <strong>Username:</strong> {idTokenPayload?.["cognito:username"]}
-          </li>
-          <li>
-            <strong>Email:</strong> {idTokenPayload?.email}
-          </li>
-          <li>
-            <strong>Email Verified:</strong>{" "}
+        <Table sx={{ width: { sm: "75%", lg: "50%" }, mx: { sm: "auto" } }}>
+          <TableRow>
+            <TableCell>
+              <strong>Username</strong>
+            </TableCell>
+            <TableCell align="right">
+              {idTokenPayload?.["cognito:username"]}
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <strong>Email</strong>
+            </TableCell>
+            <TableCell align="right">{idTokenPayload?.email}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <strong>Email Verified</strong>
+            </TableCell>
             {idTokenPayload?.email_verified ? (
-              <>
+              <TableCell align="right">
                 <CheckCircle color="success" />
                 <Box component="span" sx={visuallyHidden}>
                   Email is verified
                 </Box>
-              </>
+              </TableCell>
             ) : (
-              <>
+              <TableCell align="right">
                 <Cancel color="error" />
                 <Box component="span" sx={visuallyHidden}>
                   Email is not verified
                 </Box>
-              </>
+              </TableCell>
             )}
-          </li>
-        </ul>
+          </TableRow>
+        </Table>
       </main>
     </>
   );
