@@ -1,5 +1,7 @@
 import { Cancel, CheckCircle, Close } from "@mui/icons-material";
-import { IconButton, Typography } from "@mui/material";
+import { Box, IconButton, Typography } from "@mui/material";
+import { visuallyHidden } from "@mui/utils";
+import { useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -22,19 +24,30 @@ const Profile = () => {
   console.log("idTokenHeader", idTokenHeader);
   console.log("idTokenPayload", idTokenPayload);
 
-  const handleCloseProfile = () => {
+  const handleCloseProfile = useCallback(() => {
     navigate(-1);
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.code === "Escape") {
+        handleCloseProfile();
+      }
+    };
+
+    window.addEventListener("keyup", handleKeyUp);
+    return () => window.removeEventListener("keyup", handleKeyUp);
+  }, [handleCloseProfile]);
 
   return (
     <>
-      <header className="flex justify-between items-center m-3">
+      <header className="flex justify-between items-center m-6">
         <Typography variant="h3">Profile</Typography>
         <IconButton
           edge="end"
           color="inherit"
           onClick={handleCloseProfile}
-          aria-label="close"
+          aria-label="close profile"
           className="w-10 h-10"
         >
           <Close />
@@ -51,9 +64,19 @@ const Profile = () => {
           <li>
             <strong>Email Verified:</strong>{" "}
             {idTokenPayload?.email_verified ? (
-              <CheckCircle color="success" />
+              <>
+                <CheckCircle color="success" />
+                <Box component="span" sx={visuallyHidden}>
+                  Email is verified
+                </Box>
+              </>
             ) : (
-              <Cancel color="error" />
+              <>
+                <Cancel color="error" />
+                <Box component="span" sx={visuallyHidden}>
+                  Email is not verified
+                </Box>
+              </>
             )}
           </li>
         </ul>
