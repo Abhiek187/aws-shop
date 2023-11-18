@@ -1,4 +1,4 @@
-import { Close } from "@mui/icons-material";
+import { Cancel, CheckCircle, Close } from "@mui/icons-material";
 import { IconButton, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +17,10 @@ const Profile = () => {
   const [idTokenHeader, idTokenPayload] = parseJWT<IdTokenPayload>(
     oauth.idToken
   );
+  console.log("accessTokenHeader", accessTokenHeader);
+  console.log("accessTokenPayload", accessTokenPayload);
+  console.log("idTokenHeader", idTokenHeader);
+  console.log("idTokenPayload", idTokenPayload);
 
   const handleCloseProfile = () => {
     navigate(-1);
@@ -24,54 +28,35 @@ const Profile = () => {
 
   return (
     <>
-      <header>Profile</header>
-      <IconButton
-        edge="end"
-        color="inherit"
-        onClick={handleCloseProfile}
-        aria-label="close"
-      >
-        <Close />
-      </IconButton>
+      <header className="flex justify-between items-center m-3">
+        <Typography variant="h3">Profile</Typography>
+        <IconButton
+          edge="end"
+          color="inherit"
+          onClick={handleCloseProfile}
+          aria-label="close"
+          className="w-10 h-10"
+        >
+          <Close />
+        </IconButton>
+      </header>
       <main>
-        <section>
-          <Typography variant="h2">Access Token</Typography>
-          <Typography variant="h3">Header</Typography>
-          <ul>
-            {Object.entries(accessTokenHeader ?? {}).map(([key, value]) => (
-              <li key={key}>
-                <strong>{key}:</strong> {value}
-              </li>
-            ))}
-          </ul>
-          <Typography variant="h3">Payload</Typography>
-          <ul>
-            {Object.entries(accessTokenPayload ?? {}).map(([key, value]) => (
-              <li key={key}>
-                <strong>{key}:</strong> {value}
-              </li>
-            ))}
-          </ul>
-        </section>
-        <section>
-          <Typography variant="h2">ID Token</Typography>
-          <Typography variant="h3">Header</Typography>
-          <ul>
-            {Object.entries(idTokenHeader ?? {}).map(([key, value]) => (
-              <li key={key}>
-                <strong>{key}:</strong> {value}
-              </li>
-            ))}
-          </ul>
-          <Typography variant="h3">Payload</Typography>
-          <ul>
-            {Object.entries(idTokenPayload ?? {}).map(([key, value]) => (
-              <li key={key}>
-                <strong>{key}:</strong> {value}
-              </li>
-            ))}
-          </ul>
-        </section>
+        <ul>
+          <li>
+            <strong>Username:</strong> {idTokenPayload?.["cognito:username"]}
+          </li>
+          <li>
+            <strong>Email:</strong> {idTokenPayload?.email}
+          </li>
+          <li>
+            <strong>Email Verified:</strong>{" "}
+            {idTokenPayload?.email_verified ? (
+              <CheckCircle color="success" />
+            ) : (
+              <Cancel color="error" />
+            )}
+          </li>
+        </ul>
       </main>
     </>
   );
