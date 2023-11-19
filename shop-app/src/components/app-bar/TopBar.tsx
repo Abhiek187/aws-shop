@@ -1,6 +1,5 @@
 import {
   AccountCircle,
-  Close,
   DarkMode,
   FilterList,
   LightMode,
@@ -17,19 +16,10 @@ import {
   InputBase,
   alpha,
   styled,
-  Menu,
-  MenuItem,
-  Slide,
-  Dialog,
-  Snackbar,
-  Alert,
 } from "@mui/material";
-import { TransitionProps } from "@mui/material/transitions";
 import {
   ChangeEvent,
   MouseEvent,
-  Ref,
-  forwardRef,
   useCallback,
   useEffect,
   useState,
@@ -39,12 +29,18 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import FilterFields from "./FilterFields";
 import { appActions, selectApp } from "../../store/appSlice";
-import { isValidJWT, openHostedUI } from "../../utils/oauth";
+import { isValidJWT, openHostedUI, parseJWT } from "../../utils/oauth";
 import {
   useGetTokenMutation,
   useRevokeTokenMutation,
 } from "../../services/auth";
 import { Constants } from "../../utils/constants";
+import DeleteAccountDialog from "./DeleteAccountDialog";
+import { IdTokenPayload } from "../../types/TokenPayload";
+import AccountSnackbar from "./AccountSnackbar";
+import MobileFilter from "./MobileFilter";
+import MobileMenu from "./MobileMenu";
+import ProfileMenu from "./ProfileMenu";
 
 const SearchWrapper = styled("div")(({ theme }) => ({
   position: "relative",
@@ -84,15 +80,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const Transition = forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement;
-  },
-  ref: Ref<unknown>
-) {
-  return <Slide direction="down" ref={ref} {...props} />;
-});
-
 const TopBar = () => {
   // Save form state to URL, easier to share & better SEO compared to useState
   const [searchParams, setSearchParams] = useSearchParams();
@@ -113,10 +100,17 @@ const TopBar = () => {
     useState<null | HTMLElement>(null);
   const [filterOpen, setFilterOpen] = useState(false);
 
-  const isProfileMenuOpen = Boolean(profileAnchorEl);
-  const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
+  const profileMenuId = "profile-menu";
+  const mobileMenuId = "mobile-menu";
 
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
+
+  const [showAccountDialog, setShowAccountDialog] = useState(false);
+  const [accountEmail, setAccountEmail] = useState<string | undefined>(
+    undefined
+  );
 
   const handleOpenProfile = useCallback(async () => {
     // Check if the access & ID tokens are present & valid
@@ -127,9 +121,30 @@ const TopBar = () => {
       navigate("/profile");
     } else {
       // If not, try refreshing them
-      await refreshToken({ refresh: true, next: "profile" });
+      await refreshToken({
+        refresh: true,
+        next: Constants.TokenActions.PROFILE,
+      });
     }
   }, [navigate, oauth.accessToken, oauth.idToken, refreshToken]);
+
+  const handleOpenAccountDialog = useCallback(async () => {
+    const isValidAccessToken = await isValidJWT(oauth.accessToken);
+    const isValidIdToken = await isValidJWT(oauth.idToken);
+
+    if (isValidAccessToken && isValidIdToken) {
+      // Confirm if the user want to delete their account first
+      setShowAccountDialog(true);
+
+      const [, idTokenPayload] = parseJWT<IdTokenPayload>(oauth.idToken);
+      setAccountEmail(idTokenPayload?.email);
+    } else {
+      await refreshToken({
+        refresh: true,
+        next: Constants.TokenActions.DELETE_ACCOUNT,
+      });
+    }
+  }, [oauth.accessToken, oauth.idToken, refreshToken]);
 
   useEffect(() => {
     if (logoutResult.data !== undefined) {
@@ -154,14 +169,16 @@ const TopBar = () => {
 
       const args = refreshResult.originalArgs;
 
-      if (args?.next === "profile") {
+      if (args?.next === Constants.TokenActions.PROFILE) {
         void handleOpenProfile();
+      } else if (args?.next === Constants.TokenActions.DELETE_ACCOUNT) {
+        void handleOpenAccountDialog();
       }
     } else if (refreshResult.error !== undefined) {
       // If refresh failed, log out
       dispatch(appActions.logOut());
     }
-  }, [dispatch, handleOpenProfile, refreshResult]);
+  }, [dispatch, handleOpenAccountDialog, handleOpenProfile, refreshResult]);
 
   const handleToggleMode = () => {
     dispatch(appActions.toggleMode());
@@ -188,6 +205,39 @@ const TopBar = () => {
     await revokeToken();
   };
 
+  const handleCloseAccountDialog = () => {
+    setShowAccountDialog(false);
+  };
+
+  const handleDeleteAccount = async () => {
+    // Dynamically import the AWS SDK to improve the build size
+    const { CognitoIdentityProvider } = await import(
+      "@aws-sdk/client-cognito-identity-provider"
+    );
+    const cognito = new CognitoIdentityProvider({
+      region: Constants.Cognito.REGION,
+    });
+
+    cognito.deleteUser(
+      {
+        AccessToken: oauth.accessToken,
+      },
+      (error, data) => {
+        if (error !== null) {
+          console.error("Delete error:", error);
+          setDeleteSuccess(false);
+        } else {
+          console.log("Delete success:", data);
+          setDeleteSuccess(true);
+          void handleSignOut();
+          handleCloseAccountDialog();
+        }
+
+        setShowDeleteAlert(true);
+      }
+    );
+  };
+
   const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setMobileMenuAnchorEl(event.currentTarget);
   };
@@ -202,6 +252,10 @@ const TopBar = () => {
 
   const handleCloseLogoutAlert = () => {
     setShowLogoutAlert(false);
+  };
+
+  const handleCloseDeleteAlert = () => {
+    setShowDeleteAlert(false);
   };
 
   const updateSearchParams = (key: string, value: string) => {
@@ -227,114 +281,6 @@ const TopBar = () => {
   ) => {
     updateSearchParams("query", event.target.value);
   };
-
-  const profileMenuId = "profile-menu";
-  const renderProfileMenu = (
-    <Menu
-      anchorEl={profileAnchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={profileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isProfileMenuOpen}
-      onClose={handleProfileMenuClose}
-    >
-      {isLoggedIn ? (
-        <Box>
-          <MenuItem onClick={() => void handleOpenProfile()}>Profile</MenuItem>
-          <MenuItem onClick={() => void handleSignOut()}>Log Out</MenuItem>
-        </Box>
-      ) : (
-        <MenuItem onClick={() => void handleSignIn()}>Log In</MenuItem>
-      )}
-    </Menu>
-  );
-
-  const renderMobileFilter = (
-    <Dialog
-      fullScreen
-      open={filterOpen}
-      onClose={handleFilterClose}
-      TransitionComponent={Transition}
-    >
-      <AppBar sx={{ position: "relative" }}>
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            onClick={handleFilterClose}
-            aria-label="close"
-          >
-            <Close />
-          </IconButton>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            Search
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "5px",
-          my: 1,
-          minWidth: "100%",
-        }}
-      >
-        <FilterFields isMobile={true} />
-      </Box>
-    </Dialog>
-  );
-
-  const mobileMenuId = "mobile-menu";
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMenuAnchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem onClick={handleToggleMode}>
-        <IconButton size="large" color="inherit">
-          {isDarkMode ? <LightMode /> : <DarkMode />}
-        </IconButton>
-        <p>{`${isDarkMode ? "Light" : "Dark"} Mode`}</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton size="large" color="inherit">
-          <ShoppingCart />
-        </IconButton>
-        <p>Open Cart</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-    </Menu>
-  );
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -419,24 +365,43 @@ const TopBar = () => {
           <FilterFields isMobile={false} />
         </Toolbar>
       </AppBar>
-      {renderMobileFilter}
-      {renderMobileMenu}
-      {renderProfileMenu}
-      <Snackbar
+      <MobileFilter open={filterOpen} onClose={handleFilterClose} />
+      <MobileMenu
+        id={mobileMenuId}
+        anchorEl={mobileMenuAnchorEl}
+        onClose={handleMobileMenuClose}
+        onToggleMode={handleToggleMode}
+        onClickProfile={handleProfileMenuOpen}
+      />
+      <ProfileMenu
+        id={profileMenuId}
+        anchorEl={profileAnchorEl}
+        onClose={handleProfileMenuClose}
+        onClickProfile={() => void handleOpenProfile()}
+        onClickLogIn={() => void handleSignIn()}
+        onClickLogOut={() => void handleSignOut()}
+        onClickDeleteAccount={() => void handleOpenAccountDialog()}
+      />
+      <DeleteAccountDialog
+        open={showAccountDialog}
+        email={accountEmail ?? ""}
+        onClose={handleCloseAccountDialog}
+        onDelete={() => void handleDeleteAccount()}
+      />
+      <AccountSnackbar
         open={showLogoutAlert}
-        autoHideDuration={5000}
+        isSuccess={!isLoggedIn}
+        successMessage="Logged out successfully!"
+        errorMessage="Failed to log out, please try again later."
         onClose={handleCloseLogoutAlert}
-      >
-        <Alert
-          onClose={handleCloseLogoutAlert}
-          severity={isLoggedIn ? "error" : "success"}
-          variant="filled"
-        >
-          {isLoggedIn
-            ? "Failed to log out, please try again later."
-            : "Logged out successfully!"}
-        </Alert>
-      </Snackbar>
+      />
+      <AccountSnackbar
+        open={showDeleteAlert}
+        isSuccess={deleteSuccess}
+        successMessage="Account deleted successfully!"
+        errorMessage="Failed to delete account, please try again later."
+        onClose={handleCloseDeleteAlert}
+      />
     </Box>
   );
 };

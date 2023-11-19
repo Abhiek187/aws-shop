@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import { yellow } from "@mui/material/colors";
 import pluralize from "pluralize";
-import React from "react";
 
 import AWSService from "../../types/AWSService";
 import { commaFormat, dollarFormat } from "../../utils/number";
@@ -18,7 +17,7 @@ type ServiceProps = {
   service: AWSService;
 };
 
-const ServiceCard: React.FC<ServiceProps> = ({ service }) => {
+const ServiceCard = ({ service }: ServiceProps) => {
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
