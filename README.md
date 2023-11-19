@@ -463,6 +463,7 @@ aws cognito-idp delete-user --access-token ACCESS_TOKEN
 Delete user (admin):
 
 ```bash
+aws cognito-idp admin-disable-user --user-pool-id ID --username USERNAME
 aws cognito-idp admin-delete-user --user-pool-id ID --username USERNAME
 ```
 
