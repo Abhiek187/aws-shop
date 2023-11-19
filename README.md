@@ -456,6 +456,12 @@ Update user attributes (admin):
 aws cognito-idp admin-update-user-attributes --user-pool-id ID --username USERNAME --user-attributes Name="NAME",Value="VALUE"
 ```
 
+Change password:
+
+```bash
+aws cognito-idp change-password --previous-password OLD_PASSWORD --proposed-password NEW_PASSWORD --access-token ACCESS_TOKEN
+```
+
 Delete user (public):
 
 ```bash
