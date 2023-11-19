@@ -15,22 +15,20 @@ import { useNavigate } from "react-router-dom";
 
 import { parseJWT } from "../../utils/oauth";
 import { selectApp } from "../../store/appSlice";
-import { AccessTokenPayload, IdTokenPayload } from "../../types/TokenPayload";
+import { IdTokenPayload } from "../../types/TokenPayload";
 
 const Profile = () => {
   const { oauth } = useSelector(selectApp);
   const navigate = useNavigate();
 
-  const [accessTokenHeader, accessTokenPayload] = parseJWT<AccessTokenPayload>(
-    oauth.accessToken
-  );
-  const [idTokenHeader, idTokenPayload] = parseJWT<IdTokenPayload>(
-    oauth.idToken
-  );
-  console.log("accessTokenHeader", accessTokenHeader);
-  console.log("accessTokenPayload", accessTokenPayload);
-  console.log("idTokenHeader", idTokenHeader);
-  console.log("idTokenPayload", idTokenPayload);
+  const [, idTokenPayload] = parseJWT<IdTokenPayload>(oauth.idToken);
+
+  useEffect(() => {
+    // Redirect back to the main page if the user isn't signed in
+    if (idTokenPayload === undefined) {
+      navigate("/", { replace: true });
+    }
+  }, [idTokenPayload, navigate]);
 
   const handleCloseProfile = useCallback(() => {
     navigate(-1);
