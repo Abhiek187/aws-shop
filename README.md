@@ -446,6 +446,7 @@ Update user attributes (public):
 
 ```bash
 aws cognito-idp update-user-attributes --access-token ACCESS_TOKEN --user-attributes Name="NAME",Value="VALUE"
+aws cognito-idp verify-user-attribute --access-token ACCESS_TOKEN --attribute-name NAME --code CODE
 ```
 
 Update user attributes (admin):
