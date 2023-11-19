@@ -11,14 +11,14 @@ import {
   Checkbox,
   SelectChangeEvent,
 } from "@mui/material";
-import React, { ChangeEvent } from "react";
+import { ChangeEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 
 type FilterProps = {
   isMobile: boolean;
 };
 
-const FilterFields: React.FC<FilterProps> = ({ isMobile }) => {
+const FilterFields = ({ isMobile }: FilterProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const category = searchParams.get("category") ?? "";
   const minPrice = searchParams.get("min-price") ?? "";

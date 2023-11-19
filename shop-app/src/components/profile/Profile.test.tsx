@@ -22,6 +22,21 @@ vi.mock("react-router-dom", async () => ({
 }));
 
 describe("Profile", () => {
+  it("should redirect if the user isn't authenticated", () => {
+    // Given no access tokens
+    // When the profile page renders
+    render(
+      <BrowserRouter>
+        <Provider store={createStore()}>
+          <Profile />
+        </Provider>
+      </BrowserRouter>
+    );
+
+    // Then it should navigate back to the home page
+    expect(mockUseNavigate).toHaveBeenCalled();
+  });
+
   it("should render", () => {
     // Given a mock access & ID token
     const initialState: AppSlice = {
