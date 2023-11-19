@@ -127,7 +127,7 @@ const TopBar = () => {
       navigate("/profile");
     } else {
       // If not, try refreshing them
-      await refreshToken({ refresh: true });
+      await refreshToken({ refresh: true, next: "profile" });
     }
   }, [navigate, oauth.accessToken, oauth.idToken, refreshToken]);
 
@@ -151,8 +151,12 @@ const TopBar = () => {
           idToken: refreshResult.data.id_token,
         })
       );
-      // TODO: use originalArgs to save the current action
-      void handleOpenProfile();
+
+      const args = refreshResult.originalArgs;
+
+      if (args?.next === "profile") {
+        void handleOpenProfile();
+      }
     } else if (refreshResult.error !== undefined) {
       // If refresh failed, log out
       dispatch(appActions.logOut());
