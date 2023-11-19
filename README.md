@@ -419,6 +419,7 @@ Sign up (public):
 ```bash
 aws cognito-idp sign-up --client-id CLIENT_ID --username USERNAME --password PASSWORD [--user-attributes Name="NAME",Value="VALUE"...]
 aws cognito-idp confirm-sign-up --client-id CLIENT_ID --username USERNAME --confirmation-code CODE
+aws cognito-idp resend-confirmation-code --client-id CLIENT_ID --username USERNAME
 ```
 
 Sign up (admin):
