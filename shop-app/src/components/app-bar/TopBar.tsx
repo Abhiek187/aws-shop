@@ -1,4 +1,3 @@
-import { CognitoIdentityProvider } from "@aws-sdk/client-cognito-identity-provider";
 import {
   AccountCircle,
   DarkMode,
@@ -112,9 +111,6 @@ const TopBar = () => {
   const [accountEmail, setAccountEmail] = useState<string | undefined>(
     undefined
   );
-  const cognito = new CognitoIdentityProvider({
-    region: Constants.Cognito.REGION,
-  });
 
   const handleOpenProfile = useCallback(async () => {
     // Check if the access & ID tokens are present & valid
@@ -213,7 +209,15 @@ const TopBar = () => {
     setShowAccountDialog(false);
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
+    // Dynamically import the AWS SDK to improve the build size
+    const { CognitoIdentityProvider } = await import(
+      "@aws-sdk/client-cognito-identity-provider"
+    );
+    const cognito = new CognitoIdentityProvider({
+      region: Constants.Cognito.REGION,
+    });
+
     cognito.deleteUser(
       {
         AccessToken: oauth.accessToken,
