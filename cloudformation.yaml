@@ -583,7 +583,7 @@ Resources:
           - Name: verified_email
             Priority: 1
       AdminCreateUserConfig:
-        AllowAdminCreateUserOnly: false
+        AllowAdminCreateUserOnly: false # change to true if testing
       AutoVerifiedAttributes:
         - email
       DeletionProtection: ACTIVE

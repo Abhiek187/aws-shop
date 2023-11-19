@@ -1,7 +1,6 @@
 import { CognitoIdentityProvider } from "@aws-sdk/client-cognito-identity-provider";
 import {
   AccountCircle,
-  Close,
   DarkMode,
   FilterList,
   LightMode,
@@ -18,18 +17,10 @@ import {
   InputBase,
   alpha,
   styled,
-  Menu,
-  MenuItem,
-  Slide,
-  Dialog,
-  Divider,
 } from "@mui/material";
-import { TransitionProps } from "@mui/material/transitions";
 import {
   ChangeEvent,
   MouseEvent,
-  Ref,
-  forwardRef,
   useCallback,
   useEffect,
   useState,
@@ -48,6 +39,9 @@ import { Constants } from "../../utils/constants";
 import DeleteAccountDialog from "./DeleteAccountDialog";
 import { IdTokenPayload } from "../../types/TokenPayload";
 import AccountSnackbar from "./AccountSnackbar";
+import MobileFilter from "./MobileFilter";
+import MobileMenu from "./MobileMenu";
+import ProfileMenu from "./ProfileMenu";
 
 const SearchWrapper = styled("div")(({ theme }) => ({
   position: "relative",
@@ -87,15 +81,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const Transition = forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement;
-  },
-  ref: Ref<unknown>
-) {
-  return <Slide direction="down" ref={ref} {...props} />;
-});
-
 const TopBar = () => {
   // Save form state to URL, easier to share & better SEO compared to useState
   const [searchParams, setSearchParams] = useSearchParams();
@@ -116,8 +101,8 @@ const TopBar = () => {
     useState<null | HTMLElement>(null);
   const [filterOpen, setFilterOpen] = useState(false);
 
-  const isProfileMenuOpen = Boolean(profileAnchorEl);
-  const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
+  const profileMenuId = "profile-menu";
+  const mobileMenuId = "mobile-menu";
 
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
@@ -164,10 +149,6 @@ const TopBar = () => {
       });
     }
   }, [oauth.accessToken, oauth.idToken, refreshToken]);
-
-  const handleCloseAccountDialog = () => {
-    setShowAccountDialog(false);
-  };
 
   useEffect(() => {
     if (logoutResult.data !== undefined) {
@@ -226,6 +207,10 @@ const TopBar = () => {
 
   const handleSignOut = async () => {
     await revokeToken();
+  };
+
+  const handleCloseAccountDialog = () => {
+    setShowAccountDialog(false);
   };
 
   const handleDeleteAccount = () => {
@@ -292,121 +277,6 @@ const TopBar = () => {
   ) => {
     updateSearchParams("query", event.target.value);
   };
-
-  const profileMenuId = "profile-menu";
-  const renderProfileMenu = (
-    <Menu
-      anchorEl={profileAnchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={profileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isProfileMenuOpen}
-      onClose={handleProfileMenuClose}
-    >
-      {isLoggedIn ? (
-        <Box>
-          <MenuItem onClick={() => void handleOpenProfile()}>Profile</MenuItem>
-          <MenuItem onClick={() => void handleSignOut()}>Log Out</MenuItem>
-          <Divider />
-          <MenuItem
-            sx={{ color: "error.main" }}
-            onClick={() => void handleOpenAccountDialog()}
-          >
-            Delete Account
-          </MenuItem>
-        </Box>
-      ) : (
-        <MenuItem onClick={() => void handleSignIn()}>Log In</MenuItem>
-      )}
-    </Menu>
-  );
-
-  const renderMobileFilter = (
-    <Dialog
-      fullScreen
-      open={filterOpen}
-      onClose={handleFilterClose}
-      TransitionComponent={Transition}
-    >
-      <AppBar sx={{ position: "relative" }}>
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            onClick={handleFilterClose}
-            aria-label="close"
-          >
-            <Close />
-          </IconButton>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            Search
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "5px",
-          my: 1,
-          minWidth: "100%",
-        }}
-      >
-        <FilterFields isMobile={true} />
-      </Box>
-    </Dialog>
-  );
-
-  const mobileMenuId = "mobile-menu";
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMenuAnchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem onClick={handleToggleMode}>
-        <IconButton size="large" color="inherit">
-          {isDarkMode ? <LightMode /> : <DarkMode />}
-        </IconButton>
-        <p>{`${isDarkMode ? "Light" : "Dark"} Mode`}</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton size="large" color="inherit">
-          <ShoppingCart />
-        </IconButton>
-        <p>Open Cart</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-    </Menu>
-  );
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -491,9 +361,23 @@ const TopBar = () => {
           <FilterFields isMobile={false} />
         </Toolbar>
       </AppBar>
-      {renderMobileFilter}
-      {renderMobileMenu}
-      {renderProfileMenu}
+      <MobileFilter open={filterOpen} onClose={handleFilterClose} />
+      <MobileMenu
+        id={mobileMenuId}
+        anchorEl={mobileMenuAnchorEl}
+        onClose={handleMobileMenuClose}
+        onToggleMode={handleToggleMode}
+        onClickProfile={handleProfileMenuOpen}
+      />
+      <ProfileMenu
+        id={profileMenuId}
+        anchorEl={profileAnchorEl}
+        onClose={handleProfileMenuClose}
+        onClickProfile={() => void handleOpenProfile()}
+        onClickLogIn={() => void handleSignIn()}
+        onClickLogOut={() => void handleSignOut()}
+        onClickDeleteAccount={() => void handleOpenAccountDialog()}
+      />
       <DeleteAccountDialog
         open={showAccountDialog}
         email={accountEmail ?? ""}
