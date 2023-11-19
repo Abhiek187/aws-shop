@@ -1,10 +1,4 @@
-import {
-  Alert,
-  CircularProgress,
-  Grow,
-  Snackbar,
-  Unstable_Grid2,
-} from "@mui/material";
+import { CircularProgress, Grow, Unstable_Grid2 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,6 +13,7 @@ import { useGetTokenMutation } from "../../services/auth";
 import { Constants } from "../../utils/constants";
 import { appActions, selectApp } from "../../store/appSlice";
 import AuthorizeResponse from "../../types/AuthorizeResponse";
+import AccountSnackbar from "../app-bar/AccountSnackbar";
 
 const Store = () => {
   const { isLoggedIn, oauth } = useSelector(selectApp);
@@ -149,21 +144,13 @@ const Store = () => {
             ))}
           </TransitionGroup>
         </Unstable_Grid2>
-        <Snackbar
+        <AccountSnackbar
           open={showLoginAlert}
-          autoHideDuration={5000}
+          isSuccess={isLoggedIn}
+          successMessage="Logged in successfully!"
+          errorMessage="Failed to log in, please try again later."
           onClose={handleCloseLoginAlert}
-        >
-          <Alert
-            onClose={handleCloseLoginAlert}
-            severity={isLoggedIn ? "success" : "error"}
-            variant="filled"
-          >
-            {isLoggedIn
-              ? "Logged in successfully!"
-              : "Failed to log in, please try again later."}
-          </Alert>
-        </Snackbar>
+        />
       </>
     );
   }

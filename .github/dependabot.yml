@@ -17,6 +17,9 @@ updates:
       interval: "weekly"
       day: "wednesday"
     groups:
+      aws:
+        patterns:
+          - "@aws-sdk/*"
       emotion:
         patterns:
           - "@emotion/*"

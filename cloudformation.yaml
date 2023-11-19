@@ -583,7 +583,7 @@ Resources:
           - Name: verified_email
             Priority: 1
       AdminCreateUserConfig:
-        AllowAdminCreateUserOnly: true # TODO: set to false once user pool is ready for prod
+        AllowAdminCreateUserOnly: false
       AutoVerifiedAttributes:
         - email
       DeletionProtection: ACTIVE
@@ -618,6 +618,8 @@ Resources:
         - openid
         - phone
         - email
+        - profile
+        - aws.cognito.signin.user.admin
       AuthSessionValidity: 3 # session token validity in minutes
       CallbackURLs:
         - "http://localhost:5173" # dev

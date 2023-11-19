@@ -1,3 +1,4 @@
+import { CognitoIdentityProvider } from "@aws-sdk/client-cognito-identity-provider";
 import {
   AccountCircle,
   Close,
@@ -21,8 +22,7 @@ import {
   MenuItem,
   Slide,
   Dialog,
-  Snackbar,
-  Alert,
+  Divider,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import {
@@ -39,12 +39,15 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import FilterFields from "./FilterFields";
 import { appActions, selectApp } from "../../store/appSlice";
-import { isValidJWT, openHostedUI } from "../../utils/oauth";
+import { isValidJWT, openHostedUI, parseJWT } from "../../utils/oauth";
 import {
   useGetTokenMutation,
   useRevokeTokenMutation,
 } from "../../services/auth";
 import { Constants } from "../../utils/constants";
+import DeleteAccountDialog from "./DeleteAccountDialog";
+import { IdTokenPayload } from "../../types/TokenPayload";
+import AccountSnackbar from "./AccountSnackbar";
 
 const SearchWrapper = styled("div")(({ theme }) => ({
   position: "relative",
@@ -117,6 +120,16 @@ const TopBar = () => {
   const isMobileMenuOpen = Boolean(mobileMenuAnchorEl);
 
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
+
+  const [showAccountDialog, setShowAccountDialog] = useState(false);
+  const [accountEmail, setAccountEmail] = useState<string | undefined>(
+    undefined
+  );
+  const cognito = new CognitoIdentityProvider({
+    region: Constants.Cognito.REGION,
+  });
 
   const handleOpenProfile = useCallback(async () => {
     // Check if the access & ID tokens are present & valid
@@ -127,9 +140,34 @@ const TopBar = () => {
       navigate("/profile");
     } else {
       // If not, try refreshing them
-      await refreshToken({ refresh: true, next: "profile" });
+      await refreshToken({
+        refresh: true,
+        next: Constants.TokenActions.PROFILE,
+      });
     }
   }, [navigate, oauth.accessToken, oauth.idToken, refreshToken]);
+
+  const handleOpenAccountDialog = useCallback(async () => {
+    const isValidAccessToken = await isValidJWT(oauth.accessToken);
+    const isValidIdToken = await isValidJWT(oauth.idToken);
+
+    if (isValidAccessToken && isValidIdToken) {
+      // Confirm if the user want to delete their account first
+      setShowAccountDialog(true);
+
+      const [, idTokenPayload] = parseJWT<IdTokenPayload>(oauth.idToken);
+      setAccountEmail(idTokenPayload?.email);
+    } else {
+      await refreshToken({
+        refresh: true,
+        next: Constants.TokenActions.DELETE_ACCOUNT,
+      });
+    }
+  }, [oauth.accessToken, oauth.idToken, refreshToken]);
+
+  const handleCloseAccountDialog = () => {
+    setShowAccountDialog(false);
+  };
 
   useEffect(() => {
     if (logoutResult.data !== undefined) {
@@ -154,14 +192,16 @@ const TopBar = () => {
 
       const args = refreshResult.originalArgs;
 
-      if (args?.next === "profile") {
+      if (args?.next === Constants.TokenActions.PROFILE) {
         void handleOpenProfile();
+      } else if (args?.next === Constants.TokenActions.DELETE_ACCOUNT) {
+        void handleOpenAccountDialog();
       }
     } else if (refreshResult.error !== undefined) {
       // If refresh failed, log out
       dispatch(appActions.logOut());
     }
-  }, [dispatch, handleOpenProfile, refreshResult]);
+  }, [dispatch, handleOpenAccountDialog, handleOpenProfile, refreshResult]);
 
   const handleToggleMode = () => {
     dispatch(appActions.toggleMode());
@@ -188,6 +228,27 @@ const TopBar = () => {
     await revokeToken();
   };
 
+  const handleDeleteAccount = () => {
+    cognito.deleteUser(
+      {
+        AccessToken: oauth.accessToken,
+      },
+      (error, data) => {
+        if (error !== null) {
+          console.error("Delete error:", error);
+          setDeleteSuccess(false);
+        } else {
+          console.log("Delete success:", data);
+          setDeleteSuccess(true);
+          void handleSignOut();
+          handleCloseAccountDialog();
+        }
+
+        setShowDeleteAlert(true);
+      }
+    );
+  };
+
   const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setMobileMenuAnchorEl(event.currentTarget);
   };
@@ -202,6 +263,10 @@ const TopBar = () => {
 
   const handleCloseLogoutAlert = () => {
     setShowLogoutAlert(false);
+  };
+
+  const handleCloseDeleteAlert = () => {
+    setShowDeleteAlert(false);
   };
 
   const updateSearchParams = (key: string, value: string) => {
@@ -249,6 +314,13 @@ const TopBar = () => {
         <Box>
           <MenuItem onClick={() => void handleOpenProfile()}>Profile</MenuItem>
           <MenuItem onClick={() => void handleSignOut()}>Log Out</MenuItem>
+          <Divider />
+          <MenuItem
+            sx={{ color: "error.main" }}
+            onClick={() => void handleOpenAccountDialog()}
+          >
+            Delete Account
+          </MenuItem>
         </Box>
       ) : (
         <MenuItem onClick={() => void handleSignIn()}>Log In</MenuItem>
@@ -422,21 +494,26 @@ const TopBar = () => {
       {renderMobileFilter}
       {renderMobileMenu}
       {renderProfileMenu}
-      <Snackbar
+      <DeleteAccountDialog
+        open={showAccountDialog}
+        email={accountEmail ?? ""}
+        onClose={handleCloseAccountDialog}
+        onDelete={() => void handleDeleteAccount()}
+      />
+      <AccountSnackbar
         open={showLogoutAlert}
-        autoHideDuration={5000}
+        isSuccess={!isLoggedIn}
+        successMessage="Logged out successfully!"
+        errorMessage="Failed to log out, please try again later."
         onClose={handleCloseLogoutAlert}
-      >
-        <Alert
-          onClose={handleCloseLogoutAlert}
-          severity={isLoggedIn ? "error" : "success"}
-          variant="filled"
-        >
-          {isLoggedIn
-            ? "Failed to log out, please try again later."
-            : "Logged out successfully!"}
-        </Alert>
-      </Snackbar>
+      />
+      <AccountSnackbar
+        open={showDeleteAlert}
+        isSuccess={deleteSuccess}
+        successMessage="Account deleted successfully!"
+        errorMessage="Failed to delete account, please try again later."
+        onClose={handleCloseDeleteAlert}
+      />
     </Box>
   );
 };
