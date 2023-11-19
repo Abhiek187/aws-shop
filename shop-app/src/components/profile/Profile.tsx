@@ -3,6 +3,7 @@ import {
   Box,
   IconButton,
   Table,
+  TableBody,
   TableCell,
   TableRow,
   Typography,
@@ -62,40 +63,42 @@ const Profile = () => {
       </header>
       <main>
         <Table sx={{ width: { sm: "75%", lg: "50%" }, mx: { sm: "auto" } }}>
-          <TableRow>
-            <TableCell>
-              <strong>Username</strong>
-            </TableCell>
-            <TableCell align="right">
-              {idTokenPayload?.["cognito:username"]}
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <strong>Email</strong>
-            </TableCell>
-            <TableCell align="right">{idTokenPayload?.email}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>
-              <strong>Email Verified</strong>
-            </TableCell>
-            {idTokenPayload?.email_verified ? (
-              <TableCell align="right">
-                <CheckCircle color="success" />
-                <Box component="span" sx={visuallyHidden}>
-                  Email is verified
-                </Box>
+          <TableBody>
+            <TableRow>
+              <TableCell>
+                <strong>Username</strong>
               </TableCell>
-            ) : (
               <TableCell align="right">
-                <Cancel color="error" />
-                <Box component="span" sx={visuallyHidden}>
-                  Email is not verified
-                </Box>
+                {idTokenPayload?.["cognito:username"]}
               </TableCell>
-            )}
-          </TableRow>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <strong>Email</strong>
+              </TableCell>
+              <TableCell align="right">{idTokenPayload?.email}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <strong>Email Verified</strong>
+              </TableCell>
+              {idTokenPayload?.email_verified ? (
+                <TableCell align="right">
+                  <CheckCircle color="success" />
+                  <Box component="span" sx={visuallyHidden}>
+                    Email is verified
+                  </Box>
+                </TableCell>
+              ) : (
+                <TableCell align="right">
+                  <Cancel color="error" />
+                  <Box component="span" sx={visuallyHidden}>
+                    Email is not verified
+                  </Box>
+                </TableCell>
+              )}
+            </TableRow>
+          </TableBody>
         </Table>
       </main>
     </>
