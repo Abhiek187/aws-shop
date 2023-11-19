@@ -87,15 +87,23 @@ const base64URLDecode = (base64Url: string): string => {
 // Get the JSON header & payload from a JWT (either an ID or access token)
 export const parseJWT = <T extends TokenPayload>(
   token: string
-): [TokenHeader, T] => {
-  const [headerUrl, payloadUrl] = token.split(".").slice(0, 2);
+): [TokenHeader?, T?] => {
+  try {
+    const [headerUrl, payloadUrl] = token.split(".").slice(0, 2);
 
-  const [jsonHeader, jsonPayload] = [
-    base64URLDecode(headerUrl),
-    base64URLDecode(payloadUrl),
-  ];
+    const [jsonHeader, jsonPayload] = [
+      base64URLDecode(headerUrl),
+      base64URLDecode(payloadUrl),
+    ];
 
-  return [JSON.parse(jsonHeader) as TokenHeader, JSON.parse(jsonPayload) as T];
+    return [
+      JSON.parse(jsonHeader) as TokenHeader,
+      JSON.parse(jsonPayload) as T,
+    ];
+  } catch (error) {
+    console.error("JWT parsing error:", error);
+    return [undefined, undefined];
+  }
 };
 
 const isAccessToken = (token: TokenPayload): token is AccessTokenPayload =>
@@ -113,6 +121,10 @@ export const isValidJWT = async (token: string): Promise<boolean> => {
     // Can ony mock functions referenced by the module export
     const [header, payload] = oauth.parseJWT(token);
 
+    if (header === undefined || payload === undefined) {
+      throw new Error(`JWT is missing or malformed (received: ${token})`);
+    }
+
     // Check if the key ID comes from Cognito's JWKs
     const tokenKid = header.kid;
     const resp = await fetch(
@@ -128,7 +140,7 @@ export const isValidJWT = async (token: string): Promise<boolean> => {
 
     if (!publicKids.includes(tokenKid)) {
       throw new Error(
-        `kid doesn't match Cognito's JWKs: (expected: [${publicKids.toString()}], received: ${tokenKid})`
+        `kid doesn't match Cognito's JWKs (expected: [${publicKids.toString()}], received: ${tokenKid})`
       );
     }
 

@@ -414,18 +414,65 @@ List users:
 aws cognito-idp list-users --user-pool-id ID
 ```
 
-Sign in user (public):
+Sign up (public):
+
+```bash
+aws cognito-idp sign-up --client-id CLIENT_ID --username USERNAME --password PASSWORD [--user-attributes Name="NAME",Value="VALUE"...]
+aws cognito-idp confirm-sign-up --client-id CLIENT_ID --username USERNAME --confirmation-code CODE
+aws cognito-idp resend-confirmation-code --client-id CLIENT_ID --username USERNAME
+```
+
+Sign up (admin):
+
+```bash
+aws cognito-idp admin-create-user --user-pool-id ID --username USERNAME [--user-attributes Name="NAME",Value="VALUE"...] [--message-action SUPPRESS]
+aws cognito-idp admin-confirm-sign-up --user-pool-id ID --username USERNAME
+```
+
+Sign in (public):
 
 ```bash
 aws cognito-idp initiate-auth --client-id CLIENT_ID --auth-flow [USER_SRP_AUTH|REFRESH_TOKEN_AUTH] --auth-parameters [USERNAME=EMAIL,SRP_A=SRP|REFRESH_TOKEN=TOKEN]
 aws cognito-idp respond-to-auth-challenge --client-id CLIENT_ID [--session SESSION] --challenge-name PASSWORD_VERIFIER --challenge-responses PASSWORD_CLAIM_SIGNATURE=SIGNATURE,PASSWORD_CLAIM_SECRET_BLOCK=BLOCK,TIMESTAMP=TIME,USERNAME=EMAIL
 ```
 
-Sign in user (server-side):
+Sign in (admin):
 
 ```bash
 aws cognito-idp admin-initiate-auth --user-pool-id ID --client-id CLIENT_ID --auth-flow [USER_SRP_AUTH|REFRESH_TOKEN_AUTH] --auth-parameters [USERNAME=EMAIL,SRP_A=SRP|REFRESH_TOKEN=TOKEN]
 aws cognito-idp admin-respond-to-auth-challenge --user-pool-id ID --client-id CLIENT_ID [--session SESSION] --challenge-name PASSWORD_VERIFIER --challenge-responses PASSWORD_CLAIM_SIGNATURE=SIGNATURE,PASSWORD_CLAIM_SECRET_BLOCK=BLOCK,TIMESTAMP=TIME,USERNAME=EMAIL
+```
+
+Update user attributes (public):
+
+```bash
+aws cognito-idp update-user-attributes --access-token ACCESS_TOKEN --user-attributes Name="NAME",Value="VALUE"
+aws cognito-idp verify-user-attribute --access-token ACCESS_TOKEN --attribute-name NAME --code CODE
+```
+
+Update user attributes (admin):
+
+```bash
+aws cognito-idp admin-update-user-attributes --user-pool-id ID --username USERNAME --user-attributes Name="NAME",Value="VALUE"
+```
+
+Change password:
+
+```bash
+aws cognito-idp change-password --previous-password OLD_PASSWORD --proposed-password NEW_PASSWORD --access-token ACCESS_TOKEN
+```
+
+Delete user (public):
+
+```bash
+aws cognito-idp delete-user --access-token ACCESS_TOKEN
+```
+
+Delete user (admin):
+
+```bash
+aws cognito-idp admin-disable-user --user-pool-id ID --username USERNAME
+aws cognito-idp admin-delete-user --user-pool-id ID --username USERNAME
 ```
 
 ## Rotating Access Keys

@@ -37,7 +37,7 @@ export const authApi = createApi({
   endpoints: (builder) => ({
     getToken: builder.mutation<
       TokenResponse,
-      { refresh: boolean; code?: string; codeVerifier?: string }
+      { refresh: boolean; next?: string; code?: string; codeVerifier?: string }
     >({
       query: ({ refresh, code, codeVerifier }) => ({
         url: "/oauth2/token",

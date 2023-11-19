@@ -1,13 +1,17 @@
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { teal, yellow } from "@mui/material/colors";
 import { useSelector } from "react-redux";
+import { Route, Routes, useLocation } from "react-router-dom";
 
 import TopBar from "./components/app-bar/TopBar";
 import Store from "./components/store/Store";
 import { selectApp } from "./store/appSlice";
+import Profile from "./components/profile/Profile";
+import NotFound from "./components/404/NotFound";
 
-function App() {
+const App = () => {
   const { mode } = useSelector(selectApp);
+  const location = useLocation();
 
   const theme = createTheme({
     palette: {
@@ -30,14 +34,25 @@ function App() {
     <ThemeProvider theme={theme}>
       {/* Have the background color match the theme mode */}
       <CssBaseline />
-      <header className="sticky top-0 z-10">
-        <TopBar />
-      </header>
-      <main className="m-2">
-        <Store />
-      </main>
+      <Routes location={location}>
+        <Route
+          path="/"
+          element={
+            <>
+              <header className="sticky top-0 z-10">
+                <TopBar />
+              </header>
+              <main className="m-2">
+                <Store />
+              </main>
+            </>
+          }
+        />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </ThemeProvider>
   );
-}
+};
 
 export default App;
