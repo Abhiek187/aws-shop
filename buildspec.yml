@@ -8,6 +8,7 @@ phases:
     commands:
       - cd shop-app # the shell instance is saved every build command
       - echo Build started on `date`
+      - echo Node version `node -v`
       - npm ci
   build:
     commands:
