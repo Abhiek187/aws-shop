@@ -18,7 +18,7 @@ type FilterProps = {
   isMobile: boolean;
 };
 
-const FilterFields = ({ isMobile }: FilterProps) => {
+const FilterFields = ({ isMobile }: Readonly<FilterProps>) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const category = searchParams.get("category") ?? "";
   const minPrice = searchParams.get("min-price") ?? "";

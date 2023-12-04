@@ -17,7 +17,7 @@ type ServiceProps = {
   service: AWSService;
 };
 
-const ServiceCard = ({ service }: ServiceProps) => {
+const ServiceCard = ({ service }: Readonly<ServiceProps>) => {
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>

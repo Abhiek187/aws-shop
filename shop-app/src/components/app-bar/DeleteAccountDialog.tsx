@@ -21,7 +21,7 @@ const DeleteAccountDialog = ({
   email,
   onClose,
   onDelete,
-}: DeleteAccountDialogProps) => {
+}: Readonly<DeleteAccountDialogProps>) => {
   const emailFieldRef = useRef<HTMLInputElement>(null);
   const [emailValue, setEmailValue] = useState("");
 

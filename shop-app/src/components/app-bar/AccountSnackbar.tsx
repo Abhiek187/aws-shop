@@ -14,7 +14,7 @@ const AccountSnackbar = ({
   successMessage,
   errorMessage,
   onClose,
-}: AccountSnackbarProps) => {
+}: Readonly<AccountSnackbarProps>) => {
   return (
     <Snackbar open={open} autoHideDuration={5000} onClose={onClose}>
       <Alert

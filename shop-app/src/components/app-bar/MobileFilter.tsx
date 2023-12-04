@@ -18,7 +18,7 @@ type MobileFilterProps = {
   onClose: () => void;
 };
 
-const MobileFilter = ({ open, onClose }: MobileFilterProps) => {
+const MobileFilter = ({ open, onClose }: Readonly<MobileFilterProps>) => {
   const Transition = forwardRef(function Transition(
     props: TransitionProps & {
       children: React.ReactElement;

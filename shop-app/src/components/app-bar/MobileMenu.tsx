@@ -24,7 +24,7 @@ const MobileMenu = ({
   onClose,
   onToggleMode,
   onClickProfile,
-}: MobileMenuProps) => {
+}: Readonly<MobileMenuProps>) => {
   const { mode } = useSelector(selectApp);
   const isDarkMode = mode === "dark";
   const isMobileMenuOpen = Boolean(anchorEl);

@@ -21,7 +21,7 @@ const ProfileMenu = ({
   onClickLogIn,
   onClickLogOut,
   onClickDeleteAccount,
-}: ProfileMenuProps) => {
+}: Readonly<ProfileMenuProps>) => {
   const { isLoggedIn } = useSelector(selectApp);
   const isProfileMenuOpen = Boolean(anchorEl);
 
