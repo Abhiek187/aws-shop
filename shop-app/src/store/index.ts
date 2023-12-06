@@ -22,6 +22,7 @@ export const createStore = (preloadedState: PreloadedState<RootState> = {}) =>
     // Enable caching, invalidation, polling, and other useful features
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat([authApi.middleware, storeApi.middleware]),
+    devTools: import.meta.env.DEV,
   });
 
 const store = createStore();
