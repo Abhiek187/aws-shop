@@ -1,5 +1,5 @@
-boto3==1.33.2
-botocore==1.33.2
+boto3==1.33.8
+botocore==1.33.8
 certifi==2023.11.17
 cffi==1.16.0
 charset-normalizer==3.3.2
@@ -20,7 +20,7 @@ python-dateutil==2.8.2
 PyYAML==6.0.1
 requests==2.31.0
 responses==0.24.1
-s3transfer==0.8.1
+s3transfer==0.8.2
 six==1.16.0
 tomli==2.0.1
 types-PyYAML==6.0.12.12
