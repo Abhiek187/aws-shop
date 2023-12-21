@@ -26,6 +26,9 @@ updates:
       mui:
         patterns:
           - "@mui/*"
+      redux:
+        patterns:
+          - "*redux*"
       types:
         patterns:
           - "@types/*"

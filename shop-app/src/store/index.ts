@@ -1,8 +1,4 @@
-import {
-  PreloadedState,
-  combineReducers,
-  configureStore,
-} from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
 import { storeApi } from "../services/store";
 import { appReducer, appSlice } from "./appSlice";
@@ -15,7 +11,7 @@ const rootReducer = combineReducers({
 });
 
 // Allow tests to start fresh with a Redux store to avoid caching data
-export const createStore = (preloadedState: PreloadedState<RootState> = {}) =>
+export const createStore = (preloadedState: Partial<RootState> = {}) =>
   configureStore({
     reducer: rootReducer,
     preloadedState,
