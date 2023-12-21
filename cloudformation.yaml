@@ -243,6 +243,10 @@ Resources:
       LoggingConfiguration:
         DestinationBucketName: !Ref S3LoggingBucket
         LogFilePrefix: !Ref ReactAppBucketName
+      # Disable ACLs
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
       # Some access settings need to be enabled to add bucket policies
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
@@ -310,6 +314,10 @@ Resources:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
+      # Disable ACLs
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
