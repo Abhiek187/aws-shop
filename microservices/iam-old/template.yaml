@@ -29,7 +29,7 @@ Resources:
       # Zip files run faster than container images (setting PackageType causes false drift)
       CodeUri: src/
       Handler: app.handler
-      Runtime: python3.10 # see https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
+      Runtime: python3.12 # see https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
       Architectures:
         - arm64
       Description: Check the age of access keys for IAM users and send emails to an SNS topic
