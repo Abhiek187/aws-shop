@@ -6,7 +6,7 @@ describe("appSlice", () => {
     // Given no initial state
     const initialState = undefined;
     // When no action is called
-    const action = { type: undefined };
+    const action = { type: "" };
     const reducer = appReducer(initialState, action);
 
     // Then it should return the initial state
