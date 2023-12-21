@@ -59,3 +59,7 @@ updates:
           - "boto3"
           - "botocore"
           - "s3transfer"
+      moto:
+        patterns:
+          - "moto"
+          - "py-partiql-parser"
