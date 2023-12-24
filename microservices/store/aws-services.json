@@ -22,6 +22,14 @@
     "FreeTier": 1e6
   },
   {
+    "Name": "Application Composer",
+    "Description": "Visually create serverless applications",
+    "Price": 0,
+    "Unit": "diagram",
+    "Category": "free",
+    "FreeTier": null
+  },
+  {
     "Name": "Auto Scaling",
     "Description": "Automatically scale the number of EC2 instances with demand",
     "Price": 0,
