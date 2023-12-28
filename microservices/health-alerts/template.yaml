@@ -59,6 +59,7 @@ Resources:
     Type: AWS::SNS::TopicPolicy
     Properties:
       PolicyDocument:
+        Version: "2012-10-17"
         Statement:
           # Allow EventBridge to send email alerts using SNS
           - Sid: AllowEventBridgeServicePrincipalWriteOnly
@@ -97,6 +98,7 @@ Resources:
     Properties:
       # Allow EventBridge to send messages to the DLQ
       PolicyDocument:
+        Version: "2012-10-17"
         Statement:
           - Sid: AllowEventBridgeServicePrincipalWriteOnly
             Effect: Allow
