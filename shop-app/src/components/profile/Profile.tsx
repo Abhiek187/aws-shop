@@ -10,15 +10,15 @@ import {
 } from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
 import { useCallback, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { parseJWT } from "../../utils/oauth";
 import { selectApp } from "../../store/appSlice";
 import { IdTokenPayload } from "../../types/TokenPayload";
+import { useAppSelector } from "../../store/hooks";
 
 const Profile = () => {
-  const { oauth } = useSelector(selectApp);
+  const { oauth } = useAppSelector(selectApp);
   const navigate = useNavigate();
 
   const [, idTokenPayload] = parseJWT<IdTokenPayload>(oauth.idToken);
