@@ -6,9 +6,9 @@ import {
 } from "@mui/icons-material";
 import { Menu, MenuItem, IconButton } from "@mui/material";
 import { MouseEvent } from "react";
-import { useSelector } from "react-redux";
 
 import { selectApp } from "../../store/appSlice";
+import { useAppSelector } from "../../store/hooks";
 
 type MobileMenuProps = {
   id: string;
@@ -25,7 +25,7 @@ const MobileMenu = ({
   onToggleMode,
   onClickProfile,
 }: Readonly<MobileMenuProps>) => {
-  const { mode } = useSelector(selectApp);
+  const { mode } = useAppSelector(selectApp);
   const isDarkMode = mode === "dark";
   const isMobileMenuOpen = Boolean(anchorEl);
 

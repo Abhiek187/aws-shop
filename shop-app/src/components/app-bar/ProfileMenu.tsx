@@ -1,7 +1,7 @@
 import { Menu, Box, MenuItem, Divider } from "@mui/material";
-import { useSelector } from "react-redux";
 
 import { selectApp } from "../../store/appSlice";
+import { useAppSelector } from "../../store/hooks";
 
 type ProfileMenuProps = {
   id: string;
@@ -22,7 +22,7 @@ const ProfileMenu = ({
   onClickLogOut,
   onClickDeleteAccount,
 }: Readonly<ProfileMenuProps>) => {
-  const { isLoggedIn } = useSelector(selectApp);
+  const { isLoggedIn } = useAppSelector(selectApp);
   const isProfileMenuOpen = Boolean(anchorEl);
 
   return (

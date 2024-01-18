@@ -1,7 +1,6 @@
 import { CircularProgress, Grow, Unstable_Grid2 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { TransitionGroup } from "react-transition-group";
 import { useDebounce } from "use-debounce";
@@ -14,10 +13,11 @@ import { Constants } from "../../utils/constants";
 import { appActions, selectApp } from "../../store/appSlice";
 import AuthorizeResponse from "../../types/AuthorizeResponse";
 import AccountSnackbar from "../app-bar/AccountSnackbar";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 
 const Store = () => {
-  const { isLoggedIn, oauth } = useSelector(selectApp);
-  const dispatch = useDispatch();
+  const { isLoggedIn, oauth } = useAppSelector(selectApp);
+  const dispatch = useAppDispatch();
 
   const [searchParams] = useSearchParams();
   // Throttle API calls for efficiency every time the input changes

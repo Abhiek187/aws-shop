@@ -2,6 +2,7 @@ import { PaletteMode } from "@mui/material";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { Constants } from "../utils/constants";
+import { RootState } from ".";
 
 export type AppSlice = {
   mode: PaletteMode;
@@ -13,10 +14,6 @@ export type AppSlice = {
     accessToken: string;
     idToken: string;
   };
-};
-
-type AppState = {
-  [name: string]: AppSlice;
 };
 
 const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -68,7 +65,7 @@ export const appSlice = createSlice({
   },
 });
 
-export const selectApp = (state: AppState) => state[appSlice.name];
+export const selectApp = (state: RootState) => state[appSlice.name];
 
 export const appActions = appSlice.actions;
 export const appReducer = appSlice.reducer;

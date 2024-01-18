@@ -1,6 +1,5 @@
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { teal, yellow } from "@mui/material/colors";
-import { useSelector } from "react-redux";
 import { Route, Routes, useLocation } from "react-router-dom";
 
 import TopBar from "./components/app-bar/TopBar";
@@ -8,9 +7,10 @@ import Store from "./components/store/Store";
 import { selectApp } from "./store/appSlice";
 import Profile from "./components/profile/Profile";
 import NotFound from "./components/404/NotFound";
+import { useAppSelector } from "./store/hooks";
 
 const App = () => {
-  const { mode } = useSelector(selectApp);
+  const { mode } = useAppSelector(selectApp);
   const location = useLocation();
 
   const theme = createTheme({

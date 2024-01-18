@@ -24,7 +24,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import FilterFields from "./FilterFields";
@@ -41,6 +40,7 @@ import AccountSnackbar from "./AccountSnackbar";
 import MobileFilter from "./MobileFilter";
 import MobileMenu from "./MobileMenu";
 import ProfileMenu from "./ProfileMenu";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 
 const SearchWrapper = styled("div")(({ theme }) => ({
   position: "relative",
@@ -86,9 +86,9 @@ const TopBar = () => {
   const query = searchParams.get("query") ?? "";
   const navigate = useNavigate();
 
-  const { isLoggedIn, mode, oauth } = useSelector(selectApp);
+  const { isLoggedIn, mode, oauth } = useAppSelector(selectApp);
   const isDarkMode = mode === "dark";
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [revokeToken, logoutResult] = useRevokeTokenMutation();
   const [refreshToken, refreshResult] = useGetTokenMutation();
