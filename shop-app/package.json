@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.490.0",
-    "@aws-sdk/util-dynamodb": "^3.490.0",
+    "@aws-sdk/util-dynamodb": "^3.494.0",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.4",
