@@ -118,6 +118,14 @@
     "FreeTier": 5e4
   },
   {
+    "Name": "Control Tower",
+    "Description": "Set up and govern multiple AWS accounts",
+    "Price": 0,
+    "Unit": "landing zone",
+    "Category": "free",
+    "FreeTier": null
+  },
+  {
     "Name": "DynamoDB",
     "Description": "NoSQL, serverless key-value database",
     "Price": 0.25,
@@ -146,6 +154,30 @@
     "Price": 1,
     "Unit": "customer key",
     "Category": "paid"
+  },
+  {
+    "Name": "Organizations",
+    "Description": "Centrally manage multiple AWS accounts",
+    "Price": 0,
+    "Unit": "organization",
+    "Category": "free",
+    "FreeTier": null
+  },
+  {
+    "Name": "RAM",
+    "Description": "Share resources across multiple AWS accounts",
+    "Price": 0,
+    "Unit": "resource",
+    "Category": "free",
+    "FreeTier": null
+  },
+  {
+    "Name": "Service Catalog",
+    "Description": "Create and manage catalogs of approved IT services on AWS",
+    "Price": 7e-4,
+    "Unit": "API call",
+    "Category": "free",
+    "FreeTier": 1e3
   },
   {
     "Name": "SES",

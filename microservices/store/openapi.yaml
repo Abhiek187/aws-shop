@@ -89,7 +89,7 @@ components:
           Price:
             type: number
             minimum: 0
-            description: The price of the AWS service
+            description: The price in dollars of the AWS service
           Unit:
             type: string
             description: The unit of the AWS service when purchasing
