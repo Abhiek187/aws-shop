@@ -167,7 +167,7 @@
     "Name": "RAM",
     "Description": "Share resources across multiple AWS accounts",
     "Price": 0,
-    "Unit": "resource",
+    "Unit": "resource share",
     "Category": "free",
     "FreeTier": null
   },
