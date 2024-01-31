@@ -1,6 +1,6 @@
 import boto3
 import json
-from moto import mock_dynamodb
+from moto import mock_aws
 import os
 import pytest
 
@@ -17,7 +17,7 @@ def aws_credentials():
 
 @pytest.fixture
 def dynamodb_client(aws_credentials):
-    with mock_dynamodb():
+    with mock_aws():
         yield boto3.client("dynamodb")
 
 
