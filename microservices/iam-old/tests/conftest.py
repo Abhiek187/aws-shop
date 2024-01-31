@@ -1,7 +1,7 @@
 import boto3
 from datetime import datetime, timedelta, timezone
 from freezegun import freeze_time
-from moto import mock_iam, mock_sns
+from moto import mock_aws
 import os
 import pytest
 from unittest.mock import MagicMock
@@ -18,13 +18,13 @@ def aws_credentials():
 
 @pytest.fixture
 def iam_client(aws_credentials):
-    with mock_iam():
+    with mock_aws():
         yield boto3.client("iam")
 
 
 @pytest.fixture
 def sns_client(aws_credentials):
-    with mock_sns():
+    with mock_aws():
         yield boto3.client("sns")
 
 
