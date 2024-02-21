@@ -1,4 +1,4 @@
-import { SpyInstance, afterEach, describe, expect, it, vi } from "vitest";
+import { MockInstance, afterEach, describe, expect, it, vi } from "vitest";
 
 import * as oauth from "./oauth";
 import { isValidJWT, openHostedUI, parseJWT } from "./oauth";
@@ -226,7 +226,7 @@ describe("oauth", () => {
   it("should reject the ID token if the nonce doesn't match", async () => {
     // Given an ID token with an invalid nonce
     mockDate(mockIdTokenPayload.exp - 1);
-    const stateSpy = vi.spyOn(store, "getState") as SpyInstance<
+    const stateSpy = vi.spyOn(store, "getState") as unknown as MockInstance<
       [],
       {
         app: {

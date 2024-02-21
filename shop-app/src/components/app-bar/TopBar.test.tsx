@@ -2,7 +2,7 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import {
-  SpyInstance,
+  MockInstance,
   afterEach,
   beforeEach,
   describe,
@@ -15,11 +15,8 @@ import TopBar from "./TopBar";
 import { createStore } from "../../store";
 
 describe("TopBar", () => {
-  let setParamsSpy: SpyInstance<[name: string, value: string], void>;
-  let deleteParamsSpy: SpyInstance<
-    [name: string, value?: string | undefined],
-    void
-  >;
+  let setParamsSpy: MockInstance<[name: string, value: string], void>;
+  let deleteParamsSpy: MockInstance<[name: string, value?: string], void>;
 
   beforeEach(() => {
     render(
