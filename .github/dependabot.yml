@@ -20,11 +20,9 @@ updates:
       aws:
         patterns:
           - "@aws-sdk/*"
-      emotion:
+      mui-emotion:
         patterns:
           - "@emotion/*"
-      mui:
-        patterns:
           - "@mui/*"
       redux:
         patterns:
@@ -32,12 +30,10 @@ updates:
       types:
         patterns:
           - "@types/*"
-      typescript-eslint:
-        patterns:
           - "@typescript-eslint/*"
-      vitest:
+      vite:
         patterns:
-          - "*vitest*"
+          - "*vite*"
 
   - package-ecosystem: "pip"
     directory: "/microservices/iam-old"
