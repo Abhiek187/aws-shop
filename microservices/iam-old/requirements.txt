@@ -15,7 +15,7 @@ moto==5.0.2
 packaging==23.2
 pluggy==1.4.0
 pycparser==2.21
-pytest==8.0.2
+pytest==8.1.1
 python-dateutil==2.9.0.post0
 PyYAML==6.0.1
 requests==2.31.0
