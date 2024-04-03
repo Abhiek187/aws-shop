@@ -17,5 +17,6 @@ module.exports = {
   rules: {
     "react-refresh/only-export-components": "warn",
     "@typescript-eslint/strict-boolean-expressions": "error",
+    "@typescript-eslint/no-non-null-assertion": "error",
   },
 };
