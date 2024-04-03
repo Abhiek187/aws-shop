@@ -16,5 +16,6 @@ module.exports = {
   ignorePatterns: ["*.js", ".eslintrc.cjs"],
   rules: {
     "react-refresh/only-export-components": "warn",
+    "@typescript-eslint/strict-boolean-expressions": "error",
   },
 };

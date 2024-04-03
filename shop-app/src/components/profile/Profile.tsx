@@ -80,7 +80,7 @@ const Profile = () => {
               <TableCell>
                 <strong>Email Verified</strong>
               </TableCell>
-              {idTokenPayload?.email_verified ? (
+              {idTokenPayload?.email_verified === true ? (
                 <TableCell align="right">
                   <CheckCircle color="success" />
                   <Box component="span" sx={visuallyHidden}>

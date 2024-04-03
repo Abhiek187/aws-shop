@@ -10,7 +10,7 @@ describe("unmarshallAWSServices", () => {
     for (const service of mockStoreResponse) {
       let freeTier: AWSService["FreeTier"] = undefined;
 
-      if (service.FreeTier?.NULL) {
+      if (service.FreeTier?.NULL === true) {
         freeTier = null;
       } else if (service.FreeTier?.N !== undefined) {
         freeTier = Number(service.FreeTier.N);
