@@ -20,6 +20,9 @@ updates:
       aws:
         patterns:
           - "@aws-sdk/*"
+      eslint:
+        patterns:
+          - "*eslint*"
       mui-emotion:
         patterns:
           - "@emotion/*"
@@ -30,7 +33,6 @@ updates:
       types:
         patterns:
           - "@types/*"
-          - "@typescript-eslint/*"
       vite:
         patterns:
           - "*vite*"
