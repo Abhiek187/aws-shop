@@ -3,10 +3,6 @@ Description: >-
   A stack to host the frontend of the AWS Shopping App
 #Metadata
 Parameters:
-  ReactAppBucketName:
-    Type: String
-    Description: The name of the S3 bucket to store the React code
-    Default: aws-shop-bucket-jlkafn93hvo0a3f
   Email:
     Type: String
     Description: The email address that will receive SNS notifications for the health check alarm
@@ -235,7 +231,6 @@ Resources:
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
-      BucketName: !Ref ReactAppBucketName
       # Buckets and objects are encrypted by default
       BucketEncryption:
         ServerSideEncryptionConfiguration:
@@ -243,7 +238,6 @@ Resources:
               SSEAlgorithm: AES256
       LoggingConfiguration:
         DestinationBucketName: !Ref S3LoggingBucket
-        LogFilePrefix: !Ref ReactAppBucketName
       # Disable ACLs
       OwnershipControls:
         Rules:
