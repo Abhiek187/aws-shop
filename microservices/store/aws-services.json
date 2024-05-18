@@ -88,7 +88,7 @@
   {
     "Name": "CodeBuild",
     "Description": "CI (Continuous Integration): build and test your code",
-    "Price": 0.01,
+    "Price": 6e-4,
     "Unit": "build minute",
     "Category": "free",
     "FreeTier": 100
