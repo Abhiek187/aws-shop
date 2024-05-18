@@ -179,7 +179,7 @@ Resources:
         SuppressedRules:
           - CLOUDWATCH_LOG_GROUP_ENCRYPTED # server-side encryption is used by default
     Properties:
-      LogGroupName: store-api
+      LogGroupName: /aws/api-gateway/store-api
       RetentionInDays: 365
   # SQS
   LambdaDLQ:
