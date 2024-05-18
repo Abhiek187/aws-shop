@@ -199,7 +199,7 @@ Resources:
         # Make sure the image supports the runtime in the buildspec:
         # https://docs.aws.amazon.com/codebuild/latest/userguide/available-runtimes.html
         Type: ARM_CONTAINER
-        Image: aws/codebuild/amazonlinux2-aarch64-standard:3.0 # Amazon Linux 2 ARM image
+        Image: aws/codebuild/amazonlinux2-aarch64-standard:3.0 # Amazon Linux 2023 ARM image
         ComputeType: BUILD_GENERAL1_SMALL # free tier eligible
         EnvironmentVariables:
           - Name: CI
