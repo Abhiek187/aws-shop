@@ -199,7 +199,7 @@ Resources:
         # Make sure the image supports the runtime in the buildspec:
         # https://docs.aws.amazon.com/codebuild/latest/userguide/available-runtimes.html
         Type: ARM_LAMBDA_CONTAINER
-        Image: aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs20 # Amazon Linux 2 ARM image
+        Image: aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs20 # Amazon Linux 2023 ARM image
         ComputeType: BUILD_LAMBDA_1GB # free tier eligible
         EnvironmentVariables:
           - Name: CI
