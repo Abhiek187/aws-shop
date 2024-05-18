@@ -104,10 +104,10 @@
   {
     "Name": "CodePipeline",
     "Description": "CI/CD pipeline",
-    "Price": 1,
-    "Unit": "pipeline",
+    "Price": 2e-3,
+    "Unit": "V2 minute",
     "Category": "free",
-    "FreeTier": 1
+    "FreeTier": 100
   },
   {
     "Name": "Cognito",
