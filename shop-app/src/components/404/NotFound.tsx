@@ -5,7 +5,7 @@ const NotFound = () => {
   return (
     <main className="flex flex-col items-center gap-3">
       <Typography variant="h4" sx={{ mt: 3, mx: 3, textAlign: "center" }}>
-        Whoops! This page doesn't exist.{" "}
+        Whoops! This page doesn&apos;t exist.{" "}
       </Typography>
       <Link to="/">
         <Button variant="contained" color="secondary">
