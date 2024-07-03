@@ -36,6 +36,9 @@ updates:
       vite:
         patterns:
           - "*vite*"
+    ignore:
+      - dependency-name: "eslint"
+        versions: ["9.x"]
 
   - package-ecosystem: "pip"
     directory: "/microservices/iam-old"
