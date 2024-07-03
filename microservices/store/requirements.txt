@@ -1,5 +1,5 @@
-boto3==1.34.133
-botocore==1.34.133
+boto3==1.34.138
+botocore==1.34.138
 certifi==2024.6.2
 cffi==1.16.0
 charset-normalizer==3.3.2
@@ -11,7 +11,7 @@ iniconfig==2.0.0
 Jinja2==3.1.4
 jmespath==1.0.1
 MarkupSafe==2.1.5
-moto==5.0.9
+moto==5.0.10
 packaging==24.1
 pluggy==1.5.0
 py-partiql-parser==0.5.5
