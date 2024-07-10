@@ -227,8 +227,7 @@ describe("oauth", () => {
     // Given an ID token with an invalid nonce
     mockDate(mockIdTokenPayload.exp - 1);
     const stateSpy = vi.spyOn(store, "getState") as unknown as MockInstance<
-      [],
-      {
+      () => {
         app: {
           oauth: Pick<AppSlice["oauth"], "nonce">;
         };
