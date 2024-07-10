@@ -15,8 +15,8 @@ import TopBar from "./TopBar";
 import { createStore } from "../../store";
 
 describe("TopBar", () => {
-  let setParamsSpy: MockInstance<[name: string, value: string], void>;
-  let deleteParamsSpy: MockInstance<[name: string, value?: string], void>;
+  let setParamsSpy: MockInstance<(name: string, value: string) => void>;
+  let deleteParamsSpy: MockInstance<(name: string, value?: string) => void>;
 
   beforeEach(() => {
     render(
