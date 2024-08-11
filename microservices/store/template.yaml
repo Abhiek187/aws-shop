@@ -65,6 +65,10 @@ Resources:
             - GET
             - HEAD
             - OPTIONS
+            - PUT
+            - PATCH
+            - POST
+            - DELETE
           TargetOriginId: StoreAPIOrigin
           Compress: true
           CachePolicyId: !Ref CloudFrontCachePolicy
