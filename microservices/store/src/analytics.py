@@ -95,6 +95,25 @@ def publish_event(event, pinpoint=pinpoint):
     )
     LOG.info(f"Pinpoint response: {response}")
 
+    """
+    Sample response:
+    {
+        "ResponseMetadata": { ... },
+        "EventsResponse": {
+            "Results": {
+                "anonymous": {
+                    "EndpointItemResponse": {"Message": "Accepted", "StatusCode": 202},
+                    "EventsItemResponse": {
+                        "event-2024-08-11T20:26:22.250176": {
+                            "Message": "Accepted",
+                            "StatusCode": 202,
+                        }
+                    },
+                }
+            }
+        },
+    }
+    """
     events_response = response["EventsResponse"]["Results"][endpoint_id][
         "EventsItemResponse"
     ][event_id]

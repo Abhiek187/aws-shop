@@ -1,5 +1,6 @@
 from datetime import datetime
 from freezegun import freeze_time
+import json
 import os
 import pytest
 import sys
@@ -75,3 +76,17 @@ def test_publish_event(pinpoint_client, pinpoint_app):
                 }
             },
         )
+
+
+@pytest.mark.parametrize("apigw_event", ["pinpoint-test-event.json"], indirect=True)
+def test_analytics_handler_with_invalid_app_id(apigw_event):
+    lambda_response = analytics.handler(apigw_event, "")
+    body = json.loads(lambda_response["body"])
+
+    # Response should be 400 since the PinpointAppId env var isn't set
+    assert lambda_response["statusCode"] == 400
+    assert lambda_response["headers"] == {
+        "Content-Type": "application/json",
+    }
+    # Ex: "An error occurred (NotFoundException) when calling the PutEvents operation: Resource not found"
+    assert "PutEvents" in body
