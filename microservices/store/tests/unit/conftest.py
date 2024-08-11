@@ -3,6 +3,7 @@ import json
 from moto import mock_aws
 import os
 import pytest
+from unittest.mock import MagicMock
 
 
 @pytest.fixture
@@ -19,6 +20,12 @@ def aws_credentials():
 def dynamodb_client(aws_credentials):
     with mock_aws():
         yield boto3.client("dynamodb")
+
+
+@pytest.fixture
+def pinpoint_client(aws_credentials):
+    with mock_aws():
+        yield boto3.client("pinpoint")
 
 
 @pytest.fixture
@@ -141,6 +148,21 @@ def dynamodb_table(dynamodb_client, table_name):
         dynamodb_client.put_item(TableName=table_name, Item=item)
 
     return items
+
+
+@pytest.fixture
+def pinpoint_app_name():
+    return "test-app"
+
+
+@pytest.fixture
+def pinpoint_app(pinpoint_client, pinpoint_app_name):
+    # Create a mock Pinpoint app
+    response = pinpoint_client.create_app(
+        CreateApplicationRequest={"Name": pinpoint_app_name}
+    )
+    os.environ["PinpointAppId"] = response["ApplicationResponse"]["Id"]
+    pinpoint_client.put_events = MagicMock()
 
 
 @pytest.fixture

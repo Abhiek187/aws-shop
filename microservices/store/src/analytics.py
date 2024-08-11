@@ -65,7 +65,7 @@ def handler(event, context):
     return response
 
 
-def publish_event(event):
+def publish_event(event, pinpoint=pinpoint):
     app_id = os.environ.get("PinpointAppId", "")
     timestamp = datetime.now().isoformat()
     # anonymous = generic endpoint ID that encompases all users
@@ -73,13 +73,20 @@ def publish_event(event):
     event_id = f"event-{timestamp}"
     attributes, metrics = categorize_event_properties(event["properties"])
 
-    events_request = {"BatchItem": {}}
-    events_request["BatchItem"][endpoint_id] = {"Endpoint": {}, "Events": {}}
-    events_request["BatchItem"][endpoint_id]["Events"][event_id] = {
-        "Attributes": attributes,
-        "EventType": event["name"],
-        "Metrics": metrics,
-        "Timestamp": timestamp,
+    events_request = {
+        "BatchItem": {
+            f"{endpoint_id}": {
+                "Endpoint": {},
+                "Events": {
+                    f"{event_id}": {
+                        "Attributes": attributes,
+                        "EventType": event["name"],
+                        "Metrics": metrics,
+                        "Timestamp": timestamp,
+                    }
+                },
+            }
+        }
     }
 
     response = pinpoint.put_events(
