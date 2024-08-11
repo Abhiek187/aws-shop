@@ -118,6 +118,11 @@ Resources:
             Action:
               - "sqs:*"
             Resource: "*"
+          - Sid: AmazonPinpointFullAccess
+            Effect: Allow
+            Action:
+              - "mobiletargeting:*"
+            Resource: "*"
   GitHubOIDC:
     Type: AWS::IAM::OIDCProvider
     Properties:

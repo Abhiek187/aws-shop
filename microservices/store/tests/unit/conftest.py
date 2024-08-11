@@ -143,7 +143,7 @@ def dynamodb_table(dynamodb_client, table_name):
     return items
 
 
-@pytest.fixture()
+@pytest.fixture
 def apigw_event(request):
     # Mock API Gateway event
     current_dir = os.path.dirname(__file__)
