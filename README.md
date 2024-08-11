@@ -475,6 +475,20 @@ aws cognito-idp admin-disable-user --user-pool-id ID --username USERNAME
 aws cognito-idp admin-delete-user --user-pool-id ID --username USERNAME
 ```
 
+### Pinpoint Commands
+
+Publish event:
+
+```bash
+aws pinpoint put-events --application-id ID --events-request EVENT_FILE_PATH
+```
+
+Get endpoint:
+
+```bash
+aws pinpoint get-endpoint --application-id ID --endpoint-id ENDPOINT_ID
+```
+
 ## Rotating Access Keys
 
 Rotate your access keys every 60 days by running the following shell script ([jq](https://stedolan.github.io/jq/) is required):
