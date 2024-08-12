@@ -1,0 +1,37 @@
+{
+  "version": "2.0",
+  "routeKey": "POST /event",
+  "rawPath": "/event",
+  "rawQueryString": "",
+  "headers": {
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate, br",
+    "content-length": "104",
+    "content-type": "application/json",
+    "host": "vz5vk4kkvh.execute-api.us-east-1.amazonaws.com",
+    "postman-token": "0f6aede2-ff9c-4803-9fa7-293705ad0cec",
+    "user-agent": "PostmanRuntime/7.41.0",
+    "x-amzn-trace-id": "Root=1-66b91e6e-515e10cc426599f0416e6128",
+    "x-forwarded-port": "443",
+    "x-forwarded-proto": "https"
+  },
+  "requestContext": {
+    "accountId": "701157632481",
+    "apiId": "vz5vk4kkvh",
+    "domainName": "vz5vk4kkvh.execute-api.us-east-1.amazonaws.com",
+    "domainPrefix": "vz5vk4kkvh",
+    "http": {
+      "method": "POST",
+      "path": "/event",
+      "protocol": "HTTP/1.1",
+      "userAgent": "PostmanRuntime/7.41.0"
+    },
+    "requestId": "cXGxRitloAMEbrQ=",
+    "routeKey": "POST /event",
+    "stage": "$default",
+    "time": "11/Aug/2024:20:26:22 +0000",
+    "timeEpoch": 1723407982231
+  },
+  "body": "{\r\n    \"name\": \"test-event\",\r\n    \"properties\": {\r\n        \"key\": \"value\",\r\n        \"count\": 1\r\n    }\r\n}",
+  "isBase64Encoded": false
+}

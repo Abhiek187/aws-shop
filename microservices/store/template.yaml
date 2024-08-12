@@ -1,6 +1,21 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-#Globals
+# Supported global properties: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-template-anatomy-globals.html#sam-specification-template-anatomy-globals-supported-resources-and-properties
+Globals:
+  Function:
+    # Zip files run faster than container images (setting PackageType causes false drift)
+    CodeUri: src/
+    Runtime: python3.11 # see https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
+    Architectures:
+      - arm64
+    # Can use function URLs if API Gateway isn't necessary
+    # 128 MB of memory allocated by default
+    # Automatically update the runtime version
+    # Timeout after 3 seconds
+    Tracing: Active
+    DeadLetterQueue:
+      TargetArn: !GetAtt LambdaDLQ.Arn # automatically applies permissions to the execution role
+      Type: SQS
 Description: >-
   A stack to build the serverless backend of the AWS Shopping App
 #Metadata
@@ -50,6 +65,10 @@ Resources:
             - GET
             - HEAD
             - OPTIONS
+            - PUT
+            - PATCH
+            - POST
+            - DELETE
           TargetOriginId: StoreAPIOrigin
           Compress: true
           CachePolicyId: !Ref CloudFrontCachePolicy
@@ -203,12 +222,7 @@ Resources:
           # Security suppressions
           - IAM_NO_INLINE_POLICY_CHECK # SAM policy templates become inline policies
     Properties:
-      # Zip files run faster than container images (setting PackageType causes false drift)
-      CodeUri: src/
       Handler: app.handler
-      Runtime: python3.11 # see https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
-      Architectures:
-        - arm64
       Description: Query the AWS Services table
       Events:
         HttpApiEvent:
@@ -233,14 +247,37 @@ Resources:
                 - !Sub
                   - "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}/index/*"
                   - tableName: !Ref AWSServiceTable
-      # Can use function URLs if API Gateway isn't necessary
-      # 128 MB of memory allocated by default
-      # Automatically update the runtime version
-      # Timeout after 3 seconds
-      Tracing: Active
-      DeadLetterQueue:
-        TargetArn: !GetAtt LambdaDLQ.Arn # automatically applies permissions to the execution role
-        Type: SQS
+  AnalyticsLambdaFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      guard:
+        SuppressedRules:
+          # Reliability suppressions
+          - LAMBDA_CONCURRENCY_CHECK # save costs
+          - LAMBDA_INSIDE_VPC # no VPC created (also security check)
+          # Security suppressions
+          - IAM_NO_INLINE_POLICY_CHECK # SAM policy templates become inline policies
+    Properties:
+      Handler: analytics.handler
+      Description: Publish events to Pinpoint
+      Events:
+        HttpApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - mobiletargeting:PutEvents
+              Resource:
+                - !Sub
+                  - "arn:${AWS::Partition}:mobiletargeting:${AWS::Region}:${AWS::AccountId}:apps/${projectId}/events"
+                  - projectId: !Ref PinpointApp
+      Environment:
+        Variables:
+          PinpointAppId: !Ref PinpointApp
   # DynamoDB
   AWSServiceTable:
     # SAM version is limited
@@ -281,6 +318,11 @@ Resources:
         PointInTimeRecoveryEnabled: true
       TableClass: STANDARD
       TableName: AWS-Services
+  # Pinpoint
+  PinpointApp:
+    Type: AWS::Pinpoint::App
+    Properties:
+      Name: AWS-Shop
 Outputs:
   CloudFrontURL:
     Description: CloudFront URL of the API

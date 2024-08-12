@@ -28,19 +28,19 @@ def sns_client(aws_credentials):
         yield boto3.client("sns")
 
 
-@pytest.fixture()
+@pytest.fixture
 def user_name():
     return "test-user"
 
 
-@pytest.fixture()
+@pytest.fixture
 def new_user(iam_client, user_name):
     # Create a mock IAM user
     iam_client.create_user(UserName=user_name)
     iam_client.create_access_key(UserName=user_name)
 
 
-@pytest.fixture()
+@pytest.fixture
 def old_user(iam_client, user_name):
     today = datetime.now(timezone.utc)
 
@@ -50,17 +50,17 @@ def old_user(iam_client, user_name):
         iam_client.create_access_key(UserName=user_name)
 
 
-@pytest.fixture()
+@pytest.fixture
 def access_key_metadata(iam_client, user_name):
     return iam_client.list_access_keys(UserName=user_name)["AccessKeyMetadata"]
 
 
-@pytest.fixture()
+@pytest.fixture
 def sns_topic_name():
     return "test-topic"
 
 
-@pytest.fixture()
+@pytest.fixture
 def sns_topic(sns_client, sns_topic_name):
     # Create a mock SNS topic
     response = sns_client.create_topic(Name=sns_topic_name)
