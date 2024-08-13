@@ -4,6 +4,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Constants } from "../utils/constants";
 import AWSService from "../types/AWSService";
 import RawAWSService from "../types/RawAWSService";
+import EventRequest from "../types/EventRequest";
 
 /**
  * Remove attribute types from DynamoDB responses
@@ -31,7 +32,17 @@ export const storeApi = createApi({
       }),
       transformResponse: unmarshallAWSServices,
     }),
+    publishEvent: builder.mutation<string, EventRequest>({
+      query: (eventBody) => ({
+        url: "/event",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: eventBody,
+      }),
+    }),
   }),
 });
 
-export const { useGetAWSServicesQuery } = storeApi;
+export const { useGetAWSServicesQuery, usePublishEventMutation } = storeApi;
