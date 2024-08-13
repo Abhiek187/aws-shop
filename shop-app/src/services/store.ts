@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Constants } from "../utils/constants";
 import AWSService from "../types/AWSService";
 import RawAWSService from "../types/RawAWSService";
-import EventRequest from "../types/EventRequest";
+import { EventRequest } from "../types/Events";
 
 /**
  * Remove attribute types from DynamoDB responses

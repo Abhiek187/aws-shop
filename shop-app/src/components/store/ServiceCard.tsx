@@ -12,12 +12,25 @@ import pluralize from "pluralize";
 
 import AWSService from "../../types/AWSService";
 import { commaFormat, dollarFormat } from "../../utils/number";
+import { usePublishEventMutation } from "../../services/store";
+import { storeEvent } from "../../utils/analytics";
 
 type ServiceProps = {
   service: AWSService;
 };
 
 const ServiceCard = ({ service }: Readonly<ServiceProps>) => {
+  // No need to check the result of the event API
+  const [publishEvent] = usePublishEventMutation();
+
+  const publishServiceCardEvent = () => {
+    void publishEvent(
+      storeEvent({
+        serviceName: service.Name,
+      })
+    );
+  };
+
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
@@ -35,7 +48,7 @@ const ServiceCard = ({ service }: Readonly<ServiceProps>) => {
         >
           {service.Category}
         </Typography>
-        <Button size="small">
+        <Button size="small" onClick={publishServiceCardEvent}>
           {dollarFormat(service.Price)} per {service.Unit}
         </Button>
       </CardActions>

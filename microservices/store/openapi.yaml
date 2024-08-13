@@ -186,6 +186,10 @@ x-amazon-apigateway-cors:
     - GET
     - HEAD
     - OPTIONS
+    - PUT
+    - PATCH
+    - POST
+    - DELETE
   allowHeaders:
     - "x-apigateway-header"
     - "x-amz-date"

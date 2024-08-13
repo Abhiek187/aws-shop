@@ -19,4 +19,10 @@ export abstract class Constants {
     static readonly PROFILE = "profile";
     static readonly DELETE_ACCOUNT = "deleteAccount";
   };
+
+  static Events = class {
+    static readonly STORE = "store";
+    static readonly APP_BAR = "app-bar";
+    static readonly PROFILE = "profile";
+  };
 }
