@@ -41,6 +41,8 @@ import MobileFilter from "./MobileFilter";
 import MobileMenu from "./MobileMenu";
 import ProfileMenu from "./ProfileMenu";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { usePublishEventMutation } from "../../services/store";
+import { appBarEvent } from "../../utils/analytics";
 
 const SearchWrapper = styled("div")(({ theme }) => ({
   position: "relative",
@@ -92,6 +94,7 @@ const TopBar = () => {
 
   const [revokeToken, logoutResult] = useRevokeTokenMutation();
   const [refreshToken, refreshResult] = useGetTokenMutation();
+  const [publishEvent] = usePublishEventMutation();
 
   const [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(
     null
@@ -181,6 +184,12 @@ const TopBar = () => {
   }, [dispatch, handleOpenAccountDialog, handleOpenProfile, refreshResult]);
 
   const handleToggleMode = () => {
+    // Publish the event as the opposite of whether it's light or dark mode when toggling
+    void publishEvent(
+      appBarEvent({
+        darkMode: !isDarkMode,
+      })
+    );
     dispatch(appActions.toggleMode());
   };
 

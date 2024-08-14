@@ -8,7 +8,7 @@ export type StoreEventData = {
 };
 
 export type AppBarEventData = {
-  category?: "free" | "trial" | "paid";
+  category?: string;
   freeTier?: boolean;
   darkMode?: boolean;
 };
