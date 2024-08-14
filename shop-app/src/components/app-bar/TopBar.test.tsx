@@ -1,23 +1,17 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
-import {
-  MockInstance,
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import TopBar from "./TopBar";
 import { createStore } from "../../store";
+import * as analytics from "../../utils/analytics";
+
+const setParamsSpy = vi.spyOn(URLSearchParams.prototype, "set");
+const deleteParamsSpy = vi.spyOn(URLSearchParams.prototype, "delete");
+const appBarEventSpy = vi.spyOn(analytics, "appBarEvent");
 
 describe("TopBar", () => {
-  let setParamsSpy: MockInstance<(name: string, value: string) => void>;
-  let deleteParamsSpy: MockInstance<(name: string, value?: string) => void>;
-
   beforeEach(() => {
     render(
       <BrowserRouter>
@@ -26,13 +20,11 @@ describe("TopBar", () => {
         </Provider>
       </BrowserRouter>
     );
-
-    setParamsSpy = vi.spyOn(URLSearchParams.prototype, "set");
-    deleteParamsSpy = vi.spyOn(URLSearchParams.prototype, "delete");
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    // clear vs. reset vs. restore all mocks: https://stackoverflow.com/a/59792748
+    vi.clearAllMocks();
   });
 
   it("should render", () => {
@@ -62,6 +54,7 @@ describe("TopBar", () => {
 
     fireEvent.change(searchBar, { target: { value: "" } });
     expect(deleteParamsSpy).toHaveBeenCalledWith(searchParam);
+    expect(appBarEventSpy).not.toHaveBeenCalled();
   });
 
   it("should update search params with category", () => {
@@ -74,10 +67,14 @@ describe("TopBar", () => {
     const optionList = within(screen.getByRole("listbox"));
     fireEvent.click(optionList.getByText("Free"));
     expect(setParamsSpy).toHaveBeenCalledWith(searchParam, searchQuery);
+    expect(appBarEventSpy).toHaveBeenCalledWith({
+      category: searchQuery,
+    });
 
     fireEvent.mouseDown(categoryDropDown);
     fireEvent.click(optionList.getByText("Any"));
     expect(deleteParamsSpy).toHaveBeenCalledWith(searchParam);
+    expect(appBarEventSpy).toHaveBeenCalledTimes(1);
   });
 
   it("should update search params with min-price", () => {
@@ -90,6 +87,7 @@ describe("TopBar", () => {
 
     fireEvent.change(minPriceField, { target: { value: "" } });
     expect(deleteParamsSpy).toHaveBeenCalledWith(searchParam);
+    expect(appBarEventSpy).not.toHaveBeenCalled();
   });
 
   it("should update search params with max-price", () => {
@@ -102,6 +100,7 @@ describe("TopBar", () => {
 
     fireEvent.change(maxPriceField, { target: { value: "" } });
     expect(deleteParamsSpy).toHaveBeenCalledWith(searchParam);
+    expect(appBarEventSpy).not.toHaveBeenCalled();
   });
 
   it("should update search params with free-tier", () => {
@@ -111,8 +110,12 @@ describe("TopBar", () => {
     const searchParam = "free-tier";
     fireEvent.click(freeTierCheckbox);
     expect(setParamsSpy).toHaveBeenCalledWith(searchParam, "");
+    expect(appBarEventSpy).toHaveBeenCalledWith({
+      freeTier: true,
+    });
 
     fireEvent.click(freeTierCheckbox);
     expect(deleteParamsSpy).toHaveBeenCalledWith(searchParam);
+    expect(appBarEventSpy).toHaveBeenCalledTimes(1);
   });
 });
