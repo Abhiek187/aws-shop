@@ -23,6 +23,7 @@ const Transition = forwardRef(
     ref
   ) => <Slide direction="down" ref={ref} {...props} />
 );
+Transition.displayName = "MobileFilterTransition";
 
 type MobileFilterProps = {
   open: boolean;
