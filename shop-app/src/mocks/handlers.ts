@@ -125,6 +125,9 @@ export const handlers = [
   http.get(`${Constants.Cognito.IDP_BASE_URL}/.well-known/jwks.json`, () => {
     return HttpResponse.json(mockJWKResponse, { status: 200 });
   }),
+  http.post(`${Constants.Cognito.BASE_URL}/oauth2/revoke`, () => {
+    return new HttpResponse(null, { status: 200 });
+  }),
 ];
 
 export const errorHandlers = [
