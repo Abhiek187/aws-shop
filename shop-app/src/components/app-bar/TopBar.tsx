@@ -42,7 +42,7 @@ import MobileMenu from "./MobileMenu";
 import ProfileMenu from "./ProfileMenu";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { usePublishEventMutation } from "../../services/store";
-import { appBarEvent } from "../../utils/analytics";
+import { appBarEvent, profileEvent } from "../../utils/analytics";
 
 const SearchWrapper = styled("div")(({ theme }) => ({
   position: "relative",
@@ -121,6 +121,11 @@ const TopBar = () => {
     const isValidIdToken = await isValidJWT(oauth.idToken);
 
     if (isValidAccessToken && isValidIdToken) {
+      void publishEvent(
+        profileEvent({
+          viewedProfile: true,
+        })
+      );
       navigate("/profile");
     } else {
       // If not, try refreshing them
@@ -207,10 +212,20 @@ const TopBar = () => {
   };
 
   const handleSignIn = async () => {
+    void publishEvent(
+      profileEvent({
+        loggedIn: true,
+      })
+    );
     await openHostedUI();
   };
 
   const handleSignOut = async () => {
+    void publishEvent(
+      profileEvent({
+        loggedOut: true,
+      })
+    );
     await revokeToken();
   };
 
