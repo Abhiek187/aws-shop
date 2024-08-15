@@ -1,9 +1,14 @@
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { describe, expect, it, vi } from "vitest";
 
 import ServiceCard from "./ServiceCard";
 import AWSService from "../../types/AWSService";
+import { createStore } from "../../store";
+import * as analytics from "../../utils/analytics";
+
+const storeEventSpy = vi.spyOn(analytics, "storeEvent");
 
 describe("ServiceCard", () => {
   it("should render the service card", () => {
@@ -16,7 +21,11 @@ describe("ServiceCard", () => {
       Category: "free",
       FreeTier: 1e6,
     };
-    render(<ServiceCard service={service} />);
+    render(
+      <Provider store={createStore()}>
+        <ServiceCard service={service} />
+      </Provider>
+    );
 
     const serviceName = screen.getByText(service.Name);
     const serviceDescription = screen.getByText(service.Description);
@@ -34,5 +43,12 @@ describe("ServiceCard", () => {
     } else {
       expect(serviceFreeTier).not.toBeInTheDocument();
     }
+
+    const buyButton = screen.getByRole("button");
+    expect(buyButton).toBeInTheDocument();
+    fireEvent.click(buyButton);
+    expect(storeEventSpy).toHaveBeenCalledWith({
+      serviceName: service.Name,
+    });
   });
 });

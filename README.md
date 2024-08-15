@@ -350,7 +350,7 @@ aws dynamodb batch-write-item --request-items file://aws-services.json --return-
 Receive messages:
 
 ```bash
-aws sqs receive-message --queue-url URL --attribute-names All --message-attribute-names All --max-number-of-messages 10
+aws sqs receive-message --queue-url URL --message-attribute-names All --message-system-attribute-names All --max-number-of-messages 10
 ```
 
 Delete message:

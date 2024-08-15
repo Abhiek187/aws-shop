@@ -1,4 +1,4 @@
-import { http } from "msw";
+import { http, HttpResponse } from "msw";
 
 import { Constants } from "../utils/constants";
 import RawAWSService from "../types/RawAWSService";
@@ -117,21 +117,22 @@ const mockJWKResponse: JWK = {
 export const handlers = [
   // Mock the AWS store microservice for tests
   http.get(`${Constants.BASE_URL}/`, () => {
-    return new Response(JSON.stringify(mockStoreResponse), { status: 200 });
-    //return HttpResponse.json(mockStoreResponse, { status: 200 });
+    return HttpResponse.json(mockStoreResponse, { status: 200 });
+  }),
+  http.post(`${Constants.BASE_URL}/event`, () => {
+    return HttpResponse.json("Accepted", { status: 202 });
   }),
   http.get(`${Constants.Cognito.IDP_BASE_URL}/.well-known/jwks.json`, () => {
-    return new Response(JSON.stringify(mockJWKResponse), { status: 200 });
-    //return HttpResponse.json(mockJWKResponse, { status: 200 });
+    return HttpResponse.json(mockJWKResponse, { status: 200 });
+  }),
+  http.post(`${Constants.Cognito.BASE_URL}/oauth2/revoke`, () => {
+    return new HttpResponse(null, { status: 200 });
   }),
 ];
 
 export const errorHandlers = [
   // Create mocked error responses for each API
   http.get(`${Constants.BASE_URL}/`, () => {
-    return new Response(JSON.stringify("Unsupported route: GET /"), {
-      status: 400,
-    });
-    //return HttpResponse.json("Unsupported route: GET /", { status: 400 });
+    return HttpResponse.json("Unsupported route: GET /", { status: 400 });
   }),
 ];

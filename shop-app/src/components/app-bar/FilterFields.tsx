@@ -13,6 +13,8 @@ import {
 } from "@mui/material";
 import { ChangeEvent } from "react";
 import { useSearchParams } from "react-router-dom";
+import { usePublishEventMutation } from "../../services/store";
+import { appBarEvent } from "../../utils/analytics";
 
 type FilterProps = {
   isMobile: boolean;
@@ -24,6 +26,8 @@ const FilterFields = ({ isMobile }: Readonly<FilterProps>) => {
   const minPrice = searchParams.get("min-price") ?? "";
   const maxPrice = searchParams.get("max-price") ?? "";
   const isFreeTier = searchParams.has("free-tier");
+
+  const [publishEvent] = usePublishEventMutation();
 
   const updateSearchParams = (key: string, value: string) => {
     setSearchParams(
@@ -45,6 +49,14 @@ const FilterFields = ({ isMobile }: Readonly<FilterProps>) => {
 
   const onChangeCategory = (event: SelectChangeEvent) => {
     updateSearchParams("category", event.target.value);
+
+    if (event.target.value !== "") {
+      void publishEvent(
+        appBarEvent({
+          category: event.target.value,
+        })
+      );
+    }
   };
 
   const onChangeMinPrice = (
@@ -63,6 +75,14 @@ const FilterFields = ({ isMobile }: Readonly<FilterProps>) => {
     _: ChangeEvent<HTMLInputElement>,
     checked: boolean
   ) => {
+    if (checked) {
+      void publishEvent(
+        appBarEvent({
+          freeTier: true,
+        })
+      );
+    }
+
     setSearchParams(
       (params) => {
         if (checked) {
