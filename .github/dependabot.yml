@@ -23,6 +23,7 @@ updates:
       eslint:
         patterns:
           - "*eslint*"
+          - "globals"
       mui-emotion:
         patterns:
           - "@emotion/*"
