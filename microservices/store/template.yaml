@@ -58,6 +58,7 @@ Resources:
               # Keep TCP connections alive for 5s, timeout after 30s
               OriginProtocolPolicy: https-only
         Enabled: true
+        HttpVersion: http2and3
         ViewerCertificate:
           CloudFrontDefaultCertificate: true
         DefaultCacheBehavior:

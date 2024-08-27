@@ -434,6 +434,7 @@ Resources:
               OriginAccessIdentity: ""
             OriginAccessControlId: !GetAtt CloudFrontOriginAccessControl.Id
         Enabled: true # required
+        HttpVersion: http2and3
         ViewerCertificate:
           CloudFrontDefaultCertificate: true
         DefaultRootObject: index.html
