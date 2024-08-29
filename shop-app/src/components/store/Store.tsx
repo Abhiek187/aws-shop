@@ -1,4 +1,4 @@
-import { CircularProgress, Grow, Unstable_Grid2 } from "@mui/material";
+import { CircularProgress, Grid2, Grow } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -126,7 +126,7 @@ const Store = () => {
     return (
       <>
         {/* Each card takes up 4 columns */}
-        <Unstable_Grid2
+        <Grid2
           container
           spacing={{ xs: 2, md: 3 }}
           columns={{ xs: 4, sm: 8, md: 12 }}
@@ -137,13 +137,13 @@ const Store = () => {
             {getServicesResult.data?.map((service) => (
               // Show a smooth transition when cards appear or disappear
               <Grow key={service.Id}>
-                <Unstable_Grid2 xs={4}>
+                <Grid2 size={{ xs: 4 }}>
                   <ServiceCard service={service} />
-                </Unstable_Grid2>
+                </Grid2>
               </Grow>
             ))}
           </TransitionGroup>
-        </Unstable_Grid2>
+        </Grid2>
         <AccountSnackbar
           open={showLoginAlert}
           isSuccess={isLoggedIn}
