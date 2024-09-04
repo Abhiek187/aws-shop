@@ -3,7 +3,7 @@ botocore==1.35.7
 certifi==2024.7.4
 cffi==1.17.0
 charset-normalizer==3.3.2
-cryptography==43.0.0
+cryptography==43.0.1
 exceptiongroup==1.2.2
 freezegun==1.5.1
 idna==3.8
