@@ -25,6 +25,6 @@ six==1.16.0
 tomli==2.0.1
 types-PyYAML==6.0.12.20240808
 urllib3==1.26.18; python_version < "3.10"
-urllib3==2.2.2; python_version >= "3.10"
+urllib3==2.2.3; python_version >= "3.10"
 werkzeug==3.0.4
 xmltodict==0.13.0
