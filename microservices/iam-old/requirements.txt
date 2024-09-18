@@ -23,7 +23,7 @@ responses==0.25.3
 s3transfer==0.10.2
 six==1.16.0
 tomli==2.0.1
-types-PyYAML==6.0.12.20240808
+types-PyYAML==6.0.12.20240917
 urllib3==1.26.18; python_version < "3.10"
 urllib3==2.2.2; python_version >= "3.10"
 werkzeug==3.0.4
