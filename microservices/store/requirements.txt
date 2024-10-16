@@ -30,4 +30,4 @@ urllib3==1.26.18; python_version < "3.10"
 urllib3==2.2.3; python_version >= "3.10"
 websocket-client==1.8.0
 Werkzeug==3.0.4
-xmltodict==0.14.0
+xmltodict==0.14.1
