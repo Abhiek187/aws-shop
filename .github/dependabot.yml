@@ -65,3 +65,15 @@ updates:
         patterns:
           - "moto"
           - "py-partiql-parser"
+
+  - package-ecosystem: "pip"
+    directory: "/microservices/log-retention"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+    groups:
+      boto:
+        patterns:
+          - "boto3"
+          - "botocore"
+          - "s3transfer"

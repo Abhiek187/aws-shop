@@ -9,12 +9,14 @@ on:
     paths:
       - "microservices/store/**"
       - "microservices/iam-old/**"
+      - "microservices/log-retention/**"
       - ".github/workflows/python-app.yml"
   pull_request:
     branches: ["main"]
     paths:
       - "microservices/store/**"
       - "microservices/iam-old/**"
+      - "microservices/log-retention/**"
       - ".github/workflows/python-app.yml"
 
 # Required to use the AWS CLI
@@ -32,7 +34,12 @@ jobs:
 
     strategy:
       matrix:
-        directory: ["./microservices/store", "./microservices/iam-old"]
+        directory:
+          [
+            "./microservices/store",
+            "./microservices/iam-old",
+            "./microservices/log-retention",
+          ]
         python-version: [3.9, "3.10", "3.11"]
         # See supported Python release schedule at https://devguide.python.org/versions/
 
@@ -66,7 +73,12 @@ jobs:
 
     strategy:
       matrix:
-        directory: ["./microservices/store", "./microservices/iam-old"]
+        directory:
+          [
+            "./microservices/store",
+            "./microservices/iam-old",
+            "./microservices/log-retention",
+          ]
 
     steps:
       - uses: actions/checkout@v4
