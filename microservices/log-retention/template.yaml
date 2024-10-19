@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Set a retention policy whenever a new log group is created
+Resources:
+  LambdaFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      guard:
+        SuppressedRules:
+          # Reliability suppressions
+          - LAMBDA_CONCURRENCY_CHECK # save costs
+          - LAMBDA_INSIDE_VPC # no VPC created (also security check)
+          # Security suppressions
+          - IAM_NO_INLINE_POLICY_CHECK # SAM policy templates become inline policies
+    Properties:
+      CodeUri: src/
+      Handler: app.handler
+      Runtime: python3.12
+      Architectures:
+        - arm64
+      Description: Set a retention policy for all log groups
+      Events:
+        CreateLogEvent:
+          Type: EventBridgeRule
+          Properties:
+            DeadLetterConfig:
+              Arn: !GetAtt RuleDLQ.Arn
+            Pattern:
+              source:
+                - "aws.logs"
+              detail-type:
+                - "AWS API Call via CloudTrail"
+              detail:
+                eventSource:
+                  - "logs.amazonaws.com"
+                eventName:
+                  - "CreateLogGroup"
+            State: ENABLED
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - logs:DescribeLogGroups
+                - logs:PutRetentionPolicy
+              Resource: "*"
+      Tracing: Active
+      DeadLetterQueue:
+        TargetArn: !GetAtt LambdaDLQ.Arn
+        Type: SQS
+  RuleDLQ:
+    Type: AWS::SQS::Queue
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      MessageRetentionPeriod: 345600
+      ReceiveMessageWaitTimeSeconds: 5
+      SqsManagedSseEnabled: true
+  LambdaDLQ:
+    Type: AWS::SQS::Queue
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      MessageRetentionPeriod: 345600
+      ReceiveMessageWaitTimeSeconds: 5
+      SqsManagedSseEnabled: true
+Outputs:
+  RuleDLQURL:
+    Description: DLQ URL for EventBridge
+    Value: !Ref RuleDLQ
+  LambdaDLQURL:
+    Description: DLQ URL for Lambda
+    Value: !Ref LambdaDLQ
