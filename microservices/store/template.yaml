@@ -5,7 +5,7 @@ Globals:
   Function:
     # Zip files run faster than container images (setting PackageType causes false drift)
     CodeUri: src/
-    Runtime: python3.11 # see https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
+    Runtime: python3.12 # see https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
     Architectures:
       - arm64
     # Can use function URLs if API Gateway isn't necessary

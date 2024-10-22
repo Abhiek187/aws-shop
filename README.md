@@ -69,7 +69,7 @@ end
 
 subgraph K [Run CodeBuild Project]
 direction TB
-L(Install Node 18) --> M(Install dependencies:\nnpm ci)
+L(Install Node 20) --> M(Install dependencies:\nnpm ci)
 M --> N(Run tests:\nnpm test)
 N --> O(Build app:\nnpm run build)
 O --> P(Delete old code in S3)
@@ -88,7 +88,7 @@ A --> B
 subgraph A [Build]
 direction TB
 C(Checkout repository) --> D(Configure AWS credentials)
-D -->|3.9, 3.10, 3.11| E(Install Python)
+D -->|3.10, 3.11, 3.12| E(Install Python)
 E --> F(Install dependencies:\npip install -r requirements.txt)
 F --> G(Run tests:\npytest)
 end
