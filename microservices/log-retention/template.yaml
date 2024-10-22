@@ -15,7 +15,7 @@ Resources:
     Properties:
       CodeUri: src/
       Handler: app.handler
-      Runtime: python3.11
+      Runtime: python3.12
       Architectures:
         - arm64
       Description: Set a retention policy for all log groups
