@@ -39,19 +39,10 @@ updates:
           - "*vite*"
 
   - package-ecosystem: "pip"
-    directory: "/microservices/iam-old"
-    schedule:
-      interval: "weekly"
-      day: "wednesday"
-    groups:
-      boto:
-        patterns:
-          - "boto3"
-          - "botocore"
-          - "s3transfer"
-
-  - package-ecosystem: "pip"
-    directory: "/microservices/store"
+    directories:
+      - "/microservices/iam-old"
+      - "/microservices/store"
+      - "/microservices/log-retention"
     schedule:
       interval: "weekly"
       day: "wednesday"
@@ -65,15 +56,3 @@ updates:
         patterns:
           - "moto"
           - "py-partiql-parser"
-
-  - package-ecosystem: "pip"
-    directory: "/microservices/log-retention"
-    schedule:
-      interval: "weekly"
-      day: "wednesday"
-    groups:
-      boto:
-        patterns:
-          - "boto3"
-          - "botocore"
-          - "s3transfer"
