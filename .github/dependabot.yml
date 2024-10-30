@@ -20,10 +20,8 @@ updates:
       aws:
         patterns:
           - "@aws-sdk/*"
-      eslint:
-        patterns:
-          - "*eslint*"
-          - "globals"
+      dev:
+        dependency-type: "development"
       mui-emotion:
         patterns:
           - "@emotion/*"
@@ -31,12 +29,6 @@ updates:
       redux:
         patterns:
           - "*redux*"
-      types:
-        patterns:
-          - "@types/*"
-      vite:
-        patterns:
-          - "*vite*"
 
   - package-ecosystem: "pip"
     directories:
