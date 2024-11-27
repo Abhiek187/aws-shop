@@ -26,7 +26,9 @@ const base64URLEncode = (buffer: ArrayBuffer): string =>
 const generateRandomString = (length: number = 64): string => {
   return base64URLEncode(
     // Generate random numbers between 0 and 255 (with some padding)
-    window.crypto.getRandomValues(new Uint8Array(length * 2))
+    window.crypto.getRandomValues(
+      new Uint8Array(length * 2)
+    ) as unknown as ArrayBuffer
   ).substring(0, length);
 };
 
