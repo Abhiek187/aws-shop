@@ -13,9 +13,9 @@
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.699.0",
     "@aws-sdk/util-dynamodb": "^3.699.0",
-    "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
-    "@mui/icons-material": "^6.1.7",
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@mui/icons-material": "^6.1.8",
     "@mui/material": "^6.1.6",
     "@reduxjs/toolkit": "^2.3.0",
     "node-fetch": "^3.3.2",
