@@ -26,12 +26,12 @@ const Profile = () => {
   useEffect(() => {
     // Redirect back to the main page if the user isn't signed in
     if (idTokenPayload === undefined) {
-      navigate("/", { replace: true });
+      void navigate("/", { replace: true });
     }
   }, [idTokenPayload, navigate]);
 
   const handleCloseProfile = useCallback(() => {
-    navigate(-1);
+    void navigate(-1);
   }, [navigate]);
 
   useEffect(() => {
