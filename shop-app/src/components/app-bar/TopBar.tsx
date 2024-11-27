@@ -126,7 +126,7 @@ const TopBar = () => {
           viewedProfile: true,
         })
       );
-      navigate("/profile");
+      await navigate("/profile");
     } else {
       // If not, try refreshing them
       await refreshToken({
