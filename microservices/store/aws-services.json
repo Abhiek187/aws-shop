@@ -115,7 +115,7 @@
     "Price": 0.01,
     "Unit": "MAU (monthly active user)",
     "Category": "free",
-    "FreeTier": 5e4
+    "FreeTier": 1e4
   },
   {
     "Name": "Control Tower",
