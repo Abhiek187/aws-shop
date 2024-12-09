@@ -598,8 +598,13 @@ Resources:
       EmailConfiguration:
         # Default email: no-reply@verificationemail.com
         EmailSendingAccount: COGNITO_DEFAULT # max 50 emails per day
-      # Default password policy: 8 chars w/ 1 num, special char, uppercase & lowercase letter
       MfaConfiguration: "OFF" # turn on or make optional for more sensitive apps
+      Policies:
+        # Default password policy: 8 chars w/ 1 num, special char, uppercase & lowercase letter
+        SignInPolicy:
+          AllowedFirstAuthFactors:
+            - PASSWORD
+            - WEB_AUTHN
       UserAttributeUpdateSettings:
         # Don't update email addresses until they're verified
         AttributesRequireVerificationBeforeUpdate:
@@ -609,11 +614,23 @@ Resources:
         - email
       UsernameConfiguration:
         CaseSensitive: false
-  # Use the Cognito Hosted UI for authentication
+      UserPoolTier: ESSENTIALS
+      # Parameters based on https://developer.mozilla.org/en-US/docs/Web/API/PublicKeyCredentialRequestOptions
+      WebAuthnRelyingPartyID: !Sub "https://${AuthDomain}.auth.${AWS::Region}.amazoncognito.com"
+      WebAuthnUserVerification: required
+  # Use Cognito managed login for authentication
   CognitoUserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
       Domain: !Ref AuthDomain # .auth.[region].amazoncognito.com
+      ManagedLoginVersion: 2 # 1 = hosted UI (classic), 2 = managed login (new)
+      UserPoolId: !Ref CognitoUserPool
+  CognitoManagedLoginBranding:
+    Type: AWS::Cognito::ManagedLoginBranding
+    Properties:
+      ClientId: !Ref CognitoUserPoolClient
+      ReturnMergedResources: true
+      UseCognitoProvidedValues: true # use the default managed login UI
       UserPoolId: !Ref CognitoUserPool
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
@@ -636,6 +653,8 @@ Resources:
       EnableTokenRevocation: true
       ExplicitAuthFlows:
         - ALLOW_REFRESH_TOKEN_AUTH
+        # Choose alternatives to SRP, such as passkeys
+        - ALLOW_USER_AUTH
         - ALLOW_USER_SRP_AUTH # SRP = Secure Remote Password
       GenerateSecret: false
       IdTokenValidity: 1 # hour
