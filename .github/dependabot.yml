@@ -26,6 +26,12 @@ updates:
         patterns:
           - "@emotion/*"
           - "@mui/*"
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
       redux:
         patterns:
           - "*redux*"
