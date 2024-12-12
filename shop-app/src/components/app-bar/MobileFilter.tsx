@@ -9,20 +9,15 @@ import {
   Slide,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
-import { forwardRef } from "react";
+import { FC, ReactElement } from "react";
 
 import FilterFields from "./FilterFields";
 
 // Move Transition outside the component to prevent a re-render bug when closing the dialog:
 // https://stackoverflow.com/a/56562812
-const Transition = forwardRef(
-  (
-    props: TransitionProps & {
-      children: React.ReactElement;
-    },
-    ref
-  ) => <Slide direction="down" ref={ref} {...props} />
-);
+const Transition: FC<TransitionProps & { children: ReactElement }> = (
+  props
+) => <Slide direction="down" {...props} />;
 Transition.displayName = "MobileFilterTransition";
 
 type MobileFilterProps = {
