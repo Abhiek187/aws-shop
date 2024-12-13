@@ -44,6 +44,26 @@ const Store = () => {
   };
 
   useEffect(() => {
+    const finishLogin = ({ code, state }: AuthorizeResponse) => {
+      if (state === oauth.state && !tokenApiCalled.current) {
+        // Exchange the authorization code for JWTs
+        // Don't call this more than once since the code will get invalidated
+        void getToken({
+          refresh: false,
+          code,
+          codeVerifier: oauth.codeVerifier,
+        });
+        tokenApiCalled.current = true;
+      } else if (state !== oauth.state) {
+        // This can also happen if the user refreshes the page before they finish entering their credentials
+        // (The Redux store is cleared and the client forgets what it generated.)
+        console.error(
+          "The authorization server didn't return the correct state. We just saved you from a CSRF attack! 😊"
+        );
+        setShowLoginAlert(true);
+      }
+    };
+
     const handleMessageEvent = (event: MessageEvent<AuthorizeResponse>) => {
       // Discard messages that don't come from OAuth
       if (
@@ -56,38 +76,68 @@ const Store = () => {
       )
         return;
 
-      if (event.data.state === oauth.state && !tokenApiCalled.current) {
-        // Exchange the authorization code for JWTs
-        // Don't call this more than once since the code will get invalidated
-        void getToken({
-          refresh: false,
-          code: event.data.code,
-          codeVerifier: oauth.codeVerifier,
-        });
-        tokenApiCalled.current = true;
-      } else if (event.data.state !== oauth.state) {
-        // This can also happen if the user refreshes the page before they finish entering their credentials
-        // (The Redux store is cleared and the client forgets what it generated.)
-        console.error(
-          "The authorization server didn't return the correct state. We just saved you from a CSRF attack! 😊"
-        );
-        setShowLoginAlert(true);
+      finishLogin(event.data);
+    };
+
+    const handleStorageEvent = (event: StorageEvent) => {
+      // Ignore changes that don't involve setting the code & state
+      if (
+        !(
+          event.key === Constants.LocalStorage.OAUTH &&
+          event.oldValue === null &&
+          event.newValue !== null
+        )
+      )
+        return;
+
+      try {
+        const authorizeResponse = JSON.parse(
+          event.newValue
+        ) as AuthorizeResponse;
+
+        if (
+          Object.hasOwn(authorizeResponse, "code") &&
+          Object.hasOwn(authorizeResponse, "state")
+        ) {
+          finishLogin(authorizeResponse);
+        }
+      } catch (error) {
+        console.error("Failed to parse OAuth data:", error);
+      } finally {
+        // Clear storage for security purposes
+        localStorage.removeItem(Constants.LocalStorage.OAUTH);
       }
     };
 
     window.addEventListener("message", handleMessageEvent);
-    return () => window.removeEventListener("message", handleMessageEvent);
+    window.addEventListener("storage", handleStorageEvent);
+    return () => {
+      window.removeEventListener("message", handleMessageEvent);
+      window.removeEventListener("storage", handleStorageEvent);
+    };
   }, [getToken, oauth.codeVerifier, oauth.state]);
 
   useEffect(() => {
     // Close the current tab and alert the parent tab after getting redirected from the hosted UI
     if (isRedirect) {
       // window.opener === parent tab
-      // Enforce same-origin targets
-      (window.opener as Window | null)?.postMessage({
+      const opener = window.opener as Window | null;
+      const authorizeResponse = {
         code: searchParams.get("code"),
         state: searchParams.get("state"),
-      });
+      };
+
+      if (opener !== null) {
+        // Enforce same-origin targets
+        opener.postMessage(authorizeResponse);
+      } else {
+        // Fallback to localStorage if communication is blocked due to same-origin policy
+        localStorage.setItem(
+          Constants.LocalStorage.OAUTH,
+          JSON.stringify(authorizeResponse)
+        );
+      }
+
       window.close();
     }
   }, [isRedirect, searchParams]);
