@@ -1,7 +1,12 @@
 import { MockInstance, afterEach, describe, expect, it, vi } from "vitest";
 
 import * as oauth from "./oauth";
-import { isValidJWT, openHostedUI, parseJWT } from "./oauth";
+import {
+  isValidJWT,
+  openHostedUI,
+  openRegisterPasskey,
+  parseJWT,
+} from "./oauth";
 import { Constants } from "./constants";
 import {
   AccessTokenPayload,
@@ -75,6 +80,18 @@ describe("oauth", () => {
       `${
         Constants.Cognito.BASE_URL
       }/oauth2/authorize?${mockQueryParams.toString()}`
+    );
+  });
+
+  it("should open the register passkey site with all query parameters", () => {
+    openRegisterPasskey();
+    const mockQueryParams = new URLSearchParams({
+      client_id: Constants.Cognito.CLIENT_ID,
+      redirect_uri: mockWindowOrigin,
+    });
+
+    expect(window.location.href).toBe(
+      `${Constants.Cognito.BASE_URL}/passkeys/add?${mockQueryParams.toString()}`
     );
   });
 
