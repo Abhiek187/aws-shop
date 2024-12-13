@@ -19,7 +19,7 @@ const Store = () => {
   const { isLoggedIn, oauth } = useAppSelector(selectApp);
   const dispatch = useAppDispatch();
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   // Throttle API calls for efficiency every time the input changes
   const [debouncedSearchParams] = useDebounce(searchParams, 500);
 
@@ -114,6 +114,16 @@ const Store = () => {
       tokenApiCalled.current = false;
     }
   }, [dispatch, loginResult]);
+
+  useEffect(() => {
+    // Clear the redirect error after a few seconds
+    setTimeout(() => {
+      if (searchParams.has("reason")) {
+        searchParams.delete("reason");
+        setSearchParams(searchParams);
+      }
+    }, 5000);
+  }, []);
 
   if (getServicesResult.isLoading) {
     return <CircularProgress />;
