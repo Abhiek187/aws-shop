@@ -72,6 +72,19 @@ export const openHostedUI = async () => {
   }
 };
 
+export const openRegisterPasskey = () => {
+  const queryParams = {
+    client_id: Constants.Cognito.CLIENT_ID,
+    redirect_uri: window.location.origin,
+  };
+
+  const queryParamString = new URLSearchParams(queryParams);
+  const url = `${
+    Constants.Cognito.BASE_URL
+  }/passkeys/add?${queryParamString.toString()}`;
+  window.location.href = url; // open in the same tab
+};
+
 const base64URLDecode = (base64Url: string): string => {
   // Convert URL-encoded base64 to regular base64
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");

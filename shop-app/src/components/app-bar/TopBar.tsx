@@ -28,7 +28,12 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import FilterFields from "./FilterFields";
 import { appActions, selectApp } from "../../store/appSlice";
-import { isValidJWT, openHostedUI, parseJWT } from "../../utils/oauth";
+import {
+  isValidJWT,
+  openHostedUI,
+  openRegisterPasskey,
+  parseJWT,
+} from "../../utils/oauth";
 import {
   useGetTokenMutation,
   useRevokeTokenMutation,
@@ -209,6 +214,15 @@ const TopBar = () => {
   const handleProfileMenuClose = () => {
     setProfileAnchorEl(null);
     handleMobileMenuClose();
+  };
+
+  const handleAddPasskey = () => {
+    void publishEvent(
+      profileEvent({
+        addedPasskey: true,
+      })
+    );
+    openRegisterPasskey();
   };
 
   const handleSignIn = async () => {
@@ -402,6 +416,7 @@ const TopBar = () => {
         anchorEl={profileAnchorEl}
         onClose={handleProfileMenuClose}
         onClickProfile={() => void handleOpenProfile()}
+        onClickAddPasskey={handleAddPasskey}
         onClickLogIn={() => void handleSignIn()}
         onClickLogOut={() => void handleSignOut()}
         onClickDeleteAccount={() => void handleOpenAccountDialog()}

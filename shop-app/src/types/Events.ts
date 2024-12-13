@@ -16,5 +16,6 @@ export type AppBarEventData = {
 export type ProfileEventData = {
   loggedIn?: boolean;
   viewedProfile?: boolean;
+  addedPasskey?: boolean;
   loggedOut?: boolean;
 };
