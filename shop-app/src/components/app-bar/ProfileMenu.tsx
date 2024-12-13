@@ -8,6 +8,7 @@ type ProfileMenuProps = {
   anchorEl: null | HTMLElement;
   onClose: () => void;
   onClickProfile: () => void;
+  onClickAddPasskey: () => void;
   onClickLogIn: () => void;
   onClickLogOut: () => void;
   onClickDeleteAccount: () => void;
@@ -18,6 +19,7 @@ const ProfileMenu = ({
   anchorEl,
   onClose,
   onClickProfile,
+  onClickAddPasskey,
   onClickLogIn,
   onClickLogOut,
   onClickDeleteAccount,
@@ -44,6 +46,7 @@ const ProfileMenu = ({
       {isLoggedIn ? (
         <Box>
           <MenuItem onClick={onClickProfile}>Profile</MenuItem>
+          <MenuItem onClick={onClickAddPasskey}>Add Passkey</MenuItem>
           <MenuItem onClick={onClickLogOut}>Log Out</MenuItem>
           <Divider />
           <MenuItem sx={{ color: "error.main" }} onClick={onClickDeleteAccount}>

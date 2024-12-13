@@ -72,6 +72,19 @@ export const openHostedUI = async () => {
   }
 };
 
+export const openRegisterPasskey = () => {
+  const queryParams = {
+    client_id: Constants.Cognito.CLIENT_ID,
+    redirect_uri: window.location.origin,
+  };
+
+  const queryParamString = new URLSearchParams(queryParams);
+  const url = `${
+    Constants.Cognito.BASE_URL
+  }/passkeys/add?${queryParamString.toString()}`;
+  window.location.href = url; // open in the same tab
+};
+
 const base64URLDecode = (base64Url: string): string => {
   // Convert URL-encoded base64 to regular base64
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -92,6 +105,9 @@ export const parseJWT = <T extends TokenPayload>(
 ): [TokenHeader?, T?] => {
   try {
     const [headerUrl, payloadUrl] = token.split(".").slice(0, 2);
+    if (headerUrl === undefined || payloadUrl === undefined) {
+      return [undefined, undefined];
+    }
 
     const [jsonHeader, jsonPayload] = [
       base64URLDecode(headerUrl),
@@ -121,10 +137,14 @@ export const isValidJWT = async (token: string): Promise<boolean> => {
     // Check if the JWT is in the format [header].[payload].[signature]
     // (Can't validate the signature on the client side)
     // Can ony mock functions referenced by the module export
+    if (token.length === 0) {
+      // Silently return false since there won't be a JWT on launch
+      return false;
+    }
     const [header, payload] = oauth.parseJWT(token);
 
     if (header === undefined || payload === undefined) {
-      throw new Error(`JWT is missing or malformed (received: ${token})`);
+      throw new Error(`JWT is malformed (received: ${token})`);
     }
 
     // Check if the key ID comes from Cognito's JWKs

@@ -55,4 +55,38 @@ describe("Store", () => {
     const errorMessage = screen.queryByText(/Unsupported route/);
     expect(errorMessage).toBeInTheDocument();
   });
+
+  it("should show a success alert if a passkey was added", async () => {
+    window.history.pushState({}, "", "/?result=success");
+    render(
+      <BrowserRouter>
+        <Provider store={createStore()}>
+          <Store />
+        </Provider>
+      </BrowserRouter>
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(/Successfully added a new passkey/)
+      ).toBeInTheDocument()
+    );
+  });
+
+  it("should show an error alert if a passkey couldn't be added", async () => {
+    window.history.pushState({}, "", "/?result=invalid_session");
+    render(
+      <BrowserRouter>
+        <Provider store={createStore()}>
+          <Store />
+        </Provider>
+      </BrowserRouter>
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(/Failed to add a new passkey/)
+      ).toBeInTheDocument()
+    );
+  });
 });

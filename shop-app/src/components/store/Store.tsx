@@ -19,30 +19,60 @@ const Store = () => {
   const { isLoggedIn, oauth } = useAppSelector(selectApp);
   const dispatch = useAppDispatch();
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   // Throttle API calls for efficiency every time the input changes
   const [debouncedSearchParams] = useDebounce(searchParams, 500);
 
   // Convert URLSearchParams to a serializable object
   const searchParamsObject = Object.fromEntries(
-    debouncedSearchParams.entries()
+    [...debouncedSearchParams.entries()].filter(([key]) => key !== "result")
   );
-  const isRedirect = searchParams.has("code") || searchParams.has("state");
+  const isAuthRedirect = searchParams.has("code") || searchParams.has("state");
+  const isPasskeyRedirect = searchParams.has("result");
+  const passkeySuccess = searchParams.get("result") === "success";
 
   const getServicesResult = useGetAWSServicesQuery(
-    isRedirect ? skipToken : searchParamsObject
+    isAuthRedirect ? skipToken : searchParamsObject
   );
   const [getToken, loginResult] = useGetTokenMutation();
   // Prevent the token API from being called twice in strict mode
   const tokenApiCalled = useRef(false);
 
   const [showLoginAlert, setShowLoginAlert] = useState(false);
+  const [showPasskeyAlert, setShowPasskeyAlert] = useState(false);
 
   const handleCloseLoginAlert = () => {
     setShowLoginAlert(false);
   };
 
+  const handleClosePasskeyAlert = () => {
+    setShowPasskeyAlert(false);
+    // Delete the result query param so it doesn't interfere with other API requests
+    searchParams.delete("result");
+    setSearchParams(searchParams);
+  };
+
   useEffect(() => {
+    const finishLogin = ({ code, state }: AuthorizeResponse) => {
+      if (state === oauth.state && !tokenApiCalled.current) {
+        // Exchange the authorization code for JWTs
+        // Don't call this more than once since the code will get invalidated
+        void getToken({
+          refresh: false,
+          code,
+          codeVerifier: oauth.codeVerifier,
+        });
+        tokenApiCalled.current = true;
+      } else if (state !== oauth.state) {
+        // This can also happen if the user refreshes the page before they finish entering their credentials
+        // (The Redux store is cleared and the client forgets what it generated.)
+        console.error(
+          "The authorization server didn't return the correct state. We just saved you from a CSRF attack! 😊"
+        );
+        setShowLoginAlert(true);
+      }
+    };
+
     const handleMessageEvent = (event: MessageEvent<AuthorizeResponse>) => {
       // Discard messages that don't come from OAuth
       if (
@@ -55,41 +85,71 @@ const Store = () => {
       )
         return;
 
-      if (event.data.state === oauth.state && !tokenApiCalled.current) {
-        // Exchange the authorization code for JWTs
-        // Don't call this more than once since the code will get invalidated
-        void getToken({
-          refresh: false,
-          code: event.data.code,
-          codeVerifier: oauth.codeVerifier,
-        });
-        tokenApiCalled.current = true;
-      } else if (event.data.state !== oauth.state) {
-        // This can also happen if the user refreshes the page before they finish entering their credentials
-        // (The Redux store is cleared and the client forgets what it generated.)
-        console.error(
-          "The authorization server didn't return the correct state. We just saved you from a CSRF attack! 😊"
-        );
-        setShowLoginAlert(true);
+      finishLogin(event.data);
+    };
+
+    const handleStorageEvent = (event: StorageEvent) => {
+      // Ignore changes that don't involve setting the code & state
+      if (
+        !(
+          event.key === Constants.LocalStorage.OAUTH &&
+          event.oldValue === null &&
+          event.newValue !== null
+        )
+      )
+        return;
+
+      try {
+        const authorizeResponse = JSON.parse(
+          event.newValue
+        ) as AuthorizeResponse;
+
+        if (
+          Object.hasOwn(authorizeResponse, "code") &&
+          Object.hasOwn(authorizeResponse, "state")
+        ) {
+          finishLogin(authorizeResponse);
+        }
+      } catch (error) {
+        console.error("Failed to parse OAuth data:", error);
+      } finally {
+        // Clear storage for security purposes
+        localStorage.removeItem(Constants.LocalStorage.OAUTH);
       }
     };
 
     window.addEventListener("message", handleMessageEvent);
-    return () => window.removeEventListener("message", handleMessageEvent);
+    window.addEventListener("storage", handleStorageEvent);
+    return () => {
+      window.removeEventListener("message", handleMessageEvent);
+      window.removeEventListener("storage", handleStorageEvent);
+    };
   }, [getToken, oauth.codeVerifier, oauth.state]);
 
   useEffect(() => {
     // Close the current tab and alert the parent tab after getting redirected from the hosted UI
-    if (isRedirect) {
+    if (isAuthRedirect) {
       // window.opener === parent tab
-      // Enforce same-origin targets
-      (window.opener as Window | null)?.postMessage({
+      const opener = window.opener as Window | null;
+      const authorizeResponse = {
         code: searchParams.get("code"),
         state: searchParams.get("state"),
-      });
+      };
+
+      if (opener !== null) {
+        // Enforce same-origin targets
+        opener.postMessage(authorizeResponse);
+      } else {
+        // Fallback to localStorage if communication is blocked due to same-origin policy
+        localStorage.setItem(
+          Constants.LocalStorage.OAUTH,
+          JSON.stringify(authorizeResponse)
+        );
+      }
+
       window.close();
     }
-  }, [isRedirect, searchParams]);
+  }, [isAuthRedirect, searchParams]);
 
   useEffect(() => {
     if (loginResult.data !== undefined) {
@@ -113,6 +173,12 @@ const Store = () => {
       tokenApiCalled.current = false;
     }
   }, [dispatch, loginResult]);
+
+  useEffect(() => {
+    if (isPasskeyRedirect) {
+      setShowPasskeyAlert(true);
+    }
+  }, [isPasskeyRedirect]);
 
   if (getServicesResult.isLoading) {
     return <CircularProgress />;
@@ -150,6 +216,13 @@ const Store = () => {
           successMessage="Logged in successfully!"
           errorMessage="Failed to log in, please try again later."
           onClose={handleCloseLoginAlert}
+        />
+        <AccountSnackbar
+          open={showPasskeyAlert}
+          isSuccess={passkeySuccess}
+          successMessage="Successfully added a new passkey!"
+          errorMessage="Failed to add a new passkey, please try again later."
+          onClose={handleClosePasskeyAlert}
         />
       </>
     );

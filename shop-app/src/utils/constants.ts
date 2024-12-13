@@ -12,6 +12,7 @@ export abstract class Constants {
   };
 
   static LocalStorage = class {
+    static readonly OAUTH = "oauth";
     static readonly REFRESH_TOKEN = "refreshToken";
   };
 

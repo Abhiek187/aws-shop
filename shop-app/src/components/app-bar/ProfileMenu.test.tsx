@@ -26,6 +26,7 @@ describe("ProfileMenu", () => {
             anchorEl={null}
             onClose={vi.fn()}
             onClickProfile={vi.fn()}
+            onClickAddPasskey={vi.fn()}
             onClickLogIn={vi.fn()}
             onClickLogOut={vi.fn()}
             onClickDeleteAccount={vi.fn()}
@@ -35,6 +36,7 @@ describe("ProfileMenu", () => {
     );
 
     expect(screen.queryByText("Profile")).not.toBeInTheDocument();
+    expect(screen.queryByText("Add Passkey")).not.toBeInTheDocument();
     expect(screen.queryByText("Log Out")).not.toBeInTheDocument();
     expect(screen.queryByText("Delete Account")).not.toBeInTheDocument();
     expect(screen.getByText("Log In")).toBeInTheDocument();
@@ -57,6 +59,7 @@ describe("ProfileMenu", () => {
             anchorEl={null}
             onClose={vi.fn()}
             onClickProfile={vi.fn()}
+            onClickAddPasskey={vi.fn()}
             onClickLogIn={vi.fn()}
             onClickLogOut={vi.fn()}
             onClickDeleteAccount={vi.fn()}
@@ -66,6 +69,7 @@ describe("ProfileMenu", () => {
     );
 
     expect(screen.getByText("Profile")).toBeInTheDocument();
+    expect(screen.getByText("Add Passkey")).toBeInTheDocument();
     expect(screen.getByText("Log Out")).toBeInTheDocument();
     expect(screen.getByText("Delete Account")).toBeInTheDocument();
     expect(screen.queryByText("Log In")).not.toBeInTheDocument();
