@@ -56,8 +56,8 @@ describe("Store", () => {
     expect(errorMessage).toBeInTheDocument();
   });
 
-  it("should show an error if redirect failed", () => {
-    window.history.pushState({}, "", "/?reason=invalid_session");
+  it("should show a success alert if a passkey was added", async () => {
+    window.history.pushState({}, "", "/?result=success");
     render(
       <BrowserRouter>
         <Provider store={createStore()}>
@@ -66,7 +66,27 @@ describe("Store", () => {
       </BrowserRouter>
     );
 
-    const errorMessage = screen.getByText(/An unexpected error occurred/);
-    expect(errorMessage).toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        screen.getByText(/Successfully added a new passkey/)
+      ).toBeInTheDocument()
+    );
+  });
+
+  it("should show an error alert if a passkey couldn't be added", async () => {
+    window.history.pushState({}, "", "/?result=invalid_session");
+    render(
+      <BrowserRouter>
+        <Provider store={createStore()}>
+          <Store />
+        </Provider>
+      </BrowserRouter>
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(/Failed to add a new passkey/)
+      ).toBeInTheDocument()
+    );
   });
 });

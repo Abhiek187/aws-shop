@@ -25,22 +25,31 @@ const Store = () => {
 
   // Convert URLSearchParams to a serializable object
   const searchParamsObject = Object.fromEntries(
-    debouncedSearchParams.entries()
+    [...debouncedSearchParams.entries()].filter(([key]) => key !== "result")
   );
-  const isRedirect = searchParams.has("code") || searchParams.has("state");
-  const isError = searchParams.has("reason");
+  const isAuthRedirect = searchParams.has("code") || searchParams.has("state");
+  const isPasskeyRedirect = searchParams.has("result");
+  const passkeySuccess = searchParams.get("result") === "success";
 
   const getServicesResult = useGetAWSServicesQuery(
-    isRedirect || isError ? skipToken : searchParamsObject
+    isAuthRedirect ? skipToken : searchParamsObject
   );
   const [getToken, loginResult] = useGetTokenMutation();
   // Prevent the token API from being called twice in strict mode
   const tokenApiCalled = useRef(false);
 
   const [showLoginAlert, setShowLoginAlert] = useState(false);
+  const [showPasskeyAlert, setShowPasskeyAlert] = useState(false);
 
   const handleCloseLoginAlert = () => {
     setShowLoginAlert(false);
+  };
+
+  const handleClosePasskeyAlert = () => {
+    setShowPasskeyAlert(false);
+    // Delete the result query param so it doesn't interfere with other API requests
+    searchParams.delete("result");
+    setSearchParams(searchParams);
   };
 
   useEffect(() => {
@@ -119,7 +128,7 @@ const Store = () => {
 
   useEffect(() => {
     // Close the current tab and alert the parent tab after getting redirected from the hosted UI
-    if (isRedirect) {
+    if (isAuthRedirect) {
       // window.opener === parent tab
       const opener = window.opener as Window | null;
       const authorizeResponse = {
@@ -140,7 +149,7 @@ const Store = () => {
 
       window.close();
     }
-  }, [isRedirect, searchParams]);
+  }, [isAuthRedirect, searchParams]);
 
   useEffect(() => {
     if (loginResult.data !== undefined) {
@@ -166,24 +175,13 @@ const Store = () => {
   }, [dispatch, loginResult]);
 
   useEffect(() => {
-    // Clear the redirect error after a few seconds
-    setTimeout(() => {
-      if (searchParams.has("reason")) {
-        searchParams.delete("reason");
-        setSearchParams(searchParams);
-      }
-    }, 5000);
-  }, []);
+    if (isPasskeyRedirect) {
+      setShowPasskeyAlert(true);
+    }
+  }, [isPasskeyRedirect]);
 
   if (getServicesResult.isLoading) {
     return <CircularProgress />;
-  } else if (isError) {
-    return (
-      <p className="text-red-500">
-        An unexpected error occurred: {searchParams.get("reason")}. Please try
-        signing out and signing in again.
-      </p>
-    );
   } else if (getServicesResult.error !== undefined) {
     return (
       <p className="text-red-500">
@@ -218,6 +216,13 @@ const Store = () => {
           successMessage="Logged in successfully!"
           errorMessage="Failed to log in, please try again later."
           onClose={handleCloseLoginAlert}
+        />
+        <AccountSnackbar
+          open={showPasskeyAlert}
+          isSuccess={passkeySuccess}
+          successMessage="Successfully added a new passkey!"
+          errorMessage="Failed to add a new passkey, please try again later."
+          onClose={handleClosePasskeyAlert}
         />
       </>
     );
