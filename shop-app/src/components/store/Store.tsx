@@ -28,9 +28,10 @@ const Store = () => {
     debouncedSearchParams.entries()
   );
   const isRedirect = searchParams.has("code") || searchParams.has("state");
+  const isError = searchParams.has("reason");
 
   const getServicesResult = useGetAWSServicesQuery(
-    isRedirect ? skipToken : searchParamsObject
+    isRedirect || isError ? skipToken : searchParamsObject
   );
   const [getToken, loginResult] = useGetTokenMutation();
   // Prevent the token API from being called twice in strict mode
@@ -116,6 +117,13 @@ const Store = () => {
 
   if (getServicesResult.isLoading) {
     return <CircularProgress />;
+  } else if (isError) {
+    return (
+      <p className="text-red-500">
+        An unexpected error occurred: {searchParams.get("reason")}. Please try
+        signing out and signing in again.
+      </p>
+    );
   } else if (getServicesResult.error !== undefined) {
     return (
       <p className="text-red-500">

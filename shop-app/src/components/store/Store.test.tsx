@@ -55,4 +55,18 @@ describe("Store", () => {
     const errorMessage = screen.queryByText(/Unsupported route/);
     expect(errorMessage).toBeInTheDocument();
   });
+
+  it("should show an error if redirect failed", () => {
+    window.history.pushState({}, "", "/?reason=invalid_session");
+    render(
+      <BrowserRouter>
+        <Provider store={createStore()}>
+          <Store />
+        </Provider>
+      </BrowserRouter>
+    );
+
+    const errorMessage = screen.getByText(/An unexpected error occurred/);
+    expect(errorMessage).toBeInTheDocument();
+  });
 });
