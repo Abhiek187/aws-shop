@@ -476,6 +476,18 @@ aws cognito-idp admin-disable-user --user-pool-id ID --username USERNAME
 aws cognito-idp admin-delete-user --user-pool-id ID --username USERNAME
 ```
 
+Get WebAuthn Credentials:
+
+```bash
+aws cognito-idp list-web-authn-credentials --access-token ACCESS_TOKEN
+```
+
+Delete WebAuthn Credentials:
+
+```bash
+aws cognito-idp delete-web-authn-credential --access-token ACCESS_TOKEN --credential-id CREDENTIAL_ID
+```
+
 ### Pinpoint Commands
 
 Publish event:
