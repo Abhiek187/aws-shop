@@ -48,26 +48,22 @@ const Profile = () => {
   }, [idTokenPayload, navigate]);
 
   const fetchPasskeys = useCallback(async () => {
-    const { CognitoIdentityProvider } = await import(
-      "@aws-sdk/client-cognito-identity-provider"
-    );
-    const cognito = new CognitoIdentityProvider({
+    const { CognitoIdentityProviderClient, ListWebAuthnCredentialsCommand } =
+      await import("@aws-sdk/client-cognito-identity-provider");
+    const cognito = new CognitoIdentityProviderClient({
       region: Constants.Cognito.REGION,
     });
+    const listPasskeysCommand = new ListWebAuthnCredentialsCommand({
+      AccessToken: oauth.accessToken,
+    });
 
-    cognito.listWebAuthnCredentials(
-      {
-        AccessToken: oauth.accessToken,
-      },
-      (error, data) => {
-        if (error !== null) {
-          console.error("List passkeys error:", error);
-        } else {
-          console.log("List passkeys success:", data);
-          setCredentials(data?.Credentials ?? []);
-        }
-      }
-    );
+    try {
+      const data = await cognito.send(listPasskeysCommand);
+      setCredentials(data.Credentials ?? []);
+    } catch (error) {
+      console.error("List passkeys error:", error);
+      setCredentials([]);
+    }
   }, []);
 
   useEffect(() => {
@@ -107,36 +103,31 @@ const Profile = () => {
   };
 
   const handleDeletePasskey = async (credentialId?: string) => {
-    const { CognitoIdentityProvider } = await import(
-      "@aws-sdk/client-cognito-identity-provider"
-    );
-    const cognito = new CognitoIdentityProvider({
+    const { CognitoIdentityProviderClient, DeleteWebAuthnCredentialCommand } =
+      await import("@aws-sdk/client-cognito-identity-provider");
+    const cognito = new CognitoIdentityProviderClient({
       region: Constants.Cognito.REGION,
     });
+    const deletePasskeyCommand = new DeleteWebAuthnCredentialCommand({
+      AccessToken: oauth.accessToken,
+      CredentialId: credentialId,
+    });
 
-    cognito.deleteWebAuthnCredential(
-      {
-        AccessToken: oauth.accessToken,
-        CredentialId: credentialId,
-      },
-      (error, data) => {
-        if (error !== null) {
-          console.error("Delete passkey error:", error);
+    try {
+      const data = await cognito.send(deletePasskeyCommand);
+      console.log("Delete passkey success:", data);
+      setCredentials((creds) =>
+        creds.filter((cred) => cred.CredentialId !== credentialId)
+      );
 
-          setDeleteSuccess(false);
-          setShowPasskeyAlert(true);
-        } else {
-          console.log("Delete passkey success:", data);
-          setCredentials((creds) =>
-            creds.filter((cred) => cred.CredentialId !== credentialId)
-          );
-
-          handleClosePasskeyDialog();
-          setDeleteSuccess(true);
-          setShowPasskeyAlert(true);
-        }
-      }
-    );
+      handleClosePasskeyDialog();
+      setDeleteSuccess(true);
+    } catch (error) {
+      console.error("Delete passkey error:", error);
+      setDeleteSuccess(false);
+    } finally {
+      setShowPasskeyAlert(true);
+    }
   };
 
   return (
