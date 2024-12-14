@@ -3,6 +3,9 @@ import { Cancel, CheckCircle, Close, Delete } from "@mui/icons-material";
 import {
   Box,
   IconButton,
+  List,
+  ListItem,
+  ListItemText,
   Table,
   TableBody,
   TableCell,
@@ -60,8 +63,11 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    void fetchPasskeys();
-  }, []);
+    // Fetch passkeys if signed in
+    if (oauth.accessToken.length > 0) {
+      void fetchPasskeys();
+    }
+  }, [oauth.accessToken]);
 
   const handleCloseProfile = useCallback(() => {
     void navigate(-1);
@@ -155,28 +161,43 @@ const Profile = () => {
                 </TableCell>
               )}
             </TableRow>
+            <TableRow>
+              <TableCell>
+                <strong>Passkeys</strong>
+              </TableCell>
+              <TableCell>
+                {credentials.length === 0 ? (
+                  "—"
+                ) : (
+                  <List>
+                    {credentials.map((credential) => (
+                      <ListItem
+                        key={credential.CredentialId}
+                        secondaryAction={
+                          <IconButton
+                            color="error"
+                            edge="end"
+                            onClick={() =>
+                              void handleDeletePasskey(credential.CredentialId)
+                            }
+                            aria-label={`Delete passkey ${credential.FriendlyCredentialName}`}
+                          >
+                            <Delete />
+                          </IconButton>
+                        }
+                      >
+                        <ListItemText
+                          primary={credential.FriendlyCredentialName}
+                          secondary={`Created at: ${credential.CreatedAt?.toLocaleDateString()}`}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                )}
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
-        <Typography variant="h4">Passkeys</Typography>
-        <ul>
-          {credentials.map((credential) => (
-            <li key={credential.CredentialId} className="flex gap-3">
-              <p>{credential.FriendlyCredentialName}</p>
-              <p className="italic">
-                Created at: {credential.CreatedAt?.toLocaleDateString()}
-              </p>
-              <IconButton
-                color="error"
-                onClick={() =>
-                  void handleDeletePasskey(credential.CredentialId)
-                }
-                aria-label={`Delete passkey ${credential.FriendlyCredentialName}`}
-              >
-                <Delete />
-              </IconButton>
-            </li>
-          ))}
-        </ul>
       </main>
     </>
   );
