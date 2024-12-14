@@ -21,6 +21,8 @@ import { selectApp } from "../../store/appSlice";
 import { IdTokenPayload } from "../../types/TokenPayload";
 import { useAppSelector } from "../../store/hooks";
 import { Constants } from "../../utils/constants";
+import DeletePasskeyDialog from "./DeletePasskeyDialog";
+import AccountSnackbar from "../app-bar/AccountSnackbar";
 
 const Profile = () => {
   const { oauth } = useAppSelector(selectApp);
@@ -29,6 +31,12 @@ const Profile = () => {
   const [credentials, setCredentials] = useState<
     WebAuthnCredentialDescription[]
   >([]);
+  const [showPasskeyDialog, setShowPasskeyDialog] = useState(false);
+  const [selectedPasskey, setSelectedPasskey] = useState<
+    WebAuthnCredentialDescription | undefined
+  >(undefined);
+  const [showPasskeyAlert, setShowPasskeyAlert] = useState(false);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
 
   const [, idTokenPayload] = parseJWT<IdTokenPayload>(oauth.idToken);
 
@@ -84,6 +92,20 @@ const Profile = () => {
     return () => window.removeEventListener("keyup", handleKeyUp);
   }, [handleCloseProfile]);
 
+  const handleOpenPasskeyDialog = (passkey: WebAuthnCredentialDescription) => {
+    setSelectedPasskey(passkey);
+    setShowPasskeyDialog(true);
+  };
+
+  const handleClosePasskeyDialog = () => {
+    setShowPasskeyDialog(false);
+    setSelectedPasskey(undefined);
+  };
+
+  const handleClosePasskeyAlert = () => {
+    setShowPasskeyAlert(false);
+  };
+
   const handleDeletePasskey = async (credentialId?: string) => {
     const { CognitoIdentityProvider } = await import(
       "@aws-sdk/client-cognito-identity-provider"
@@ -100,11 +122,18 @@ const Profile = () => {
       (error, data) => {
         if (error !== null) {
           console.error("Delete passkey error:", error);
+
+          setDeleteSuccess(false);
+          setShowPasskeyAlert(true);
         } else {
           console.log("Delete passkey success:", data);
           setCredentials((creds) =>
             creds.filter((cred) => cred.CredentialId !== credentialId)
           );
+
+          handleClosePasskeyDialog();
+          setDeleteSuccess(true);
+          setShowPasskeyAlert(true);
         }
       }
     );
@@ -177,9 +206,7 @@ const Profile = () => {
                           <IconButton
                             color="error"
                             edge="end"
-                            onClick={() =>
-                              void handleDeletePasskey(credential.CredentialId)
-                            }
+                            onClick={() => handleOpenPasskeyDialog(credential)}
                             aria-label={`Delete passkey ${credential.FriendlyCredentialName}`}
                           >
                             <Delete />
@@ -199,6 +226,19 @@ const Profile = () => {
           </TableBody>
         </Table>
       </main>
+      <DeletePasskeyDialog
+        open={showPasskeyDialog}
+        name={selectedPasskey?.FriendlyCredentialName ?? ""}
+        onClose={handleClosePasskeyDialog}
+        onDelete={() => void handleDeletePasskey(selectedPasskey?.CredentialId)}
+      />
+      <AccountSnackbar
+        open={showPasskeyAlert}
+        isSuccess={deleteSuccess}
+        successMessage="Passkey deleted successfully!"
+        errorMessage="Failed to delete the passkey, please try again later."
+        onClose={handleClosePasskeyAlert}
+      />
     </>
   );
 };
