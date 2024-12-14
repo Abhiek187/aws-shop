@@ -185,7 +185,7 @@ const Profile = () => {
               <TableCell>
                 <strong>Passkeys</strong>
               </TableCell>
-              <TableCell>
+              <TableCell align="right">
                 {credentials.length === 0 ? (
                   "—"
                 ) : (
