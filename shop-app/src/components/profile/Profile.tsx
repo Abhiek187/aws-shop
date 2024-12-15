@@ -59,6 +59,7 @@ const Profile = () => {
 
     try {
       const data = await cognito.send(listPasskeysCommand);
+      console.log("List passkeys success:", data);
       setCredentials(data.Credentials ?? []);
     } catch (error) {
       console.error("List passkeys error:", error);
