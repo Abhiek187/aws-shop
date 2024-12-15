@@ -248,32 +248,30 @@ const TopBar = () => {
   };
 
   const handleDeleteAccount = async () => {
-    // Dynamically import the AWS SDK to improve the build size
-    const { CognitoIdentityProvider } = await import(
+    // Dynamically import the AWS SDK to reduce the build size
+    const { CognitoIdentityProviderClient, DeleteUserCommand } = await import(
       "@aws-sdk/client-cognito-identity-provider"
     );
-    const cognito = new CognitoIdentityProvider({
+    const cognito = new CognitoIdentityProviderClient({
       region: Constants.Cognito.REGION,
     });
+    const deleteUserCommand = new DeleteUserCommand({
+      AccessToken: oauth.accessToken,
+    });
 
-    cognito.deleteUser(
-      {
-        AccessToken: oauth.accessToken,
-      },
-      (error, data) => {
-        if (error !== null) {
-          console.error("Delete error:", error);
-          setDeleteSuccess(false);
-        } else {
-          console.log("Delete success:", data);
-          setDeleteSuccess(true);
-          void handleSignOut();
-          handleCloseAccountDialog();
-        }
+    try {
+      const data = await cognito.send(deleteUserCommand);
+      console.log("Delete success:", data);
 
-        setShowDeleteAlert(true);
-      }
-    );
+      setDeleteSuccess(true);
+      void handleSignOut();
+      handleCloseAccountDialog();
+    } catch (error) {
+      console.error("Delete error:", error);
+      setDeleteSuccess(false);
+    } finally {
+      setShowDeleteAlert(true);
+    }
   };
 
   const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>) => {
