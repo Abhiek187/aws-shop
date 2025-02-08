@@ -19,6 +19,7 @@ s3_prefix = "AWS-Shop-Store-Service"
 region = "us-east-1"
 image_repositories = []
 parameter_overrides = "ParameterKey=Email,UsePreviousValue=true"
+tags = "AppManagerCFNStackKey=arn:aws:cloudformation:us-east-1:701157632481:stack/AWS-Shop-Store-Service/8d082c90-f2bc-11ed-aca7-0e17106275ff"
 
 [default.package.parameters]
 resolve_s3 = true
