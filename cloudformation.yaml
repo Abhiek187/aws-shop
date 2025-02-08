@@ -462,11 +462,9 @@ Resources:
         #   Bucket: !GetAtt CloudFrontLoggingBucket.DomainName
         #   IncludeCookies: false
       # Stack tags aren't added to certain services like CloudFront or EventBridge, for some reason
-      # Commenting out for now since tags aren't getting picked up by drift detection:
-      # https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/901
-      # Tags:
-      #   - Key: AppManagerCFNStackKey
-      #     Value: !Ref AWS::StackId
+      Tags:
+        - Key: AppManagerCFNStackKey
+          Value: !Ref AWS::StackId
   CloudFrontOriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
