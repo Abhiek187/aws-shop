@@ -7,3 +7,4 @@ region = "us-east-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
 image_repositories = []
+tags = "AppManagerCFNStackKey=arn:aws:cloudformation:us-east-1:701157632481:stack/Log-Retention-Stack/73567930-8dc7-11ef-a242-12ceca569401"

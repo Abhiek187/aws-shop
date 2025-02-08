@@ -8,3 +8,4 @@ confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
 image_repositories = []
 parameter_overrides = "ParameterKey=Email,UsePreviousValue=true"
+tags = "AppManagerCFNStackKey=arn:aws:cloudformation:us-east-1:701157632481:stack/IAM-Old-Stack/0cd4a990-f910-11ed-86c8-0ec36529a8bd"

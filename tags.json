@@ -1,0 +1,6 @@
+[
+  {
+    "Key": "AppManagerCFNStackKey",
+    "Value": "arn:aws:cloudformation:us-east-1:701157632481:stack/AWS-Shop-Frontend-Stack/95097020-d57f-11ed-9c56-0e1d4b60fc0b"
+  }
+]

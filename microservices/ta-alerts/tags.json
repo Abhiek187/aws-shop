@@ -1,0 +1,6 @@
+[
+  {
+    "Key": "AppManagerCFNStackKey",
+    "Value": "arn:aws:cloudformation:us-east-1:701157632481:stack/Trusted-Advisor-Alert-Stack/fe034dd0-2061-11ee-a60a-1210e009b02f"
+  }
+]

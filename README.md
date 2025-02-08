@@ -160,7 +160,7 @@ Download the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-
 Create stack:
 
 ```bash
-aws cloudformation create-stack --stack-name NAME --template-body FILE_PATH --parameters ParameterKey=KEY,ParameterValue=VALUE --capabilities CAPABILITY_NAMED_IAM
+aws cloudformation create-stack --stack-name NAME --template-body FILE_PATH --parameters ParameterKey=KEY,ParameterValue=VALUE --tags TAGS_FILE_PATH --capabilities CAPABILITY_NAMED_IAM
 ```
 
 List stacks:
@@ -173,7 +173,7 @@ aws cloudformation describe-stacks # more detailed than list-stacks
 Update stack:
 
 ```bash
-aws cloudformation update-stack --stack-name NAME --template-body FILE_PATH --parameters PARAM_FILE_PATH --capabilities CAPABILITY_NAMED_IAM
+aws cloudformation update-stack --stack-name NAME --template-body FILE_PATH --parameters PARAM_FILE_PATH --tags TAGS_FILE_PATH --capabilities CAPABILITY_NAMED_IAM
 ```
 
 Continue update rollback:
@@ -209,7 +209,7 @@ aws cloudformation describe-stack-drift-detection-status --stack-drift-detection
 Create change set:
 
 ```bash
-aws cloudformation create-change-set --stack-name NAME --change-set-name CHANGE_SET --template-body FILE_PATH --parameters PARAM_FILE_PATH --capabilities CAPABILITY_NAMED_IAM
+aws cloudformation create-change-set --stack-name NAME --change-set-name CHANGE_SET --template-body FILE_PATH --parameters PARAM_FILE_PATH --tags TAGS_FILE_PATH --capabilities CAPABILITY_NAMED_IAM
 ```
 
 List change sets:

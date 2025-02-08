@@ -1,0 +1,6 @@
+[
+  {
+    "Key": "AppManagerCFNStackKey",
+    "Value": "arn:aws:cloudformation:us-east-1:701157632481:stack/Health-Alert-Stack/f035cfc0-162a-11ee-a14e-12f8f4f0e2d3"
+  }
+]
