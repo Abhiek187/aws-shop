@@ -90,7 +90,7 @@ jobs:
           echo "STACK_NAME=${{ matrix.cfn-info.stack }}" >> "$GITHUB_ENV"
           echo "STACK_FILE=${{ matrix.cfn-info.file }}" >> "$GITHUB_ENV"
           echo "PARAM_FILE=${{ matrix.cfn-info.params }}" >> "$GITHUB_ENV"
-          echo "TAGS_FILE=${{ matrix.cfn-info.tags }}" >> "$GITHUB_ENV"
+          echo "TAGS=$(< ${{ matrix.cfn-info.tags }})" >> "$GITHUB_ENV"
 
       - uses: actions/checkout@v4
 
@@ -106,6 +106,7 @@ jobs:
           name: ${{ env.STACK_NAME }}
           template: ${{ env.STACK_FILE }}
           parameter-overrides: file://${{ github.workspace }}/${{ env.PARAM_FILE }}
-          tags: file://${{ github.workspace }}/${{ env.TAGS_FILE }}
+          # tags only supports strings, not file paths
+          tags: ${{ env.TAGS }}
           no-fail-on-empty-changeset: "1"
           capabilities: CAPABILITY_NAMED_IAM
