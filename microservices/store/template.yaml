@@ -328,8 +328,8 @@ Resources:
     Properties:
       Name: AWS-Shop
       Tags:
-        - Key: AppManagerCFNStackKey
-          Value: !Ref AWS::StackId
+        # Some resources specify tags as maps instead of arrays
+        AppManagerCFNStackKey: !Ref AWS::StackId
 Outputs:
   CloudFrontURL:
     Description: CloudFront URL of the API
