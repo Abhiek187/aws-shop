@@ -91,6 +91,9 @@ Resources:
         # Logging:
         #   Bucket: !GetAtt CloudFrontLoggingBucket.DomainName
         #   IncludeCookies: false
+      Tags:
+        - Key: AppManagerCFNStackKey
+          Value: !Ref AWS::StackId
   CloudFrontCachePolicy:
     Type: AWS::CloudFront::CachePolicy
     Properties:
@@ -324,6 +327,9 @@ Resources:
     Type: AWS::Pinpoint::App
     Properties:
       Name: AWS-Shop
+      Tags:
+        - Key: AppManagerCFNStackKey
+          Value: !Ref AWS::StackId
 Outputs:
   CloudFrontURL:
     Description: CloudFront URL of the API

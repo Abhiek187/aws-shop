@@ -461,6 +461,10 @@ Resources:
         # Logging:
         #   Bucket: !GetAtt CloudFrontLoggingBucket.DomainName
         #   IncludeCookies: false
+      # Stack tags aren't added to certain services like CloudFront or EventBridge, for some reason
+      Tags:
+        - Key: AppManagerCFNStackKey
+          Value: !Ref AWS::StackId
   CloudFrontOriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
