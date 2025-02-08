@@ -92,7 +92,7 @@ jobs:
           echo "STACK_NAME=${{ matrix.cfn-info.stack }}" >> "$GITHUB_ENV"
           echo "STACK_FILE=${{ matrix.cfn-info.file }}" >> "$GITHUB_ENV"
           echo "PARAM_FILE=${{ matrix.cfn-info.params }}" >> "$GITHUB_ENV"
-          echo "TAGS=$(< ${{ matrix.cfn-info.tags }})" >> "$GITHUB_ENV"
+          echo "TAGS=$(jq -c . < ${{ matrix.cfn-info.tags }})" >> "$GITHUB_ENV"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
