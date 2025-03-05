@@ -15,7 +15,7 @@
     "@aws-sdk/util-dynamodb": "^3.751.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^6.4.5",
+    "@mui/icons-material": "^6.4.6",
     "@mui/material": "^6.1.6",
     "@reduxjs/toolkit": "^2.6.0",
     "node-fetch": "^3.3.2",
