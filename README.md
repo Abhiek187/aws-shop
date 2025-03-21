@@ -55,10 +55,10 @@ A --> B
 subgraph A [Build]
 direction TB
 C(Checkout repository) -->|18.x, 20.x| D(Install Node.js)
-D --> E(Install dependencies:\nnpm ci)
-E --> F(Lint app:\nnpm run lint --if-present)
-F --> G(Build app:\nnpm run build --if-present)
-G --> H(Run tests:\nnpm test)
+D --> E(Install dependencies:<br>npm ci)
+E --> F(Lint app:<br>npm run lint --if-present)
+F --> G(Build app:<br>npm run build --if-present)
+G --> H(Run tests:<br>npm test)
 end
 
 subgraph B [Deploy]
@@ -69,9 +69,9 @@ end
 
 subgraph K [Run CodeBuild Project]
 direction TB
-L(Install Node 20) --> M(Install dependencies:\nnpm ci)
-M --> N(Run tests:\nnpm test)
-N --> O(Build app:\nnpm run build)
+L(Install Node 20) --> M(Install dependencies:<br>npm ci)
+M --> N(Run tests:<br>npm test)
+N --> O(Build app:<br>npm run build)
 O --> P(Delete old code in S3)
 P --> Q(Upload new code to S3)
 Q --> R(Invalidate cache in CloudFront)
@@ -89,16 +89,16 @@ subgraph A [Build]
 direction TB
 C(Checkout repository) --> D(Configure AWS credentials)
 D -->|3.10, 3.11, 3.12| E(Install Python)
-E --> F(Install dependencies:\npip install -r requirements.txt)
-F --> G(Run tests:\npytest)
+E --> F(Install dependencies:<br>pip install -r requirements.txt)
+F --> G(Run tests:<br>pytest)
 end
 
 subgraph B [Deploy]
 direction TB
 H(Checkout repository) --> I(Install SAM)
 I --> J(Configure AWS credentials)
-J --> K(Build SAM app:\nsam build)
-K --> L(Deploy SAM app:\nsam deploy)
+J --> K(Build SAM app:<br>sam build)
+K --> L(Deploy SAM app:<br>sam deploy)
 end
 ```
 
@@ -119,10 +119,10 @@ subgraph B [Build]
 direction TB
 F(Get the template and stack name) --> |For each template| G(Checkout repository)
 G --> H(Configure AWS credentials)
-H --> I(Validate template:\naws cloudformation validate-template)
-I --> J(Detect stack drift:\n./detect-stack-drift.sh)
+H --> I(Validate template:<br>aws cloudformation validate-template)
+I --> J(Detect stack drift:<br>./detect-stack-drift.sh)
 J --> K(Install cfn-guard)
-K --> L(Scan for vulnerabilities:\ncfn-guard validate)
+K --> L(Scan for vulnerabilities:<br>cfn-guard validate)
 end
 
 subgraph C [Deploy]
