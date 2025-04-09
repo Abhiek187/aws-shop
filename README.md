@@ -54,7 +54,7 @@ A --> B
 
 subgraph A [Build]
 direction TB
-C(Checkout repository) -->|18.x, 20.x| D(Install Node.js)
+C(Checkout repository) -->|20.x, 22.x| D(Install Node.js)
 D --> E(Install dependencies:<br>npm ci)
 E --> F(Lint app:<br>npm run lint --if-present)
 F --> G(Build app:<br>npm run build --if-present)
