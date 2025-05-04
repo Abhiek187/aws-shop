@@ -45,7 +45,6 @@ Resources:
             # https://docs.aws.amazon.com/scheduler/latest/UserGuide/schedule-types.html#cron-based
             ScheduleExpression: "cron(0 0 * * ? *)" # run every day at midnight UTC
             State: ENABLED
-      FunctionName: iam-old-handler
       Policies:
         - arn:aws:iam::aws:policy/IAMReadOnlyAccess
         # SAM policy templates:
@@ -71,7 +70,6 @@ Resources:
       Subscription:
         - Endpoint: !Ref Email
           Protocol: email
-      TopicName: RotateAccessKeys
   SNSTopicPolicy:
     Type: AWS::SNS::TopicPolicy
     Properties:

@@ -36,12 +36,13 @@ def table_name():
 @pytest.fixture
 def dynamodb_table(dynamodb_client, table_name):
     # Create a mock DynamoDB table with items
-    dynamodb_client.create_table(
+    response = dynamodb_client.create_table(
         TableName=table_name,
         KeySchema=[{"AttributeName": "Id", "KeyType": "HASH"}],
         AttributeDefinitions=[{"AttributeName": "Id", "AttributeType": "S"}],
         BillingMode="PAY_PER_REQUEST",  # don't specify RCUs or WCUs
     )
+    os.environ["TableName"] = response["TableDescription"]["TableName"]
 
     items = [
         {

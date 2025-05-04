@@ -11,7 +11,7 @@ from src import app
 @pytest.mark.parametrize(
     "apigw_event", ["dev.json", "prod.json", "query-params.json"], indirect=True
 )
-def test_lambda_handler(apigw_event):
+def test_lambda_handler(apigw_event, dynamodb_table):
     # Given an API Gateway event
     # When the Lambda function is called with GET /
     lambda_response = app.handler(apigw_event, "")

@@ -10,7 +10,6 @@ Resources:
   EventBridgeRule:
     Type: AWS::Events::Rule
     Properties:
-      Name: USEast1AdvisorRule
       Description: Push Trusted Advisor notifications to an SNS topic
       EventPattern:
         source:
@@ -38,7 +37,6 @@ Resources:
       Subscription:
         - Endpoint: !Ref Email
           Protocol: email
-      TopicName: TrustedAdvisorNotifications
   SNSTopicPolicy:
     Type: AWS::SNS::TopicPolicy
     Properties:

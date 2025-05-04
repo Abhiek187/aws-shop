@@ -10,7 +10,6 @@ Resources:
   EventBridgeRule:
     Type: AWS::Events::Rule
     Properties:
-      Name: USEast1HealthRule
       Description: Push AWS Health notifications to an SNS topic
       EventPattern:
         source:
@@ -55,7 +54,6 @@ Resources:
       Subscription:
         - Endpoint: !Ref Email
           Protocol: email
-      TopicName: AWSHealthNotifications
   SNSTopicPolicy:
     Type: AWS::SNS::TopicPolicy
     Properties:

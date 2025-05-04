@@ -16,7 +16,7 @@ on:
       - ".github/workflows/node.js.yml"
 
 env:
-  CODEBUILD_PROJECT: AWSShopBuild
+  CODEBUILD_PROJECT: CodeBuildProject-IlkkSw80w7Y4
 
 # Required to use the AWS CLI
 permissions:
