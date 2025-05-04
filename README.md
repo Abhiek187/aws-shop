@@ -1,6 +1,6 @@
 # AWS Shop
 
-![AWS CodeBuild](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiL2NLTUo2Y2M4Y2VCZDNUdWFMTGUyN25BTzRMby8vbTJKQ0hidUVBTlZFSXpObE9OMnlxMFAyMVViamc5Z2NvWGdLZy9UZlAxdCtvY2svbGdUT1plSU1vPSIsIml2UGFyYW1ldGVyU3BlYyI6IlNEdldyWkllMnBJWEl5c2UiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
+![AWS CodeBuild](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiM1dYNGxRZkpFU1UvL2Jic0tDa0VRS1EvMm1IUDFSYnQvSkdFRmljRGVJeERLVEIrVlRkbHptcW40YVYwQlFPN0ZOOElTSlpZYUx2QlAyelNFL1FodHNrPSIsIml2UGFyYW1ldGVyU3BlYyI6InZONGx5cDBIUzhyd2cxZlAiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
 [![CloudFormation CI/CD](https://github.com/Abhiek187/aws-shop/actions/workflows/cfn.yml/badge.svg)](https://github.com/Abhiek187/aws-shop/actions/workflows/cfn.yml)
 [![CodeQL](https://github.com/Abhiek187/aws-shop/actions/workflows/codeql.yml/badge.svg)](https://github.com/Abhiek187/aws-shop/actions/workflows/codeql.yml)
 [![Dependency Review](https://github.com/Abhiek187/aws-shop/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/Abhiek187/aws-shop/actions/workflows/dependency-review.yml)
