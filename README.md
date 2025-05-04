@@ -324,25 +324,25 @@ aws dynamodb describe-table --table-name TABLE_NAME
 Scan table:
 
 ```bash
-aws dynamodb scan --table-name AWS-Services --index-name INDEX --projection-expression "Name, Price" --filter-expression "Category = :free" --expression-attribute-values file://attributes.json --return-consumed-capacity TOTAL
+aws dynamodb scan --table-name TABLE_NAME --index-name INDEX --projection-expression "Name, Price" --filter-expression "Category = :free" --expression-attribute-values file://attributes.json --return-consumed-capacity TOTAL
 ```
 
 Query table:
 
 ```bash
-aws dynamodb query --table-name AWS-Services --index-name INDEX --projection-expression "Name, Price" --key-condition-expression "Category = :free" --expression-attribute-values file://attributes.json --return-consumed-capacity TOTAL
+aws dynamodb query --table-name TABLE_NAME --index-name INDEX --projection-expression "Name, Price" --key-condition-expression "Category = :free" --expression-attribute-values file://attributes.json --return-consumed-capacity TOTAL
 ```
 
 Query table using PartiQL:
 
 ```bash
-aws dynamodb execute-statement --statement "SELECT Name, Price FROM \"AWS-Services\".\"INDEX\" WHERE Category = 'free'" --return-consumed-capacity TOTAL --return-values-on-condition-check-failure ALL_OLD
+aws dynamodb execute-statement --statement "SELECT Name, Price FROM \"TABLE_NAME\".\"INDEX\" WHERE Category = 'free'" --return-consumed-capacity TOTAL --return-values-on-condition-check-failure ALL_OLD
 ```
 
 Update table:
 
 ```bash
-aws dynamodb batch-write-item --request-items file://aws-services.json --return-consumed-capacity INDEXES --return-item-collection-metrics SIZE
+aws dynamodb batch-write-item --request-items file://request-items.json --return-consumed-capacity INDEXES --return-item-collection-metrics SIZE
 ```
 
 ### SQS Commands

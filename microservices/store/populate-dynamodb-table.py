@@ -7,7 +7,7 @@ from typing import Any, Dict
 from uuid import uuid4
 
 # Constants
-TABLE_NAME = "AWS-Services"
+TABLE_NAME = "AWS-Shop-Store-Service-AWSServiceTable-EIXHOC4KO39Y"
 JSON_FILE_NAME = "aws-services.json"
 TRANSACT_WRITE_LIMIT = 100
 # Reserved words in DynamoDB that can't be used in update expressions:

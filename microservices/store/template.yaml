@@ -202,6 +202,7 @@ Resources:
         SuppressedRules:
           - CLOUDWATCH_LOG_GROUP_ENCRYPTED # server-side encryption is used by default
     Properties:
+      # Follow AWS's naming convention for log groups
       LogGroupName: /aws/api-gateway/store-api
       RetentionInDays: 365
   # SQS
@@ -233,7 +234,6 @@ Resources:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
-      FunctionName: aws-service-handler
       Policies:
         # SAM policy templates:
         # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
@@ -251,6 +251,9 @@ Resources:
                 - !Sub
                   - "arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${tableName}/index/*"
                   - tableName: !Ref AWSServiceTable
+      Environment:
+        Variables:
+          TableName: !Ref AWSServiceTable
   AnalyticsLambdaFunction:
     Type: AWS::Serverless::Function
     Metadata:
@@ -321,7 +324,6 @@ Resources:
         # Back up the table every second for 35 days (only charged based on table+index size)
         PointInTimeRecoveryEnabled: true
       TableClass: STANDARD
-      TableName: AWS-Services
   # Pinpoint
   PinpointApp:
     Type: AWS::Pinpoint::App

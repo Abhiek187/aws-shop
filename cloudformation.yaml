@@ -143,7 +143,6 @@ Resources:
           # https://github.com/aws-cloudformation/aws-guard-rules-registry/issues/246
           - IAM_POLICY_NO_STATEMENTS_WITH_FULL_ACCESS
     Properties:
-      ManagedPolicyName: CodeBuildAccess
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -181,7 +180,6 @@ Resources:
     Type: AWS::CodeBuild::Project
     # DependsOn: CodeBuildSourceCredential
     Properties:
-      Name: AWSShopBuild
       Description: A project that builds and deploys the AWS Shopping App
       Source:
         Auth:

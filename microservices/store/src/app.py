@@ -1,9 +1,9 @@
 import boto3
 import json
 import logging
+import os
 
 dynamodb = boto3.client("dynamodb")
-table_name = "AWS-Services"
 
 # Enable detailed logging
 LOG = logging.getLogger()
@@ -74,7 +74,8 @@ def scan_table(table_name):
     return response["Items"]
 
 
-def get_aws_services(query_parameters, table_name=table_name, use_index=True):
+def get_aws_services(query_parameters, use_index=True):
+    table_name = os.environ.get("TableName", "")
     if not query_parameters:
         return scan_table(table_name)
 
