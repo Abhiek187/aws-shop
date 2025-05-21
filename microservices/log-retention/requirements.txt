@@ -12,7 +12,7 @@ jmespath==1.0.1
 MarkupSafe==3.0.2
 moto==5.1.4
 packaging==25.0
-pluggy==1.5.0
+pluggy==1.6.0
 pycparser==2.22
 pytest==8.3.5
 python-dateutil==2.9.0.post0
