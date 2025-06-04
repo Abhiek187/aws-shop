@@ -17,7 +17,7 @@ packaging==25.0
 pluggy==1.6.0
 py-partiql-parser==0.6.1
 pycparser==2.22
-pytest==8.3.5
+pytest==8.4.0
 python-dateutil==2.9.0.post0
 PyYAML==6.0.2
 requests==2.32.3
