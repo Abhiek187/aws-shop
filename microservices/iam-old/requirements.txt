@@ -18,7 +18,7 @@ pycparser==2.22
 pytest==8.4.0
 python-dateutil==2.9.0.post0
 PyYAML==6.0.2
-requests==2.32.3
+requests==2.32.4
 responses==0.25.7
 s3transfer==0.13.0
 six==1.17.0
