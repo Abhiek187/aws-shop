@@ -14,14 +14,16 @@ moto==5.1.5
 packaging==25.0
 pluggy==1.6.0
 pycparser==2.22
+Pygments==2.19.1
 pytest==8.4.0
 python-dateutil==2.9.0.post0
 PyYAML==6.0.2
-requests==2.32.3
+requests==2.32.4
 responses==0.25.7
 s3transfer==0.13.0
 six==1.17.0
 tomli==2.2.1
+typing_extensions==4.14.0
 urllib3==1.26.20; python_version < "3.10"
 urllib3==2.4.0; python_version >= "3.10"
 Werkzeug==3.1.3
