@@ -25,7 +25,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.6.2",
     "react-transition-group": "^4.4.5",
-    "use-debounce": "^10.0.4"
+    "use-debounce": "^10.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",
