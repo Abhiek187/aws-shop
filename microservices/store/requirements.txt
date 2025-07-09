@@ -27,7 +27,7 @@ s3transfer==0.13.0
 six==1.17.0
 tomli==2.2.1
 types-PyYAML==6.0.12.20250516
-typing_extensions==4.14.0
+typing_extensions==4.14.1
 urllib3==1.26.20; python_version < "3.10"
 urllib3==2.5.0; python_version >= "3.10"
 websocket-client==1.8.0
