@@ -37,9 +37,11 @@ const ServiceCard = ({ service }: Readonly<ServiceProps>) => {
       {/* Icon source: https://aws.amazon.com/architecture/icons/ */}
       <CardMedia
         component="img"
+        width="64"
         height="64"
         image={`/icons/${service.Name.replaceAll(" ", "-")}.svg`}
         alt={service.Name}
+        sx={{ margin: "8px auto 0", width: "revert-layer" }}
       />
       <CardContent>
         <Typography variant="h5" sx={{ textAlign: "center", mb: 1.5 }}>
