@@ -22,7 +22,7 @@
     "FreeTier": 1e6
   },
   {
-    "Name": "Application Composer",
+    "Name": "Infrastructure Composer",
     "Description": "Visually create serverless applications",
     "Price": 0,
     "Unit": "diagram",
@@ -378,7 +378,7 @@
     "Category": "trial"
   },
   {
-    "Name": "LightSail",
+    "Name": "Lightsail",
     "Description": "Quickly create servers",
     "Price": 3.5,
     "Unit": "Linux server",
@@ -481,13 +481,6 @@
     "Description": "Automated code review, SonarQube-like",
     "Price": 10,
     "Unit": "repo",
-    "Category": "paid"
-  },
-  {
-    "Name": "CodeStar",
-    "Description": "GUI for managing software deployment projects",
-    "Price": 7.2,
-    "Unit": "EC2 instance",
     "Category": "paid"
   },
   {
