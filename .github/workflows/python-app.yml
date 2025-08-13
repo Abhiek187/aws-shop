@@ -44,7 +44,7 @@ jobs:
         # See supported Python release schedule at https://devguide.python.org/versions/
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.GH_OIDC_ROLE }}
@@ -81,7 +81,7 @@ jobs:
           ]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

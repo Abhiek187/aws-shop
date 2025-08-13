@@ -26,7 +26,7 @@ jobs:
       cfn-info: ${{ steps.read-json.outputs.info }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - id: read-json
         run: echo "info=$(jq -c . < .github/workflows/cfn-info.json)" >> "$GITHUB_OUTPUT"
@@ -45,7 +45,7 @@ jobs:
           echo "STACK_NAME=${{ matrix.cfn-info.stack }}" >> "$GITHUB_ENV"
           echo "STACK_FILE=${{ matrix.cfn-info.file }}" >> "$GITHUB_ENV"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -85,7 +85,7 @@ jobs:
         cfn-info: ${{ fromJson(needs.get-templates.outputs.cfn-info) }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set Environment Variables
         run: |
