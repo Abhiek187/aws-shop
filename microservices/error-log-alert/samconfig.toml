@@ -1,0 +1,11 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "Error-Log-Alert-Stack"
+resolve_s3 = true
+s3_prefix = "Error-Log-Alert-Stack"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = []
+parameter_overrides = "ParameterKey=Email,UsePreviousValue=true"
+tags = "AppManagerCFNStackKey=arn:aws:cloudformation:us-east-1:701157632481:stack/Error-Log-Alert-Stack/STACK_ID"

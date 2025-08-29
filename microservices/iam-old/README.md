@@ -6,7 +6,9 @@
 
 IAM Old is a service that checks the age of all the access keys for all IAM users daily. If the access key is 90 days old, an email is sent to remind the user to rotate their key. A dead-letter queue (DLQ) is used to catch any errors from EventBridge and Lambda.
 
-**Note:** This service doesn't automatically rotate access keys since the secret is only displayed once and must be saved on the user's machine. Run [rotate-access-key.sh](../../rotate-access-key.sh) to accomplish both tasks.
+> [!NOTE]
+>
+> This service doesn't automatically rotate access keys since the secret is only displayed once and must be saved on the user's machine. Run [rotate-access-key.sh](../../rotate-access-key.sh) to accomplish both tasks.
 
 ## Directions
 
