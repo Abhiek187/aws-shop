@@ -1,3 +1,4 @@
+import { defineConfig } from "eslint/config";
 import eslint from "@eslint/js";
 import reactRecommended from "eslint-plugin-react/configs/recommended.js";
 import reactRefresh from "eslint-plugin-react-refresh";
@@ -11,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Preview: npx @eslint/config-inspector
-export default tseslint.config(
+export default defineConfig(
   {
     // Global ignores
     ignores: ["dist/", "coverage/", "*.js"],
