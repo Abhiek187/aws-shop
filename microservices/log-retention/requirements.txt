@@ -13,7 +13,7 @@ MarkupSafe==3.0.2
 moto==5.1.11
 packaging==25.0
 pluggy==1.6.0
-pycparser==2.22
+pycparser==2.23
 Pygments==2.19.2
 pytest==8.4.1
 python-dateutil==2.9.0.post0
