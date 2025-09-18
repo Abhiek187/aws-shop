@@ -20,10 +20,7 @@ phases:
     on-failure: ABORT
   post_build:
     commands:
-      # Delete the old code in S3 before uploading the new code
-      - aws s3 rm s3://$ARTIFACT_BUCKET --recursive
+      # Only delete/update files that differ in size (usually the CSS & JS files)
+      # Ignores timestamps & minimizes the number of delete markers and noncurrent versions
+      - aws s3 sync shop-app/dist s3://$ARTIFACT_BUCKET --size-only --delete
       - echo Build completed on `date`
-artifacts:
-  base-directory: "shop-app/dist"
-  files:
-    - "**/*"
