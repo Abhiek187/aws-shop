@@ -23,6 +23,6 @@ phases:
       # Only delete/update files that differ in size (usually the CSS & JS files)
       # Ignores timestamps & minimizes the number of delete markers and noncurrent versions
       # index.html may be the same size, but will always change to point to the new assets
-      - aws s3 cp dist/index.html s3://$ARTIFACT_BUCKET/index.html
+      - aws s3 cp dist/index.html s3://$ARTIFACT_BUCKET/index.html --cache-control "no-cache"
       - aws s3 sync dist s3://$ARTIFACT_BUCKET --size-only --delete --exclude "index.html"
       - echo Build completed on `date`

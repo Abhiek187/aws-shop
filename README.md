@@ -271,6 +271,32 @@ Stop build:
 aws codebuild stop-build --id BUILD_ID
 ```
 
+### CloudFront Commands
+
+List distributions:
+
+```bash
+aws cloudfront list-distributions
+```
+
+Invalidate cache:
+
+```bash
+aws cloudfront create-invalidation --distribution-id DISTRIBUTION --paths ABSOLUTE_PATHS
+```
+
+List invalidations:
+
+```bash
+aws cloudfront list-invalidations --distribution-id DISTRIBUTION
+```
+
+Get invalidation:
+
+```bash
+aws cloudfront get-invalidation --id INVALIDATION_ID --distribution-id DISTRIBUTION
+```
+
 ### S3 Commands
 
 List objects:
