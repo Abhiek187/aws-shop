@@ -22,5 +22,5 @@ phases:
     commands:
       # Only delete/update files that differ in size (usually the CSS & JS files)
       # Ignores timestamps & minimizes the number of delete markers and noncurrent versions
-      - aws s3 sync shop-app/dist s3://$ARTIFACT_BUCKET --size-only --delete
+      - aws s3 sync dist s3://$ARTIFACT_BUCKET --size-only --delete
       - echo Build completed on `date`
