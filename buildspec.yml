@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 20
+      nodejs: 22
   pre_build:
     commands:
       - cd shop-app # the shell instance is saved every build command
@@ -22,5 +22,7 @@ phases:
     commands:
       # Only delete/update files that differ in size (usually the CSS & JS files)
       # Ignores timestamps & minimizes the number of delete markers and noncurrent versions
-      - aws s3 sync dist s3://$ARTIFACT_BUCKET --size-only --delete
+      # index.html may be the same size, but will always change to point to the new assets
+      - aws s3 cp dist/index.html s3://$ARTIFACT_BUCKET/index.html
+      - aws s3 sync dist s3://$ARTIFACT_BUCKET --size-only --delete --exclude "index.html"
       - echo Build completed on `date`

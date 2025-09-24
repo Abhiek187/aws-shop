@@ -69,7 +69,7 @@ end
 
 subgraph K [Run CodeBuild Project]
 direction TB
-L(Install Node 20) --> M(Install dependencies:<br>npm ci)
+L(Install Node 22) --> M(Install dependencies:<br>npm ci)
 M --> N(Run tests:<br>npm test)
 N --> O(Build app:<br>npm run build)
 O --> P(Delete old code in S3)
