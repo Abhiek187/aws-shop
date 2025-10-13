@@ -28,8 +28,7 @@ six==1.17.0
 tomli==2.2.1
 types-PyYAML==6.0.12.20250915
 typing_extensions==4.15.0
-urllib3==1.26.20; python_version < "3.10"
-urllib3==2.5.0; python_version >= "3.10"
+urllib3==2.5.0
 websocket-client==1.9.0
 Werkzeug==3.1.3
 xmltodict==1.0.2

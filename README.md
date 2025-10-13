@@ -88,7 +88,7 @@ A --> B
 subgraph A [Build]
 direction TB
 C(Checkout repository) --> D(Configure AWS credentials)
-D -->|3.10, 3.11, 3.12| E(Install Python)
+D -->|3.11, 3.12, 3.13| E(Install Python)
 E --> F(Install dependencies:<br>pip install -r requirements.txt)
 F --> G(Run tests:<br>pytest)
 end
