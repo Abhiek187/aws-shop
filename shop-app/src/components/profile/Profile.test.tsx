@@ -21,6 +21,14 @@ vi.mock("react-router-dom", async () => ({
   useNavigate: () => mockUseNavigate,
 }));
 
+vi.mock("@aws-sdk/client-cognito-identity-provider", () => ({
+  CognitoIdentityProviderClient: vi.fn(() => ({
+    send: vi.fn().mockResolvedValue({ Credentials: [] }),
+  })),
+  ListWebAuthnCredentialsCommand: vi.fn(),
+  DeleteWebAuthnCredentialCommand: vi.fn(),
+}));
+
 describe("Profile", () => {
   it("should redirect if the user isn't authenticated", () => {
     // Given no access tokens
