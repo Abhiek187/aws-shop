@@ -12,10 +12,10 @@ iniconfig==2.3.0
 Jinja2==3.1.6
 jmespath==1.0.1
 MarkupSafe==3.0.3
-moto==5.1.14
+moto==5.1.15
 packaging==25.0
 pluggy==1.6.0
-py-partiql-parser==0.6.1
+py-partiql-parser==0.6.3
 pycparser==2.23
 Pygments==2.19.2
 pytest==8.4.2
