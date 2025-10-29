@@ -22,9 +22,11 @@ vi.mock("react-router-dom", async () => ({
 }));
 
 vi.mock("@aws-sdk/client-cognito-identity-provider", () => ({
-  CognitoIdentityProviderClient: vi.fn(() => ({
-    send: vi.fn().mockResolvedValue({ Credentials: [] }),
-  })),
+  CognitoIdentityProviderClient: vi.fn(
+    class MockCognitoIdentityProviderClient {
+      send = vi.fn().mockResolvedValue({ Credentials: [] });
+    }
+  ),
   ListWebAuthnCredentialsCommand: vi.fn(),
   DeleteWebAuthnCredentialCommand: vi.fn(),
 }));
