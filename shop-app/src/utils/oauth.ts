@@ -42,6 +42,16 @@ const sha256 = async (message: string): Promise<ArrayBuffer> => {
 
 // Initiate and authorization code flow with PKCE
 export const openHostedUI = async () => {
+  // Call window.open immediately so browsers like Safari don't block the pop-up
+  const newWindow = window.open(); // open login page in a new tab so session storage persists
+
+  if (newWindow === null || newWindow.closed) {
+    alert(
+      "Pop-ups are required to sign in a new tab. Please enable them to continue."
+    );
+    return;
+  }
+
   // Save the state, code challenge, and nonce in memory to verify upon signing in
   const state = generateRandomString();
   const codeVerifier = generateRandomString();
@@ -63,13 +73,8 @@ export const openHostedUI = async () => {
   const url = `${
     Constants.Cognito.BASE_URL
   }/oauth2/authorize?${queryParamString.toString()}`;
-  const newWindow = window.open(url); // open login page in a new tab so session storage persists
-
-  if (newWindow === null || newWindow.closed) {
-    alert(
-      "Pop-ups are required to sign in a new tab. Please enable them to continue."
-    );
-  }
+  // Then update the URL once it's ready
+  newWindow.location.href = url;
 };
 
 export const openRegisterPasskey = () => {

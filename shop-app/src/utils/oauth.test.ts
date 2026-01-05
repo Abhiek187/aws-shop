@@ -76,7 +76,8 @@ describe("oauth", () => {
       nonce: "",
     });
 
-    expect(windowOpenSpy).toHaveBeenCalledWith(
+    expect(windowOpenSpy).toHaveBeenCalledWith();
+    expect(window.location.href).toBe(
       `${
         Constants.Cognito.BASE_URL
       }/oauth2/authorize?${mockQueryParams.toString()}`

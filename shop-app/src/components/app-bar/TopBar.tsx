@@ -189,6 +189,7 @@ const TopBar = () => {
       }
     } else if (refreshResult.error !== undefined) {
       // If refresh failed, log out
+      localStorage.removeItem(Constants.LocalStorage.REFRESH_TOKEN);
       dispatch(appActions.logOut());
     }
   }, [dispatch, handleOpenAccountDialog, handleOpenProfile, refreshResult]);
