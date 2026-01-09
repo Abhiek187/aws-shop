@@ -192,7 +192,7 @@ const TopBar = () => {
       localStorage.removeItem(Constants.LocalStorage.REFRESH_TOKEN);
       dispatch(appActions.logOut());
     }
-  }, [dispatch, handleOpenAccountDialog, handleOpenProfile, refreshResult]);
+  }, [dispatch, refreshResult]);
 
   const handleToggleMode = () => {
     // Publish the event as the opposite of whether it's light or dark mode when toggling
