@@ -1,7 +1,7 @@
 import { defineConfig } from "eslint/config";
 import eslint from "@eslint/js";
 import reactRecommended from "eslint-plugin-react/configs/recommended.js";
-import reactRefresh from "eslint-plugin-react-refresh";
+import { reactRefresh } from "eslint-plugin-react-refresh";
 import globals from "globals";
 import path from "path";
 import tseslint from "typescript-eslint";
@@ -43,7 +43,7 @@ export default defineConfig(
       reportUnusedDisableDirectives: true,
     },
     plugins: {
-      "react-refresh": reactRefresh,
+      "react-refresh": reactRefresh.plugin,
     },
     rules: {
       // Suppress errors for missing 'import React' in files
