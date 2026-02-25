@@ -28,4 +28,4 @@ types-PyYAML==6.0.12.20250915
 typing_extensions==4.15.0
 urllib3==2.6.3
 Werkzeug==3.1.6
-xmltodict==1.0.3
+xmltodict==1.0.4
