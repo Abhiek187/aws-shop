@@ -11,7 +11,7 @@
     "test": "vitest run --coverage"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "^3.1016.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.1017.0",
     "@aws-sdk/util-dynamodb": "^3.996.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -28,7 +28,7 @@
     "use-debounce": "^10.1.0"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9.39.4",
     "@tailwindcss/vite": "^4.2.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -37,19 +37,19 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
-    "@vitest/coverage-v8": "^4.1.0",
-    "eslint": "^10.0.3",
+    "@vitest/coverage-v8": "^4.1.1",
+    "eslint": "^10.1.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
-    "jsdom": "^29.0.0",
-    "msw": "^2.12.13",
+    "jsdom": "^29.0.1",
+    "msw": "^2.12.14",
     "postcss": "^8.5.8",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.57.1",
-    "vite": "^8.0.0",
-    "vitest": "^4.0.5"
+    "typescript-eslint": "^8.57.2",
+    "vite": "^8.0.2",
+    "vitest": "^4.1.1"
   },
   "overrides": {
     "eslint-plugin-react": {
