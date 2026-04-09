@@ -31,7 +31,9 @@ const MobileFilter = ({ open, onClose }: Readonly<MobileFilterProps>) => {
       fullScreen
       open={open}
       onClose={onClose}
-      TransitionComponent={Transition}
+      slots={{
+        transition: Transition
+      }}
     >
       <AppBar sx={{ position: "relative" }}>
         <Toolbar>
