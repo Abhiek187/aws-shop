@@ -136,9 +136,11 @@ const FilterFields = ({ isMobile }: Readonly<FilterProps>) => {
           value={minPrice}
           onChange={onChangeMinPrice}
           sx={{ width: isMobile ? "10ch" : "15ch" }}
-          InputProps={{
-            startAdornment: <InputAdornment position="start">$</InputAdornment>,
-            inputProps: { min: 0 },
+          slotProps={{
+            input: {
+              startAdornment: <InputAdornment position="start">$</InputAdornment>,
+              inputProps: { min: 0 },
+            }
           }}
         />
         <Typography> ≤ Price ≤ </Typography>
@@ -153,9 +155,11 @@ const FilterFields = ({ isMobile }: Readonly<FilterProps>) => {
           value={maxPrice}
           onChange={onChangeMaxPrice}
           sx={{ width: isMobile ? "10ch" : "15ch" }}
-          InputProps={{
-            startAdornment: <InputAdornment position="start">$</InputAdornment>,
-            inputProps: { min: 0 },
+          slotProps={{
+            input: {
+              startAdornment: <InputAdornment position="start">$</InputAdornment>,
+              inputProps: { min: 0 },
+            }
           }}
         />
       </Box>

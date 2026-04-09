@@ -202,11 +202,11 @@ const Store = () => {
           <TransitionGroup component={Fragment}>
             {getServicesResult.data?.map((service) => (
               // Show a smooth transition when cards appear or disappear
-              <Grow key={service.Id}>
+              (<Grow key={service.Id}>
                 <Grid size={{ xs: 4 }}>
                   <ServiceCard service={service} />
                 </Grid>
-              </Grow>
+              </Grow>)
             ))}
           </TransitionGroup>
         </Grid>
