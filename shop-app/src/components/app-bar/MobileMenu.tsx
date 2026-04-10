@@ -1,9 +1,7 @@
-import {
-  LightMode,
-  DarkMode,
-  ShoppingCart,
-  AccountCircle,
-} from "@mui/icons-material";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import DarkMode from "@mui/icons-material/DarkMode";
+import LightMode from "@mui/icons-material/LightMode";
+import ShoppingCart from "@mui/icons-material/ShoppingCart";
 import { Menu, MenuItem, IconButton } from "@mui/material";
 import { MouseEvent } from "react";
 

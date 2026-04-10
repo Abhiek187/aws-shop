@@ -1,5 +1,8 @@
 import type { WebAuthnCredentialDescription } from "@aws-sdk/client-cognito-identity-provider";
-import { Cancel, CheckCircle, Close, Delete } from "@mui/icons-material";
+import Cancel from "@mui/icons-material/Cancel";
+import CheckCircle from "@mui/icons-material/CheckCircle";
+import Close from "@mui/icons-material/Close";
+import Delete from "@mui/icons-material/Delete";
 import {
   Box,
   IconButton,

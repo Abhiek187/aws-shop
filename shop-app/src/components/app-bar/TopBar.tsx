@@ -1,12 +1,10 @@
-import {
-  AccountCircle,
-  DarkMode,
-  FilterList,
-  LightMode,
-  MoreVert,
-  Search,
-  ShoppingCart,
-} from "@mui/icons-material";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import DarkMode from "@mui/icons-material/DarkMode";
+import FilterList from "@mui/icons-material/FilterList";
+import LightMode from "@mui/icons-material/LightMode";
+import MoreVert from "@mui/icons-material/MoreVert";
+import Search from "@mui/icons-material/Search";
+import ShoppingCart from "@mui/icons-material/ShoppingCart";
 import {
   Box,
   Toolbar,
