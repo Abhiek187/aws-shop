@@ -12,7 +12,7 @@ Jinja2==3.1.6
 jmespath==1.1.0
 MarkupSafe==3.0.3
 moto==5.1.22
-packaging==26.1
+packaging==26.2
 pluggy==1.6.0
 pycparser==3.0
 Pygments==2.20.0
