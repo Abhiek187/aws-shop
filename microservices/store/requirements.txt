@@ -1,5 +1,5 @@
-boto3==1.43.6
-botocore==1.43.6
+boto3==1.43.9
+botocore==1.43.9
 certifi==2026.4.22
 cffi==2.0.0
 charset-normalizer==3.4.7
