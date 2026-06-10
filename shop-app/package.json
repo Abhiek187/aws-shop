@@ -23,7 +23,7 @@
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-redux": "^9.3.0",
-    "react-router-dom": "^7.16.0",
+    "react-router-dom": "^7.17.0",
     "react-transition-group": "^4.4.5",
     "use-debounce": "^10.1.1"
   },
