@@ -11,8 +11,8 @@
     "test": "vitest run --coverage"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "^3.1079.0",
-    "@aws-sdk/util-dynamodb": "^3.996.5",
+    "@aws-sdk/client-cognito-identity-provider": "^3.1085.0",
+    "@aws-sdk/util-dynamodb": "^3.996.6",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^9.2.0",
