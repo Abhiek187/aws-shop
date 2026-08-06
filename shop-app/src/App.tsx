@@ -1,6 +1,6 @@
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { teal, yellow } from "@mui/material/colors";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router";
 
 import TopBar from "./components/app-bar/TopBar";
 import Store from "./components/store/Store";

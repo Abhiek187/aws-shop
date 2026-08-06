@@ -12,7 +12,7 @@ import {
   SelectChangeEvent,
 } from "@mui/material";
 import { ChangeEvent } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { usePublishEventMutation } from "../../services/store";
 import { appBarEvent } from "../../utils/analytics";
 

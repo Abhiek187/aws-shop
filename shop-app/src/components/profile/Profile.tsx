@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 import { parseJWT } from "../../utils/oauth";
 import { selectApp } from "../../store/appSlice";

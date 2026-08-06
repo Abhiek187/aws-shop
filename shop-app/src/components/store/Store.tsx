@@ -1,7 +1,7 @@
 import { CircularProgress, Grid, Grow } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { TransitionGroup } from "react-transition-group";
 import { useDebounce } from "use-debounce";
 
