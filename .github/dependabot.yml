@@ -58,3 +58,8 @@ updates:
         patterns:
           - "moto"
           - "py-partiql-parser"
+      # Group all identical dependency updates together that don't belong in the above groups
+      lambda-deps:
+        group-by: "dependency-name"
+        patterns:
+          - "*"
