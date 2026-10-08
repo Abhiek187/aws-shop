@@ -31,7 +31,7 @@ afterAll(() => server.close());
 
 // Runs a cleanup after each test case (e.g. clearing jsdom)
 afterEach(() => {
-  cleanup();
   // Reset any request handlers that may be added during the tests, so they don't affect other tests
   server.resetHandlers();
+  cleanup();
 });

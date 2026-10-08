@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -73,7 +79,7 @@ describe("TopBar", () => {
     expect(appBarEventSpy).not.toHaveBeenCalled();
   });
 
-  it("should update search params with category", () => {
+  it("should update search params with category", async () => {
     renderTopBar();
     // When changing the category, the "category" query param should be updated
     const categoryDropDown = screen.getByRole<HTMLDivElement>("combobox");
@@ -84,14 +90,18 @@ describe("TopBar", () => {
     const optionList = within(screen.getByRole("listbox"));
     fireEvent.click(optionList.getByText("Free"));
     expect(setParamsSpy).toHaveBeenCalledWith(searchParam, searchQuery);
-    expect(appBarEventSpy).toHaveBeenCalledWith({
-      category: searchQuery,
+    await waitFor(() => {
+      expect(appBarEventSpy).toHaveBeenCalledWith({
+        category: searchQuery,
+      });
     });
 
     fireEvent.mouseDown(categoryDropDown);
     fireEvent.click(optionList.getByText("Any"));
     expect(deleteParamsSpy).toHaveBeenCalledWith(searchParam);
-    expect(appBarEventSpy).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(appBarEventSpy).toHaveBeenCalledTimes(1);
+    });
   });
 
   it("should update search params with min-price", () => {
@@ -122,7 +132,7 @@ describe("TopBar", () => {
     expect(appBarEventSpy).not.toHaveBeenCalled();
   });
 
-  it("should update search params with free-tier", () => {
+  it("should update search params with free-tier", async () => {
     renderTopBar();
     // When toggling the free tier checkbox, the "free-tier" query param should be updated
     const freeTierCheckbox =
@@ -130,16 +140,20 @@ describe("TopBar", () => {
     const searchParam = "free-tier";
     fireEvent.click(freeTierCheckbox);
     expect(setParamsSpy).toHaveBeenCalledWith(searchParam, "");
-    expect(appBarEventSpy).toHaveBeenCalledWith({
-      freeTier: true,
+    await waitFor(() => {
+      expect(appBarEventSpy).toHaveBeenCalledWith({
+        freeTier: true,
+      });
     });
 
     fireEvent.click(freeTierCheckbox);
     expect(deleteParamsSpy).toHaveBeenCalledWith(searchParam);
-    expect(appBarEventSpy).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(appBarEventSpy).toHaveBeenCalledTimes(1);
+    });
   });
 
-  it("should toggle between light & dark mode", () => {
+  it("should toggle between light & dark mode", async () => {
     renderTopBar({
       [appSlice.name]: {
         ...getInitialState(),
@@ -150,21 +164,25 @@ describe("TopBar", () => {
     const darkModeButton = screen.getByLabelText("switch to dark mode");
     expect(darkModeButton).toBeInTheDocument();
     fireEvent.click(darkModeButton);
-    expect(appBarEventSpy).toHaveBeenCalledWith({
-      darkMode: true,
+    await waitFor(() => {
+      expect(appBarEventSpy).toHaveBeenCalledWith({
+        darkMode: true,
+      });
     });
 
     const lightModeButton = screen.getByLabelText("switch to light mode");
     expect(lightModeButton).toBeInTheDocument();
     fireEvent.click(lightModeButton);
-    expect(appBarEventSpy).toHaveBeenCalledWith({
-      darkMode: false,
+    await waitFor(() => {
+      expect(appBarEventSpy).toHaveBeenCalledWith({
+        darkMode: false,
+      });
+      expect(darkModeButton).toBeInTheDocument();
+      expect(appBarEventSpy).toHaveBeenCalledTimes(2);
     });
-    expect(darkModeButton).toBeInTheDocument();
-    expect(appBarEventSpy).toHaveBeenCalledTimes(2);
   });
 
-  it("should show the login button when logged out", () => {
+  it("should show the login button when logged out", async () => {
     renderTopBar({
       [appSlice.name]: {
         ...getInitialState(),
@@ -178,10 +196,12 @@ describe("TopBar", () => {
     const loginButton = screen.getByText("Log In");
     expect(loginButton).toBeInTheDocument();
     fireEvent.click(loginButton);
-    expect(profileEventSpy).toHaveBeenCalledWith({
-      loggedIn: true,
+    await waitFor(() => {
+      expect(profileEventSpy).toHaveBeenCalledWith({
+        loggedIn: true,
+      });
+      expect(openHostedUISpy).toHaveBeenCalled();
     });
-    expect(openHostedUISpy).toHaveBeenCalled();
   });
 
   it("should show the profile & logout buttons when logged in", () => {

@@ -1,5 +1,4 @@
-import "@testing-library/jest-dom";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { describe, expect, it, vi } from "vitest";
 
@@ -11,7 +10,7 @@ import * as analytics from "../../utils/analytics";
 const storeEventSpy = vi.spyOn(analytics, "storeEvent");
 
 describe("ServiceCard", () => {
-  it("should render the service card", () => {
+  it("should render the service card", async () => {
     const service: AWSService = {
       Id: "0",
       Name: "Lambda",
@@ -47,8 +46,10 @@ describe("ServiceCard", () => {
     const buyButton = screen.getByRole("button");
     expect(buyButton).toBeInTheDocument();
     fireEvent.click(buyButton);
-    expect(storeEventSpy).toHaveBeenCalledWith({
-      serviceName: service.Name,
+    await waitFor(() => {
+      expect(storeEventSpy).toHaveBeenCalledWith({
+        serviceName: service.Name,
+      });
     });
   });
 });
