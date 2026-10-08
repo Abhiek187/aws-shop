@@ -55,7 +55,7 @@ A --> B
 subgraph A [Build]
 direction TB
 C(Checkout repository) -->|22.x, 24.x| D(Install Node.js)
-D --> E(Install dependencies:<br>npm ci)
+D --> E(Install dependencies:<br>npm i)
 E --> F(Lint app:<br>npm run lint --if-present)
 F --> G(Build app:<br>npm run build --if-present)
 G --> H(Run tests:<br>npm test)
@@ -69,7 +69,7 @@ end
 
 subgraph K [Run CodeBuild Project]
 direction TB
-L(Install Node 22) --> M(Install dependencies:<br>npm ci)
+L(Install Node 22) --> M(Install dependencies:<br>npm i)
 M --> N(Run tests:<br>npm test)
 N --> O(Build app:<br>npm run build)
 O --> P(Delete old code in S3)
