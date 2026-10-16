@@ -12,6 +12,8 @@ export interface TokenPayload {
   exp: number; // expiration time (Unix)
   iat: number; // issued at (Unix)
   jti: string; // JWT ID (unique identifier for this token)
+  amr?: string[]; // authentication methods references
+  acr?: string; // authentication context class reference
 }
 
 export interface AccessTokenPayload extends TokenPayload {
