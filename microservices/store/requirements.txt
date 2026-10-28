@@ -16,7 +16,7 @@ moto==5.2.4
 packaging==26.3
 pluggy==1.7.0
 py-partiql-parser==0.6.3
-pycparser==3.11
+pycparser==3.12
 Pygments==2.21.0
 pytest==9.1.1
 python-dateutil==2.9.0.post0
