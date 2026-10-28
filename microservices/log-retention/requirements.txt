@@ -16,7 +16,7 @@ pluggy==1.7.0
 pycparser==3.12
 Pygments==2.21.0
 pytest==9.1.1
-python-dateutil==2.9.0.post0
+python-dateutil==3.0.0
 PyYAML==6.0.3
 requests==2.34.2
 responses==0.26.3
