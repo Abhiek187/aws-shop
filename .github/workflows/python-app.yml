@@ -40,7 +40,7 @@ jobs:
             "./microservices/iam-old",
             "./microservices/log-retention",
           ]
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.12", "3.13", "3.14"]
         # See supported Python release schedule at https://devguide.python.org/versions/
 
     steps:
