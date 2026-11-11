@@ -24,7 +24,7 @@ responses==0.26.3
 s3transfer==0.19.3
 six==1.17.0
 tomli==2.5.0
-types-PyYAML==6.0.12.20261030
+types-PyYAML==6.0.12.20261103
 typing_extensions==4.16.0
 urllib3==2.8.0
 Werkzeug==3.1.9
